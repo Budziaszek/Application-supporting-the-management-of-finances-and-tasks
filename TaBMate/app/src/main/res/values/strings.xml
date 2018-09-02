@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">TaB Mate</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_password_confirm">Confirm password</string>
+
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_register">Register</string>
+    <string name="action_sign_up">Not a member? Join here</string>
+    <string name="action_sign_in_short">Sign in</string>
+
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is invalid</string>
+    <string name="error_too_short_password">This password too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_passwords_not_same">Given passwords do not match</string>
+    <string name="error_no_internet_connection">No internet connection</string>
+
+    <string name="title_activity_main">TaB Mate</string>
+    <string name="user_title">Logged in as:</string>
+    <string name="user_image">User Image</string>
+    <string name="log_out">Log out </string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
