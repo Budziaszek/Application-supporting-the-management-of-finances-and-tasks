@@ -3,10 +3,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,13 +12,11 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.view.inputmethod.InputMethodManager;
-
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -31,22 +26,19 @@ import com.google.firebase.auth.FirebaseUser;
 
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login (and register) via email/password.
  */
 public class LoginActivity extends Activity {
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
+
     private UserLoginTask mAuthTask = null;
 
-    // UI references.
+    // UI references
     private EditText mEmailView;
     private EditText mPasswordView;
     private EditText mPasswordConfirmView;
     private Button mEmailSignInButton;
     private Button mEmailSignUpButton;
     private Button mEmailRegisterButton;
-
     private View mProgressView;
     private View mLoginFormView;
     private FirebaseAuth mAuth;
@@ -54,12 +46,16 @@ public class LoginActivity extends Activity {
 
     private Boolean doRegister = false;
 
+    // Start main activity (called after login)
     public void startMain(){
-        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);//MainActivity.class);
         LoginActivity.this.startActivity(myIntent);
         finish();
     }
 
+    /**
+     * If register page is displayed, go to login page
+     */
     @Override
     public void onBackPressed() {
         if(!doRegister) {
@@ -79,6 +75,15 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
+        initializeForm();
+
+        if(currentUser != null){
+            Log.d("User", currentUser.getEmail());
+            startMain();
+        }
+    }
+
+    private void initializeForm(){
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -138,12 +143,9 @@ public class LoginActivity extends Activity {
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
-        if(currentUser != null){
-            Log.d("User", currentUser.getEmail());
-            startMain();
-        }
     }
+
+    // Hide the keyboard if necessary
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -154,6 +156,7 @@ public class LoginActivity extends Activity {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -220,12 +223,10 @@ public class LoginActivity extends Activity {
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() >= 6;
     }
 
@@ -314,7 +315,6 @@ public class LoginActivity extends Activity {
                         }
                     });
         }
-
         protected void finishTask(final Boolean success) {
             mAuthTask = null;
             showProgress(false);

@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/flipper"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <RelativeLayout
+        android:id="@+id/progress_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient_background_light"
+        android:gravity="center">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/no_group_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent2"
+        android:gravity="center">
+
+        <RelativeLayout
+            android:id="@+id/profile_layout_no_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:elevation="4dp"
+            android:gravity="center"
+            android:paddingBottom="24dp">
+
+            <TextView
+                android:id="@+id/no_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="@string/no_group"
+                android:textColor="#fff"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/join"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_group"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="@string/join_or_create_group"
+                android:textColor="#fff"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/join_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/no_group"
+                android:layout_below="@+id/join"
+                android:layout_marginTop="16dp"
+                android:background="@color/colorAccent2"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/join_group"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/create_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/no_group"
+                android:layout_below="@+id/join"
+                android:layout_marginTop="16dp"
+                android:background="@color/colorAccent2"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/create_group"
+                android:textStyle="bold" />
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/create_group_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient_background_light"
+        android:gravity="center">
+
+        <RelativeLayout
+            android:id="@+id/profile_layout_create"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:background="@color/colorAccent2Semi"
+            android:elevation="4dp"
+            android:gravity="center"
+            android:paddingBottom="24dp">
+
+            <TextView
+                android:id="@+id/create_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="17dp"
+                android:text="@string/create_new_group"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/edit_group_name_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/create_title"
+                android:layout_margin="20dp">
+
+                <EditText
+                    android:id="@+id/edit_group_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:hint="@string/group_name_label"
+                    android:inputType="textPersonName"
+                    android:textSize="18sp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/edit_group_description_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/edit_group_name_input"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp">
+
+                <EditText
+                    android:id="@+id/edit_group_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="@string/group_description_label"
+                    android:inputType="textMultiLine"
+                    android:textSize="14sp" />
+
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/submit_create_group"
+                style="?android:textAppearanceSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/edit_group_description_input"
+                android:layout_centerHorizontal="true"
+                android:background="@color/colorAccent2"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/submit_create"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/show_groups_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/profile_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:background="@color/colorPrimaryDarker"
+                android:elevation="4dp"
+                android:paddingBottom="24dp">
+
+                <TextView
+                    android:id="@+id/group_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:text="Group name"
+                    android:textColor="#fff"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/group_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/group_name"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:text="Description"
+                    android:textColor="#fff"
+                    android:textSize="18sp" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/members_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/profile_layout"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/members_title"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/bar_background"
+                    android:elevation="4dp"
+                    android:padding="20dp"
+                    android:text="@string/members" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/members_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="20dp"
+                    tools:layout_editor_absoluteX="5dp"
+                    tools:layout_editor_absoluteY="44dp" />
+            </LinearLayout>
+
+
+            <!--LinearLayoutapp:srcCompat="@drawable/add"
+         android:layout_below="@+id/members_layout"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_alignParentBottom="true"
+         android:gravity="center"
+         android:orientation="vertical">
+
+
+     </LinearLayout-->
+
+
+        </RelativeLayout>
+    </ScrollView>
+</ViewFlipper>

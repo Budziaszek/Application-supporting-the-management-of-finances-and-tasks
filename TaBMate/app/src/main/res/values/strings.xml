@@ -23,9 +23,22 @@
     <string name="user_title">Logged in as:</string>
     <string name="user_image">User Image</string>
     <string name="log_out">Log out </string>
+    <string name="logout_title">Log out</string>
+    <string name="logout_message">Are you sure you want to log out?</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="members">Members</string>
+    <string name="no_group">You are not a group member</string>
+    <string name="join_or_create_group">Create or join now</string>
+    <string name="join_group">Join</string>
+    <string name="create_group">Create</string>
+
+    <string name="create_new_group">Create new group</string>
+    <string name="group_name_label">Name</string>
+    <string name="group_description_label">Description</string>
+    <string name="submit_create">Submit</string>
 
     <string name="action_settings">Settings</string>
 </resources>
