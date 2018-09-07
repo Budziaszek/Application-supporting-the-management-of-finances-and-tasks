@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/flipper"
     android:layout_width="fill_parent"
@@ -23,7 +24,7 @@
         android:id="@+id/no_group_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorAccent2"
+        android:background="@drawable/gradient_background_light"
         android:gravity="center">
 
         <RelativeLayout
@@ -31,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorAccent2Semi"
             android:elevation="4dp"
             android:gravity="center"
             android:paddingBottom="24dp">
@@ -44,7 +45,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:text="@string/no_group"
-                android:textColor="#fff"
+                android:textColor="@color/colorPrimaryDarker"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -56,7 +57,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:text="@string/join_or_create_group"
-                android:textColor="#fff"
+                android:textColor="@color/colorPrimaryDarker"
                 android:textSize="18sp" />
 
             <Button
@@ -209,7 +210,6 @@
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="20dp"
-                    android:text="Group name"
                     android:textColor="#fff"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -221,7 +221,6 @@
                     android:layout_below="@+id/group_name"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
-                    android:text="Description"
                     android:textColor="#fff"
                     android:textSize="18sp" />
 
@@ -243,13 +242,13 @@
                     android:background="@drawable/bar_background"
                     android:elevation="4dp"
                     android:padding="20dp"
-                    android:text="@string/members" />
+                    android:text="@string/members"
+                    android:textSize="18sp" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/members_list"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="20dp"
                     tools:layout_editor_absoluteX="5dp"
                     tools:layout_editor_absoluteY="44dp" />
             </LinearLayout>
