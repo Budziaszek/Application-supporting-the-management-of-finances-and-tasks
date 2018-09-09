@@ -19,10 +19,15 @@ import android.widget.TextView;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Arrays;
 
 
 /**
@@ -33,6 +38,7 @@ public class LoginActivity extends Activity {
     private UserLoginTask mAuthTask = null;
 
     // UI references
+    private EditText mNameView;
     private EditText mEmailView;
     private EditText mPasswordView;
     private EditText mPasswordConfirmView;
@@ -62,6 +68,7 @@ public class LoginActivity extends Activity {
             super.onBackPressed();
         }
         else{
+            mNameView.setVisibility(View.GONE);
             mPasswordConfirmView.setVisibility(View.GONE);
             mEmailRegisterButton.setVisibility(View.GONE);
             mEmailSignInButton.setVisibility(View.VISIBLE);
@@ -84,6 +91,8 @@ public class LoginActivity extends Activity {
     }
 
     private void initializeForm(){
+        mNameView = (EditText) findViewById(R.id.user_name);
+
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -112,7 +121,7 @@ public class LoginActivity extends Activity {
         mEmailRegisterButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                hideKeyboard(LoginActivity.this);
+                SpecialFunction.hideKeyboard(LoginActivity.this);
                 attemptLogin(true);
             }
         });
@@ -124,6 +133,8 @@ public class LoginActivity extends Activity {
                 doRegister = true;
                 mEmailSignInButton.setVisibility(View.GONE);
                 mEmailSignUpButton.setVisibility(View.GONE);
+                mNameView.setVisibility(View.VISIBLE);
+                mNameView.requestFocus();
                 mPasswordConfirmView.setVisibility(View.VISIBLE);
                 mEmailRegisterButton.setVisibility(View.VISIBLE);
             }
@@ -133,7 +144,7 @@ public class LoginActivity extends Activity {
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                hideKeyboard(LoginActivity.this);
+                SpecialFunction.hideKeyboard(LoginActivity.this);
                 attemptLogin(false);
             }
         });
@@ -143,18 +154,6 @@ public class LoginActivity extends Activity {
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-    }
-
-    // Hide the keyboard if necessary
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     /**
@@ -168,16 +167,35 @@ public class LoginActivity extends Activity {
         }
 
         // Reset errors.
+        mNameView.setError(null);
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mPasswordConfirmView.setError(null);
 
         // Store values at the time of the login attempt.
+        String name = mNameView.getText().toString();
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String confirm = mPasswordConfirmView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
+        //Check if password and confirm password are same
+        if(register){
+            if(mPasswordView.getText().equals(confirm)) {
+                cancel = true;
+                focusView = mPasswordConfirmView;
+                mPasswordConfirmView.setError(getString(R.string.error_passwords_not_same));
+            }
+        }
+
+        // Check for a valid confirm password, if the user entered one.
+        if (register && confirm.length() == 0 ) {
+            mPasswordConfirmView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordConfirmView;
+            cancel = true;
+        }
 
         // Check for a valid password, if the user entered one.
         if (password.length() == 0 || !isPasswordValid(password)) {
@@ -186,6 +204,12 @@ public class LoginActivity extends Activity {
             cancel = true;
         }
 
+        //Check for a valid name.
+        if (register && TextUtils.isEmpty(name)) {
+            mNameView.setError(getString(R.string.error_field_required));
+            focusView = mNameView;
+            cancel = true;
+        }
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
@@ -197,22 +221,13 @@ public class LoginActivity extends Activity {
             cancel = true;
         }
 
-        //Check if password and confirm password are same
-        if(register){
-            if(mPasswordView.getText().equals(mPasswordConfirmView.getText())) {
-                cancel = true;
-                focusView = mPasswordConfirmView;
-                mPasswordConfirmView.setError(getString(R.string.error_passwords_not_same));
-            }
-        }
-
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
         } else {
             // Attempt login or register
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(name, email, password);
             if (register) {
                 mAuthTask.doRegisterTask();
             }
@@ -267,11 +282,13 @@ public class LoginActivity extends Activity {
      */
     public class UserLoginTask{
 
+        private final String mName;
         private final String mEmail;
         private final String mPassword;
         private final String TAG = "Login";
 
-        UserLoginTask(String email, String password) {
+        UserLoginTask(String name, String email, String password) {
+            mName = name;
             mEmail = email;
             mPassword = password;
         }
@@ -301,6 +318,7 @@ public class LoginActivity extends Activity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
+                                addUser(task.getResult().getUser().getUid(), mName, mEmail);
                                 Log.d(TAG, "createUserWithEmail:success");
                                 currentUser = mAuth.getCurrentUser();
                                 doLoginTask();
@@ -327,6 +345,25 @@ public class LoginActivity extends Activity {
             }
         }
 
+    }
+    public void addUser(String id, String name, String email){
+        User newUser = new User(id, name, email);
+        FirebaseFirestore.getInstance().collection(DatabaseInformation.USER_COLLECTION).document(id).set(newUser)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //Toast.makeText(LoginActivity.this, "Group created",
+                                //Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(LoginActivity.this, "ERROR" + e.toString(),
+                                Toast.LENGTH_SHORT).show();
+                        Log.d("TAG", e.toString());
+                    }
+                });
     }
 }
 

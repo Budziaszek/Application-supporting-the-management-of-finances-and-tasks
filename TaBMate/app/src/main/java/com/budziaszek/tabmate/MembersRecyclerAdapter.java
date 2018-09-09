@@ -8,8 +8,8 @@ import java.util.List;
 
 public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecyclerAdapter.MyViewHolder> {
 
-    //private List<User> usersList;
-    private  List<String> usersList;
+    private List<User> usersList;
+    //private  List<String> usersList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
@@ -21,7 +21,7 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
     }
 
 
-    public MembersRecyclerAdapter(List<String> usersList) {
+    public MembersRecyclerAdapter( List<User> usersList) {
         this.usersList = usersList;
     }
 
@@ -35,8 +35,8 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        String user = usersList.get(position);
-        holder.title.setText(user);
+        User user = usersList.get(position);
+        holder.title.setText(user.getName());
     }
 
     @Override

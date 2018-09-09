@@ -17,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 
 
@@ -71,11 +73,13 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            //addNewTask();
+            Toast.makeText(MainActivity.this, "Settings clicked", Toast.LENGTH_SHORT).show();
             return true;
+        }else if(id == R.id.action_new_member){
+            return false;
         }
-
-        return super.onOptionsItemSelected(item);
+        return false;
+        //return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -89,7 +93,7 @@ public class MainActivity extends AppCompatActivity
            // Flipper.setDisplayedChild(1);
         }else if (id == R.id.nav_group) {
             try {
-                newFragment = GroupsFragment.class.newInstance();
+                newFragment = groupsFragment;
             } catch (Exception e) {
                 Log.e("ERROR CREATING FRAGMENT", e.getMessage());
             }
@@ -156,19 +160,15 @@ public class MainActivity extends AppCompatActivity
     private void initializeFragments(){
         try {
             this.groupsFragment = (GroupsFragment) GroupsFragment.class.newInstance();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, groupsFragment).commit();
+            //getSupportFragmentManager().beginTransaction().replace(R.id.flContent, groupsFragment).commit();
         } catch (Exception e) {
             Log.e("ERROR CREATING FRAGMENT", e.getMessage());
         }
     }
 
     private void alertAndLogOut(){
-        AlertDialog.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(this);
-        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+
         builder.setTitle(R.string.logout_title)
                 .setMessage(R.string.logout_message)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {

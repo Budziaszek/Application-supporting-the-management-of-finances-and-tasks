@@ -10,7 +10,7 @@
         android:id="@+id/progress_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/gradient_background_light"
+        android:background="@drawable/gradient_background_trio"
         android:gravity="center">
 
         <ProgressBar
@@ -24,7 +24,7 @@
         android:id="@+id/no_group_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/gradient_background_light"
+        android:background="@drawable/gradient_background_trio"
         android:gravity="center">
 
         <RelativeLayout
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="?attr/actionBarSize"
-            android:background="@color/colorAccent2Semi"
+            android:background="@color/colorAccentLightSemi"
             android:elevation="4dp"
             android:gravity="center"
             android:paddingBottom="24dp">
@@ -45,7 +45,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:text="@string/no_group"
-                android:textColor="@color/colorPrimaryDarker"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -57,7 +57,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:text="@string/join_or_create_group"
-                android:textColor="@color/colorPrimaryDarker"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="18sp" />
 
             <Button
@@ -68,7 +68,7 @@
                 android:layout_alignEnd="@+id/no_group"
                 android:layout_below="@+id/join"
                 android:layout_marginTop="16dp"
-                android:background="@color/colorAccent2"
+                android:background="@color/colorAccentLight"
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/join_group"
@@ -82,7 +82,7 @@
                 android:layout_alignStart="@+id/no_group"
                 android:layout_below="@+id/join"
                 android:layout_marginTop="16dp"
-                android:background="@color/colorAccent2"
+                android:background="@color/colorAccentLight"
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/create_group"
@@ -97,7 +97,7 @@
         android:id="@+id/create_group_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/gradient_background_light"
+        android:background="@drawable/gradient_background_trio"
         android:gravity="center">
 
         <RelativeLayout
@@ -106,7 +106,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:layout_marginTop="?attr/actionBarSize"
-            android:background="@color/colorAccent2Semi"
+            android:background="@color/colorAccentLightSemi"
             android:elevation="4dp"
             android:gravity="center"
             android:paddingBottom="24dp">
@@ -119,7 +119,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="17dp"
                 android:text="@string/create_new_group"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -129,7 +129,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/create_title"
-                android:layout_margin="20dp">
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp">
 
                 <EditText
                     android:id="@+id/edit_group_name"
@@ -176,7 +179,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/edit_group_description_input"
                 android:layout_centerHorizontal="true"
-                android:background="@color/colorAccent2"
+                android:background="@color/colorAccentLight"
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/submit_create"
@@ -199,7 +202,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="?attr/actionBarSize"
-                android:background="@color/colorPrimaryDarker"
+                android:background="@color/colorPrimaryDark"
                 android:elevation="4dp"
                 android:paddingBottom="24dp">
 
@@ -210,6 +213,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="20dp"
+                    android:padding="10dp"
                     android:textColor="#fff"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -243,7 +247,9 @@
                     android:elevation="4dp"
                     android:padding="20dp"
                     android:text="@string/members"
-                    android:textSize="18sp" />
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/members_list"
@@ -268,4 +274,5 @@
 
         </RelativeLayout>
     </ScrollView>
+
 </ViewFlipper>

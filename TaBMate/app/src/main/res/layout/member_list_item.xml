@@ -14,9 +14,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_margin="5dp"
-        android:background="@color/colorAccent1Semi"
+        android:background="@color/colorPrimarySemi"
         android:padding="20dp"
-        android:textColor="@color/colorAccent"
-        android:textSize="16dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="14dp"
         android:textStyle="bold" />
 </RelativeLayout>
