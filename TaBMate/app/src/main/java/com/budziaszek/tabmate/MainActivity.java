@@ -3,8 +3,8 @@ package com.budziaszek.tabmate;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
@@ -20,13 +20,37 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG =  "MainProcedure";
+
+    public static final String USER_COLLECTION = "users";
+    public static final String USER_COLLECTION_INVITATION_FIELD = "invitations";
+    public static final String GROUP_COLLECTION = "groups";
+
     private Fragment newFragment = null;
     private GroupsFragment groupsFragment = null;
+    private FirebaseUser user = null;
+
+    public String getCurrentUserEmail(){
+        if(user!=null)
+            return user.getEmail();
+        else
+            finish();
+        return null;
+    }
+
+    public String getCurrentUserId(){
+        if(user!=null)
+            return user.getUid();
+        else
+            finish();
+        return null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,21 +59,24 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initializeDrawer();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerLayout = navigationView.getHeaderView(0);
-        TextView user_email = (TextView) headerLayout.findViewById(R.id.user_email);
-        user_email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        TextView user_email = headerLayout.findViewById(R.id.user_email);
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
+        user_email.setText(getCurrentUserEmail());
 
         if (savedInstanceState == null) {
            initializeFragments();
+
         }
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -60,7 +87,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -82,22 +109,16 @@ public class MainActivity extends AppCompatActivity
         //return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (id == R.id.nav_dashboard){
-            //Flipper.setDisplayedChild(0);
-        } else if (id == R.id.nav_tasks) {
-           // Flipper.setDisplayedChild(1);
+            //TODO add dashboard fragment
+        }else if (id == R.id.nav_tasks) {
+            //TODO add tasks gragment
         }else if (id == R.id.nav_group) {
-            try {
-                newFragment = groupsFragment;
-            } catch (Exception e) {
-                Log.e("ERROR CREATING FRAGMENT", e.getMessage());
-            }
-           // Flipper.setDisplayedChild(2);
+            newFragment = groupsFragment;
         }else if (id == R.id.nav_logOut) {
             alertAndLogOut();
         }
@@ -108,17 +129,17 @@ public class MainActivity extends AppCompatActivity
         setTitle(item.getTitle());
 
         // Close the navigation drawer
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
     }
 
     private void initializeDrawer(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.addDrawerListener(
                 new DrawerLayout.DrawerListener() {
                     @Override
@@ -138,7 +159,7 @@ public class MainActivity extends AppCompatActivity
                             try {
                                 getSupportFragmentManager().beginTransaction().replace(R.id.flContent, newFragment).commit();
                             } catch (Exception e) {
-                                Log.e("ERROR CREATING FRAGMENT", e.getMessage());
+                                Log.e(TAG, "Error in fragment transaction " + e.getMessage());
                             }
                             newFragment = null;
                         }
@@ -159,13 +180,17 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeFragments(){
         try {
-            this.groupsFragment = (GroupsFragment) GroupsFragment.class.newInstance();
+            this.groupsFragment = GroupsFragment.class.newInstance();
             //getSupportFragmentManager().beginTransaction().replace(R.id.flContent, groupsFragment).commit();
         } catch (Exception e) {
-            Log.e("ERROR CREATING FRAGMENT", e.getMessage());
+            Log.e(TAG, "Error initializing fragment " + e.getMessage());
         }
     }
 
+    /**
+     * Shows alert when user choose log out action. If action is confirmed Firebase signOut is called
+     * and activity finishes.
+     */
     private void alertAndLogOut(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
 
@@ -174,9 +199,9 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         FirebaseAuth.getInstance().signOut();
-
                         Intent myIntent = new Intent(MainActivity.this, LoginActivity.class);
                         MainActivity.this.startActivity(myIntent);
+                        Log.d(TAG, "User logged out.");
                         finish();
                     }
                 })

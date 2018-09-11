@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <gradient
+                    android:startColor="@color/colorPrimary"
+                    android:endColor="@color/colorAccentLight"
+                    android:angle="180" />
+                    <!--android:endColor="@color/colorPrimaryDarkSemi"-->
+        </shape>
+    </item>
+   <!--<item android:drawable="@drawable/icon_semi_transparent"
+          android:gravity="center|clip_vertical|clip_horizontal"/>-->
+</layer-list>

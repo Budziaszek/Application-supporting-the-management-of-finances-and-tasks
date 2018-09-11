@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import java.util.List;
 
-public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecyclerAdapter.MyViewHolder> {
+public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.MyViewHolder> {
 
     private List<User> usersList;
     //private  List<String> usersList;
@@ -16,12 +16,12 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
 
         public MyViewHolder(View view) {
             super(view);
-            title = (TextView) view.findViewById(R.id.title);
+            title = view.findViewById(R.id.title);
         }
     }
 
 
-    public MembersRecyclerAdapter( List<User> usersList) {
+    public MembersAdapter(List<User> usersList) {
         this.usersList = usersList;
     }
 

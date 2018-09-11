@@ -15,7 +15,7 @@
 
     <color name="colorPrimary">#2D728F</color>
     <color name="colorPrimaryDark">#10495c</color>
-    <color name="colorPrimaryLight">#70A9A1</color>
+    <color name="colorPrimaryLight">#70a9a1</color>
     <color name="colorAccentDark">#0a2463</color>
     <color name="colorAccent">#054478</color>
     <color name="colorAccentLight">#d7f9f1</color>
@@ -32,5 +32,5 @@
     <color name="colorPrimaryLightTransparent">#5070A9A1</color>
     <color name="colorAccentDarkTransparent">#500A2463</color>
     <color name="colorAccentTransparent">#50054478</color>
-    <color name="colorAccentLightTransparent">#50D7F9F1</color>
+    <color name="colorAccentLightTransparent">#50d7f9f1</color>
 </resources>

@@ -24,6 +24,7 @@
         android:id="@+id/no_group_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
         android:background="@drawable/gradient_background_trio"
         android:gravity="center">
 
@@ -31,22 +32,23 @@
             android:id="@+id/profile_layout_no_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="?attr/actionBarSize"
-            android:background="@color/colorAccentLightSemi"
-            android:elevation="4dp"
-            android:gravity="center"
-            android:paddingBottom="24dp">
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:background="@color/colorAccentLightTransparent"
+            android:gravity="center_vertical|center_horizontal|center">
 
-            <TextView
-                android:id="@+id/no_group"
-                android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/create_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/join"
+                android:layout_margin="10dp"
                 android:layout_marginTop="20dp"
-                android:text="@string/no_group"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="24sp"
+                android:background="@color/colorAccentLight"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/create_group"
                 android:textStyle="bold" />
 
             <TextView
@@ -60,33 +62,25 @@
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="18sp" />
 
-            <Button
-                android:id="@+id/join_button"
-                style="?android:textAppearanceSmall"
-                android:layout_width="120dp"
+            <TextView
+                android:id="@+id/no_group"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/no_group"
-                android:layout_below="@+id/join"
-                android:layout_marginTop="16dp"
-                android:background="@color/colorAccentLight"
-                android:clickable="true"
-                android:focusable="true"
-                android:text="@string/join_group"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:text="@string/no_group"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/create_button"
-                style="?android:textAppearanceSmall"
-                android:layout_width="120dp"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/invitations_list"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/no_group"
-                android:layout_below="@+id/join"
-                android:layout_marginTop="16dp"
-                android:background="@color/colorAccentLight"
-                android:clickable="true"
-                android:focusable="true"
-                android:text="@string/create_group"
-                android:textStyle="bold" />
+                android:layout_below="@+id/create_button"
+                android:layout_margin="10dp"
+                android:layout_marginTop="20dp" />
 
 
         </RelativeLayout>
@@ -207,7 +201,7 @@
                 android:paddingBottom="24dp">
 
                 <TextView
-                    android:id="@+id/group_name"
+                    android:id="@+id/invitations_group_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
@@ -222,7 +216,7 @@
                     android:id="@+id/group_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/group_name"
+                    android:layout_below="@+id/invitations_group_name"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:textColor="#fff"
@@ -258,20 +252,6 @@
                     tools:layout_editor_absoluteX="5dp"
                     tools:layout_editor_absoluteY="44dp" />
             </LinearLayout>
-
-
-            <!--LinearLayoutapp:srcCompat="@drawable/add"
-         android:layout_below="@+id/members_layout"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:layout_alignParentBottom="true"
-         android:gravity="center"
-         android:orientation="vertical">
-
-
-     </LinearLayout-->
-
-
         </RelativeLayout>
     </ScrollView>
 
