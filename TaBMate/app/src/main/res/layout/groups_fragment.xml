@@ -48,7 +48,7 @@
                 android:background="@color/colorAccentLight"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="@string/create_group"
+                android:text="@string/create_group_long"
                 android:textStyle="bold" />
 
             <TextView
@@ -57,8 +57,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/no_group"
                 android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
                 android:layout_marginTop="10dp"
-                android:text="@string/join_or_create_group"
+                android:text="@string/create_or_join_now"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="18sp" />
 
@@ -69,7 +70,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="?attr/actionBarSize"
-                android:text="@string/no_group"
+                android:text="@string/not_a_group_member"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="24sp"
                 android:textStyle="bold" />
@@ -112,7 +113,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="17dp"
-                android:text="@string/create_new_group"
+                android:text="@string/create_group_short"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="24sp"
                 android:textStyle="bold" />
@@ -135,7 +136,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_margin="20dp"
                     android:layout_weight="1"
-                    android:hint="@string/group_name_label"
+                    android:hint="@string/group_name_title"
                     android:inputType="textPersonName"
                     android:textSize="18sp" />
 
@@ -159,7 +160,7 @@
                     android:layout_margin="20dp"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:hint="@string/group_description_label"
+                    android:hint="@string/group_description_title"
                     android:inputType="textMultiLine"
                     android:textSize="14sp" />
 
@@ -176,7 +177,7 @@
                 android:background="@color/colorAccentLight"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="@string/submit_create"
+                android:text="@string/submit"
                 android:textStyle="bold" />
 
         </RelativeLayout>

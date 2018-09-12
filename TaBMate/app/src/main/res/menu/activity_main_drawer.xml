@@ -7,15 +7,15 @@
         <item
                 android:id="@+id/nav_dashboard"
                 android:icon="?android:attr/actionModeFindDrawable"
-                android:title="Dashboard"/>
+                android:title="@string/dashboard"/>
         <item
                 android:id="@+id/nav_tasks"
                 android:icon="?android:attr/actionModePasteDrawable"
-                android:title="Tasks"/>
+                android:title="@string/tasks"/>
         <item
                 android:id="@+id/nav_group"
                 android:icon="@drawable/group"
-                android:title="Groups"/>
+                android:title="@string/groups"/>
         <item
                 android:id="@+id/nav_logOut"
                 android:icon="@android:drawable/ic_lock_power_off"
@@ -41,16 +41,16 @@
                 -->
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/communicate">
         <menu>
             <item
                     android:id="@+id/nav_share"
                     android:icon="@drawable/ic_menu_share"
-                    android:title="Share"/>
+                    android:title="@string/share"/>
             <item
                     android:id="@+id/nav_send"
                     android:icon="@drawable/ic_menu_send"
-                    android:title="Send"/>
+                    android:title="@string/send"/>
         </menu>
     </item>
 

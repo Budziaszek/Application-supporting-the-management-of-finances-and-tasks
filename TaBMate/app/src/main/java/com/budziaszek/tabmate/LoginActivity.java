@@ -91,7 +91,8 @@ public class LoginActivity extends Activity {
             Log.d(TAG, "User is logged in " + currentUser.getEmail());
             startMain();
         }
-
+        //TODO remove auto login
+        //doLoginTask("ananke.moro@gmail.com", "zabcia3");
     }
 
     private void initializeForm(){
@@ -183,10 +184,10 @@ public class LoginActivity extends Activity {
 
         //Check if password and confirm password are same
         if(register){
-            if(password.equals(confirm)) {
+            if(!password.equals(confirm)) {
                 cancel = true;
                 focusView = mPasswordConfirmView;
-                mPasswordConfirmView.setError(getString(R.string.error_passwords_not_same));
+                mPasswordConfirmView.setError(getString(R.string.error_passwords_not_match));
             }
         }
 

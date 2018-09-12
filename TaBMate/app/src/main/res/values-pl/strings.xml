@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">TaB Mate</string>
+
+    <!-- Strings related to login -->
+    <string name="name_or_nickname">Imie lub nick</string>
+    <string name="email">Email</string>
+    <string name="password">Hasło</string>
+    <string name="confirm_password">Potwierdź hasło</string>
+    <string name="sign_in">Zaloguj</string>
+    <string name="register">Zarejestruj</string>
+    <string name="not_a_member">Nie masz konta? Dołącz tutaj</string>
+    <!-- Strings related to login errors-->
+    <string name="error_invalid_email">Podany adres email jest nieprawidłowy</string>
+    <string name="error_invalid_password">Podane hasło jest nieprawidłowe</string>
+    <string name="error_too_short_password">Podane hało jest zbyt krótkie</string>
+    <string name="error_incorrect_password">Podane hasło jest nieprawidłowe</string>
+    <string name="error_field_required">To pole jest wymagane</string>
+    <string name="error_passwords_not_match">Podane hasła są różne</string>
+    <string name="error_no_internet_connection">Brak połączenia z internetem</string>
+
+    <!-- Strings related to main activity-->
+    <string name="title_activity_main">TaB Mate</string>
+    <string name="logged_in_as">Zalogowany jako:</string>
+    <string name="user_image">Obrazek użytkownika</string>
+    <string name="log_out">Wyloguj</string>
+    <string name="confirm_log_out">Czy na pewno chcesz się wylogować?</string>
+
+    <!-- Strings related to groups fragment -->
+    <string name="members">Członkowie</string>
+    <string name="not_a_group_member">Nie jesteś członkiem żadnej grupy</string>
+    <string name="create_or_join_now">Utwórz nową lub dołącz teraz</string>
+    <string name="new_invitation">Nowe zaproszenie</string>
+    <string name="join_group_short">Dołącz</string>
+    <string name="remove_group_short">Usuń</string>
+    <string name="create_group_short">Utwórz</string>
+    <string name="create_group_long">Tworzenie nowej grupy</string>
+    <string name="group_name_title">Nazwa</string>
+    <string name="group_description_title">Opis</string>
+    <string name="submit">Zatwierdź</string>
+
+    <!-- Strings related to menu -->
+    <string name="settings">Ustawienia</string>
+    <string name="invite_new_member">Zaproś nowego członka</string>
+
+    <!-- Strings related to drawer -->
+    <string name="navigation_drawer_open">Otwórz</string>
+    <string name="navigation_drawer_close">Zamknij</string>
+    <string name="dashboard">Tablica</string>
+    <string name="tasks">Zadania</string>
+    <string name="groups">Grupy</string>
+    <string name="share">Udostępnij</string>
+    <string name="send">Wyślij</string>
+    <string name="communicate">Kontakt</string>
+</resources>

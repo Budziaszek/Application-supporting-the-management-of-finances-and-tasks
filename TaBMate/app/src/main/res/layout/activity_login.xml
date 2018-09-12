@@ -55,7 +55,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:hint="@string/prompt_name"
+                            android:hint="@string/name_or_nickname"
                             android:imeActionId="6"
                             android:imeOptions="actionUnspecified"
                             android:inputType="text|textShortMessage|textPersonName"
@@ -74,7 +74,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:hint="@string/prompt_email"
+                            android:hint="@string/email"
                             android:imeActionId="6"
                             android:imeOptions="actionUnspecified"
                             android:inputType="textEmailAddress"
@@ -92,7 +92,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:hint="@string/prompt_password"
+                            android:hint="@string/password"
                             android:imeActionId="6"
                             android:imeOptions="actionUnspecified"
                             android:inputType="textPassword"
@@ -109,7 +109,7 @@
                             android:id="@+id/password_confirm"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/prompt_password_confirm"
+                            android:hint="@string/confirm_password"
                             android:imeActionId="6"
                             android:imeOptions="actionUnspecified"
                             android:inputType="textPassword"
@@ -126,7 +126,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:background="@color/colorAccentLight"
-                        android:text="@string/action_sign_in"
+                        android:text="@string/sign_in"
                         android:textStyle="bold" />
 
                     <Button
@@ -136,7 +136,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:background="@color/colorAccentLight"
-                        android:text="@string/action_register"
+                        android:text="@string/register"
                         android:textStyle="bold"
                         android:visibility="gone" />
 
@@ -147,7 +147,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:background="@null"
-                        android:text="@string/action_sign_up"
+                        android:text="@string/not_a_member"
                         android:textColor="@color/common_google_signin_btn_text_dark_default"
                         android:textStyle="bold" />
                 </LinearLayout>

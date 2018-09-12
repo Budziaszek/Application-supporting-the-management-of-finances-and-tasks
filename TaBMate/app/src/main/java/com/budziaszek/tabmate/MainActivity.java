@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -29,8 +31,9 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG =  "MainProcedure";
 
     public static final String USER_COLLECTION = "users";
-    public static final String USER_COLLECTION_INVITATION_FIELD = "invitations";
+    public static final String USER_COLLECTION_INVITATIONS_FIELD = "invitations";
     public static final String GROUP_COLLECTION = "groups";
+    public static final String GROUP_COLLECTION_MEMBERS_FIELD = "members";
 
     private Fragment newFragment = null;
     private GroupsFragment groupsFragment = null;
@@ -194,8 +197,8 @@ public class MainActivity extends AppCompatActivity
     private void alertAndLogOut(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
 
-        builder.setTitle(R.string.logout_title)
-                .setMessage(R.string.logout_message)
+        builder.setTitle(R.string.log_out)
+                .setMessage(R.string.confirm_log_out)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         FirebaseAuth.getInstance().signOut();

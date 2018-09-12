@@ -51,6 +51,7 @@ public class GroupsFragment extends Fragment {
 
     private List<Group> groups = new ArrayList<>();
     private Integer currentGroup = null;
+    private List<String> invitationsList = null;
 
     //TODO override onbackpressed
     public enum FlipperPage{
@@ -117,6 +118,7 @@ public class GroupsFragment extends Fragment {
 
         return false;
     }
+
     private void initializeButtons(){
 
         Button createGroupButton = fView.findViewById(R.id.create_button);
@@ -260,18 +262,41 @@ public class GroupsFragment extends Fragment {
         }
     }
 
+    private void addGroupMember(int position){
+        //Add user
+        db.collection(MainActivity.GROUP_COLLECTION)
+                .document(invitationsList.get(position))
+                .update(MainActivity.GROUP_COLLECTION_MEMBERS_FIELD,
+                        FieldValue.arrayUnion(((MainActivity)getActivity()).getCurrentUserId()));
+        //TODO remove invitation from database, from list, inform adapter
+    }
+
     private void checkInvitations(DocumentSnapshot documentSnapshot){
             User user =  documentSnapshot.toObject(User.class);
+            if(user != null) {
+                invitationsList = user.getInvitations();
+                //TODO get name from Firebase (now id is sent), what if it was removed
+                if(invitationsList != null && !invitationsList.isEmpty()) {
+                    RecyclerView invitations = fView.findViewById(R.id.invitations_list);
+                    invitations.setAdapter(mInvitationsAdapter);
+                    mInvitationsAdapter = new InvitationsAdapter(invitationsList, new ClickListener() {
+                        @Override
+                        public void onAcceptClicked(int position) {
+                            addGroupMember(position);
+                            //Toast.makeText(fView.getContext(), "Accepted " + position, Toast.LENGTH_SHORT).show();
+                        }
 
-            List<String> invitationsList = user.getInvitations();
-            //TODO get name from Firebase (now id is sent)
-            RecyclerView invitations = fView.findViewById(R.id.invitations_list);
-            mInvitationsAdapter = new InvitationsAdapter(invitationsList);
-
-            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
-            invitations.setLayoutManager(mLayoutManager);
-            invitations.setItemAnimator(new DefaultItemAnimator());
-            invitations.setAdapter(mInvitationsAdapter);
+                        @Override
+                        public void onRemoveClicked(int position) {
+                            Toast.makeText(fView.getContext(), "Removed " + position, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
+                    invitations.setLayoutManager(mLayoutManager);
+                    invitations.setItemAnimator(new DefaultItemAnimator());
+                    invitations.setAdapter(mInvitationsAdapter);
+                }
+            }
     }
 
     private void checkUser(Task<QuerySnapshot> task){
@@ -295,7 +320,7 @@ public class GroupsFragment extends Fragment {
                 //Add
                 db.collection(MainActivity.USER_COLLECTION)
                         .document(mNewMemberId)
-                        .update(MainActivity.USER_COLLECTION_INVITATION_FIELD,
+                        .update(MainActivity.USER_COLLECTION_INVITATIONS_FIELD,
                                 FieldValue.arrayUnion(groups.get(currentGroup).getId()));
 
                 Toast.makeText(fView.getContext(), "Invitation sent to " + mNewMemberEmail, Toast.LENGTH_SHORT).show();

@@ -2,47 +2,53 @@
     <string name="app_name">TaB Mate</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_name">Name or nickname</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="prompt_password_confirm">Confirm password</string>
+    <string name="name_or_nickname">Name or nickname</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="register">Register</string>
+    <string name="not_a_member">Not a member? Join here</string>
+        <!-- Strings related to login errors-->
+        <string name="error_invalid_email">This email address is invalid</string>
+        <string name="error_invalid_password">This password is invalid</string>
+        <string name="error_too_short_password">This password too short</string>
+        <string name="error_incorrect_password">This password is incorrect</string>
+        <string name="error_field_required">This field is required</string>
+        <string name="error_passwords_not_match">Given passwords do not match</string>
+        <string name="error_no_internet_connection">No internet connection</string>
 
-    <string name="action_sign_in">Sign in</string>
-    <string name="action_register">Register</string>
-    <string name="action_sign_up">Not a member? Join here</string>
-    <string name="action_sign_in_short">Sign in</string>
-
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is invalid</string>
-    <string name="error_too_short_password">This password too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="error_passwords_not_same">Given passwords do not match</string>
-    <string name="error_no_internet_connection">No internet connection</string>
-
+    <!-- Strings related to main activity-->
     <string name="title_activity_main">TaB Mate</string>
-    <string name="user_title">Logged in as:</string>
+    <string name="logged_in_as">Logged in as:</string>
     <string name="user_image">User Image</string>
     <string name="log_out">Log out </string>
-    <string name="logout_title">Log out</string>
-    <string name="logout_message">Are you sure you want to log out?</string>
+    <string name="confirm_log_out">Are you sure you want to log out?</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
+    <!-- Strings related to groups fragment -->
     <string name="members">Members</string>
-    <string name="no_group">You are not a group member</string>
-    <string name="join_or_create_group">Create or join now</string>
+    <string name="not_a_group_member">You are not a group member</string>
+    <string name="create_or_join_now">Create or join now</string>
     <string name="new_invitation">New invitation</string>
-    <string name="join_group">Join</string>
-    <string name="remove_group">Remove</string>
-    <string name="create_group">Create</string>
+    <string name="join_group_short">Join</string>
+    <string name="remove_group_short">Remove</string>
+    <string name="create_group_short">Create</string>
+    <string name="create_group_long">Create new group</string>
+    <string name="group_name_title">Name</string>
+    <string name="group_description_title">Description</string>
+    <string name="submit">Submit</string>
 
-    <string name="create_new_group">Create new group</string>
-    <string name="group_name_label">Name</string>
-    <string name="group_description_label">Description</string>
-    <string name="submit_create">Submit</string>
+    <!-- Strings related to menu -->
+    <string name="settings">Settings</string>
+    <string name="invite_new_member">Invite new member</string>
 
-    <string name="action_settings">Settings</string>
-    <string name="action_new_member">Invite new member</string>
+    <!-- Strings related to drawer -->
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="tasks">Tasks</string>
+    <string name="groups">Groups</string>
+    <string name="share">Share</string>
+    <string name="send">Send</string>
+    <string name="communicate">Communicate</string>
 </resources>
