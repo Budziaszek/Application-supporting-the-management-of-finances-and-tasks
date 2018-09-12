@@ -3,7 +3,6 @@ package com.budziaszek.tabmate;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,13 +21,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
@@ -53,6 +48,8 @@ public class GroupsFragment extends Fragment {
     private Integer currentGroup = null;
     private List<String> invitationsList = null;
 
+    private FirestoreRequests firestoreRequests = new FirestoreRequests();
+
     //TODO override onbackpressed
     public enum FlipperPage{
 
@@ -67,17 +64,16 @@ public class GroupsFragment extends Fragment {
         public int getValue() { return id; }
     }
 
-    private FirebaseFirestore db;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         users = new ArrayList<>();
         fView = inflater.inflate(R.layout.groups_fragment, container, false);
-        db = FirebaseFirestore.getInstance();
         initializeButtons();
         flipper = fView.findViewById(R.id.flipper);
-        readGroup(((MainActivity)getActivity()).getCurrentUserId());
+
+        flipper.setDisplayedChild(FlipperPage.PROGRESS.getValue());
+        firestoreRequests.getGroupByField("id", ((MainActivity)getActivity()).getCurrentUserId(), this::updateGroup);
 
         return fView;
     }
@@ -153,66 +149,35 @@ public class GroupsFragment extends Fragment {
         Group newGroup = new Group(name + "_" + id, name, description);
         newGroup.addMember(id);
 
-        db.collection(MainActivity.GROUP_COLLECTION)
-                .document(name + "_" + id)
-                .set(newGroup)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(fView.getContext(), "Group created",
-                                Toast.LENGTH_SHORT).show();
-                        readGroup(((MainActivity)getActivity()).getCurrentUserId());
-                        Log.d(TAG, "Group added");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(fView.getContext(), e.toString(),
-                                Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "Error while adding group", e);
-                        flipper.setDisplayedChild(FlipperPage.CREATE_GROUP.getValue());
-                    }
-                });
+       firestoreRequests.addGroup(newGroup, name + " " + id,
+               (Void) ->  {
+                    Toast.makeText(fView.getContext(), "Group created",
+                            Toast.LENGTH_SHORT).show();
+                            flipper.setDisplayedChild(FlipperPage.PROGRESS.getValue());
+                            firestoreRequests.getGroupByField("id", ((MainActivity)getActivity()).getCurrentUserId(), this::updateGroup);
+                            Log.d(TAG, "Group added");
+                            },
+               (e) -> {Toast.makeText(fView.getContext(), e.toString(),
+                            Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "Error while adding group", e);
+                            flipper.setDisplayedChild(FlipperPage.CREATE_GROUP.getValue());
+                            });
     }
 
-    private void readUser(final String id){
-        db.collection(MainActivity.USER_COLLECTION)
-                .document(id)
-                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    User user = documentSnapshot.toObject(User.class);
-                    users.add(user);
-                    mMembersAdapter.notifyDataSetChanged();
-                    Log.d(TAG, "User " + id + "read");
-                }
-            });
+    private void addUserToList(DocumentSnapshot documentSnapshot){
+        User user = documentSnapshot.toObject(User.class);
+        users.add(user);
+        mMembersAdapter.notifyDataSetChanged();
     }
 
-    private void getUsers(List<String> usersId){
-        for(String uid : usersId){
-            readUser(uid);
+    private void updateGroup(Task<QuerySnapshot> task) {
+        if (task.isSuccessful()) {
+            checkGroups(task);
+        } else {
+            Exception exception = task.getException();
+            if(exception != null)
+                Toast.makeText(fView.getContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void readGroup(String id) {
-        flipper.setDisplayedChild(FlipperPage.PROGRESS.getValue());
-        db.collection("groups")
-                .whereArrayContains("members", id)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            checkGroups(task);
-                        } else {
-                            Exception exception = task.getException();
-                            if(exception != null)
-                                Toast.makeText(fView.getContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
     }
 
     private void checkGroups(Task<QuerySnapshot> task){
@@ -226,7 +191,9 @@ public class GroupsFragment extends Fragment {
             TextView groupDescription = fView.findViewById(R.id.group_description);
             RecyclerView members = fView.findViewById(R.id.members_list);
 
-            getUsers(group.getMembers());
+            for(String uid : group.getMembers()){
+                firestoreRequests.getUser(uid, this::addUserToList);
+            }
 
             mMembersAdapter = new MembersAdapter(users);
 
@@ -246,32 +213,14 @@ public class GroupsFragment extends Fragment {
         }
         if(!foundGroup){
             flipper.setDisplayedChild(FlipperPage.NO_GROUP.getValue());
-            db.collection(MainActivity.USER_COLLECTION)
-                    .document(((MainActivity)getActivity()).getCurrentUserId())
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            checkInvitations(documentSnapshot);
-                        }
-                    });
-            //TODO accept group invitation, remove from Firebase
+            firestoreRequests.getUser(((MainActivity)getActivity()).getCurrentUserId(), this::checkAndManageInvitations);
         }
         else{
             flipper.setDisplayedChild(FlipperPage.VIEW_GROUP.getValue());
         }
     }
 
-    private void addGroupMember(int position){
-        //Add user
-        db.collection(MainActivity.GROUP_COLLECTION)
-                .document(invitationsList.get(position))
-                .update(MainActivity.GROUP_COLLECTION_MEMBERS_FIELD,
-                        FieldValue.arrayUnion(((MainActivity)getActivity()).getCurrentUserId()));
-        //TODO remove invitation from database, from list, inform adapter
-    }
-
-    private void checkInvitations(DocumentSnapshot documentSnapshot){
+    private void checkAndManageInvitations(DocumentSnapshot documentSnapshot){
             User user =  documentSnapshot.toObject(User.class);
             if(user != null) {
                 invitationsList = user.getInvitations();
@@ -282,8 +231,9 @@ public class GroupsFragment extends Fragment {
                     mInvitationsAdapter = new InvitationsAdapter(invitationsList, new ClickListener() {
                         @Override
                         public void onAcceptClicked(int position) {
-                            addGroupMember(position);
-                            //Toast.makeText(fView.getContext(), "Accepted " + position, Toast.LENGTH_SHORT).show();
+                            firestoreRequests.addGroupMember(invitationsList.get(position), ((MainActivity)getActivity()).getCurrentUserId());
+                            //TODO remove invitation from database, from list, inform adapter
+                            Toast.makeText(fView.getContext(), "Accepted " + position, Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
@@ -318,13 +268,21 @@ public class GroupsFragment extends Fragment {
             }
             else {
                 //Add
-                db.collection(MainActivity.USER_COLLECTION)
-                        .document(mNewMemberId)
-                        .update(MainActivity.USER_COLLECTION_INVITATIONS_FIELD,
-                                FieldValue.arrayUnion(groups.get(currentGroup).getId()));
-
+                firestoreRequests.addInvitation(mNewMemberId, groups.get(currentGroup).getId());
                 Toast.makeText(fView.getContext(), "Invitation sent to " + mNewMemberEmail, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "User found " + mNewMemberId);
+            }
+        }
+    }
+
+    private void sendInvitation(Task<QuerySnapshot> task){
+        if (task.isSuccessful()) {
+            checkUser(task);
+        } else {
+            Exception exception = task.getException();
+            if(exception != null) {
+                Toast.makeText(fView.getContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Error while adding invitation " +exception.getMessage());
             }
         }
     }
@@ -353,7 +311,8 @@ public class GroupsFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mNewMemberEmail = input.getText().toString();
-                sendInvitation();
+                //sendInvitation();
+                firestoreRequests.getUserByField("email", mNewMemberEmail, x -> sendInvitation(x));
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -365,27 +324,5 @@ public class GroupsFragment extends Fragment {
 
         builder.show();
     }
-
-    private void sendInvitation(){
-        //Find
-        db.collection(MainActivity.USER_COLLECTION)
-                .whereEqualTo("email", mNewMemberEmail)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            checkUser(task);
-                        } else {
-                            Exception exception = task.getException();
-                            if(exception != null) {
-                                Toast.makeText(fView.getContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
-                                Log.d(TAG, "Error while adding invitation " +exception.getMessage());
-                            }
-                        }
-                    }
-                });
-    }
-
 
 }

@@ -30,11 +30,6 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG =  "MainProcedure";
 
-    public static final String USER_COLLECTION = "users";
-    public static final String USER_COLLECTION_INVITATIONS_FIELD = "invitations";
-    public static final String GROUP_COLLECTION = "groups";
-    public static final String GROUP_COLLECTION_MEMBERS_FIELD = "members";
-
     private Fragment newFragment = null;
     private GroupsFragment groupsFragment = null;
     private FirebaseUser user = null;
