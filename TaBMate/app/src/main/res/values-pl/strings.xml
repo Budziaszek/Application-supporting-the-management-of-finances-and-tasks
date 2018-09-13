@@ -28,6 +28,7 @@
     <!-- Strings related to groups fragment -->
     <string name="members">Członkowie</string>
     <string name="not_a_group_member">Nie jesteś członkiem żadnej grupy</string>
+    <string name="invitations">Invitations</string>
     <string name="create_or_join_now">Utwórz nową lub dołącz teraz</string>
     <string name="new_invitation">Nowe zaproszenie</string>
     <string name="join_group_short">Dołącz</string>

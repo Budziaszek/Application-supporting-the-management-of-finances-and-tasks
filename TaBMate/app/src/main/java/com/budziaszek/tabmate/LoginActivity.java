@@ -17,15 +17,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 
 /**
@@ -88,11 +84,11 @@ public class LoginActivity extends Activity {
         initializeForm();
 
         if(currentUser != null){
-            Log.d(TAG, "User is logged in " + currentUser.getEmail());
+            InformUser.log(TAG, "User is logged in.");
             startMain();
         }
         //TODO remove auto login
-        //doLoginTask("ananke.moro@gmail.com", "zabcia3");
+        doLoginTask("ananke.moro@gmail.com", "zabcia3");
     }
 
     private void initializeForm(){
@@ -283,12 +279,11 @@ public class LoginActivity extends Activity {
                         if (!task.isSuccessful()) {
                             Exception exception = task.getException();
                             if(exception != null) {
-                                Toast.makeText(LoginActivity.this, exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                                Log.w(TAG, "login - failure", task.getException());
+                                InformUser.informFailure(LoginActivity.this, TAG, exception);
                             }
                             showProgress(false);
                         } else {
-                            Log.w(TAG, "Login - success");
+                            InformUser.log(TAG, "Login user success.");
                             showProgress(false);
                             startMain();
                         }
@@ -307,16 +302,15 @@ public class LoginActivity extends Activity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
+                            InformUser.log(TAG, "Register user in Firestore success.");
                             addUser(LoginActivity.this, task.getResult().getUser().getUid(), name, email);
-                            Log.d(TAG, "Create user - success");
                             currentUser = mAuth.getCurrentUser();
                             doLoginTask(email, password);
                         } else {
                             // If sign in fails, display a message to the user.
                             Exception exception = task.getException();
                             if(exception != null) {
-                                Log.w(TAG, "Create user - failure", task.getException());
-                                Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                InformUser.informFailure(LoginActivity.this, TAG, task.getException());
                             }
                             showProgress(false);
                         }
@@ -329,22 +323,10 @@ public class LoginActivity extends Activity {
      */
     public static void addUser(final Context activity, String id, String name, String email){
         User newUser = new User(id, name, email);
-        FirebaseFirestore.getInstance().collection(MainActivity.USER_COLLECTION).document(id).set(newUser)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "User data added to Firestore database");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // If set fails, display a message to the user.
-                        Toast.makeText(activity, e.toString(),
-                                Toast.LENGTH_SHORT).show();
-                        Log.w(TAG, "Failed to add user data to Firestore database", e);
-                    }
-                });
+        FirestoreRequests firestoreRequests = new FirestoreRequests();
+        firestoreRequests.addUser(newUser, id,
+                (Void) -> InformUser.log(TAG, "Add user document to Firestore success."),
+                (e) -> InformUser.informFailure(activity, TAG, e));
     }
 }
 

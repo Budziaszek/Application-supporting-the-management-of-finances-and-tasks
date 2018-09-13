@@ -17,11 +17,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,9 +30,13 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG =  "MainProcedure";
 
-    private Fragment newFragment = null;
-    private GroupsFragment groupsFragment = null;
+    private Class newFragment = null;
+
     private FirebaseUser user = null;
+
+    private List<User> users = new ArrayList<>();
+    private List<Group> groups = new ArrayList<>();
+    private Integer currentGroup = -1;
 
     public String getCurrentUserEmail(){
         if(user!=null)
@@ -50,6 +54,8 @@ public class MainActivity extends AppCompatActivity
         return null;
     }
 
+    //TODO onBackPressed
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,11 +71,6 @@ public class MainActivity extends AppCompatActivity
         user = FirebaseAuth.getInstance().getCurrentUser();
 
         user_email.setText(getCurrentUserEmail());
-
-        if (savedInstanceState == null) {
-           initializeFragments();
-
-        }
     }
 
     @Override
@@ -98,7 +99,6 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Toast.makeText(MainActivity.this, "Settings clicked", Toast.LENGTH_SHORT).show();
             return true;
         }else if(id == R.id.action_new_member){
             return false;
@@ -112,11 +112,12 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (id == R.id.nav_dashboard){
+
             //TODO add dashboard fragment
         }else if (id == R.id.nav_tasks) {
-            //TODO add tasks gragment
+            //TODO add tasks fragment
         }else if (id == R.id.nav_group) {
-            newFragment = groupsFragment;
+            newFragment = NewGroupFragment.class;
         }else if (id == R.id.nav_logOut) {
             alertAndLogOut();
         }
@@ -131,6 +132,58 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
+    }
+
+    public void startFragment(Class fragmentClass){
+        try {
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, (Fragment) fragmentClass.newInstance()).commit();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in fragment transaction " + e.getMessage());
+        }
+    }
+    /*
+    public void startAddGroupFragment(){
+        try {
+            AddGroupFragment addGroupFragment = AddGroupFragment.class.newInstance();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, addGroupFragment).commit();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in fragment transaction " + e.getMessage());
+        }
+    }
+
+    public void startDisplayGroupFragment(){
+        try {
+            DisplayGroupFragment displayGroupFragment = DisplayGroupFragment.class.newInstance();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, displayGroupFragment).commit();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in fragment transaction " + e.getMessage());
+        }
+    }
+
+    public void startNewGroupFragment(){
+        try {
+            DisplayGroupFragment displayGroupFragment = DisplayGroupFragment.class.newInstance();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, displayGroupFragment).commit();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in fragment transaction " + e.getMessage());
+        }
+    }
+*/
+    public void addGroup(Group group){
+        groups.add(group);
+        currentGroup++;
+    }
+
+    public Group getCurrentGroup(){
+        return groups.get(currentGroup);
+    }
+
+    public void addUser(User user){
+        users.add(user);
+    }
+
+    public List<User> getUsers(){
+        return users;
     }
 
     private void initializeDrawer(){
@@ -154,11 +207,7 @@ public class MainActivity extends AppCompatActivity
                     public void onDrawerClosed(View drawerView) {
                         // Respond when the drawer is closed
                         if(newFragment != null) {
-                            try {
-                                getSupportFragmentManager().beginTransaction().replace(R.id.flContent, newFragment).commit();
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error in fragment transaction " + e.getMessage());
-                            }
+                            startFragment(newFragment);
                             newFragment = null;
                         }
                     }
@@ -174,15 +223,6 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-    }
-
-    private void initializeFragments(){
-        try {
-            this.groupsFragment = GroupsFragment.class.newInstance();
-            //getSupportFragmentManager().beginTransaction().replace(R.id.flContent, groupsFragment).commit();
-        } catch (Exception e) {
-            Log.e(TAG, "Error initializing fragment " + e.getMessage());
-        }
     }
 
     /**

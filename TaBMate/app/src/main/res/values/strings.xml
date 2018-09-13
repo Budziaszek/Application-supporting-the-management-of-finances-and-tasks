@@ -28,6 +28,7 @@
     <!-- Strings related to groups fragment -->
     <string name="members">Members</string>
     <string name="not_a_group_member">You are not a group member</string>
+    <string name="invitations">Yours invitations will appear below</string>
     <string name="create_or_join_now">Create or join now</string>
     <string name="new_invitation">New invitation</string>
     <string name="join_group_short">Join</string>

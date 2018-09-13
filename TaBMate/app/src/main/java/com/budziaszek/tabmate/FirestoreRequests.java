@@ -1,9 +1,6 @@
 package com.budziaszek.tabmate;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
-import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -12,9 +9,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class FirestoreRequests {
 
@@ -25,10 +20,30 @@ public class FirestoreRequests {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public void getUser(final String uid, final Consumer<DocumentSnapshot> action) {
-        db.collection(MainActivity.USER_COLLECTION)
+    public void addUser(User user, String targetDocument, Consumer succes, Consumer<Exception> failure){
+        FirebaseFirestore.getInstance()
+                .collection(FirestoreRequests.USER_COLLECTION)
+                .document(targetDocument)
+                .set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        succes.accept(aVoid);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        failure.accept(e);
+                    }
+                });
+    }
+
+    public void getUser(String uid, Consumer<DocumentSnapshot> action) {
+        db.collection(USER_COLLECTION)
                 .document(uid)
-                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         action.accept(documentSnapshot);
@@ -37,7 +52,7 @@ public class FirestoreRequests {
     }
 
     public void getUserByField(String field, String value, Consumer<Task<QuerySnapshot>> action){
-        db.collection(MainActivity.USER_COLLECTION)
+        db.collection(USER_COLLECTION)
                 .whereEqualTo(field, value)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -49,7 +64,7 @@ public class FirestoreRequests {
     }
 
     public void addGroup(Group group, String targetDocument, Consumer succes, Consumer<Exception> failure){
-        db.collection(MainActivity.GROUP_COLLECTION)
+        db.collection(GROUP_COLLECTION)
                 .document(targetDocument)
                 .set(group)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -67,7 +82,7 @@ public class FirestoreRequests {
     }
 
     public void getGroup(final String gid, final Consumer<DocumentSnapshot> action) {
-        db.collection(MainActivity.GROUP_COLLECTION)
+        db.collection(GROUP_COLLECTION)
                 .document(gid)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -91,16 +106,16 @@ public class FirestoreRequests {
     }
 
     public void addGroupMember(String gid, String uid){
-        db.collection(MainActivity.GROUP_COLLECTION)
+        db.collection(GROUP_COLLECTION)
                 .document(gid)
-                .update(MainActivity.GROUP_COLLECTION_MEMBERS_FIELD,
+                .update(GROUP_COLLECTION_MEMBERS_FIELD,
                         FieldValue.arrayUnion(uid));
     }
 
     public void addInvitation(String uid, String gid){
-        db.collection(MainActivity.USER_COLLECTION)
+        db.collection(USER_COLLECTION)
                 .document(uid)
-                .update(MainActivity.USER_COLLECTION_INVITATIONS_FIELD,
+                .update(USER_COLLECTION_INVITATIONS_FIELD,
                         FieldValue.arrayUnion(gid));
     }
 

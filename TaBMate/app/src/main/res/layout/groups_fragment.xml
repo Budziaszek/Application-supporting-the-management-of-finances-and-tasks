@@ -21,7 +21,7 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/no_group_layout"
+        android:id="@+id/no_group_layout1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"
@@ -29,7 +29,7 @@
         android:gravity="center">
 
         <RelativeLayout
-            android:id="@+id/profile_layout_no_group"
+            android:id="@+id/profile_layout_no_group1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -38,11 +38,11 @@
             android:gravity="center_vertical|center_horizontal|center">
 
             <Button
-                android:id="@+id/create_button"
+                android:id="@+id/create_button1"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/join"
+                android:layout_below="@+id/invitations"
                 android:layout_margin="10dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/colorAccentLight"
@@ -52,10 +52,10 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/join"
+                android:id="@+id/join1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/no_group"
+                android:layout_below="@+id/no_group1"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="20dp"
                 android:layout_marginTop="10dp"
@@ -64,7 +64,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/no_group"
+                android:id="@+id/no_group1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -76,10 +76,10 @@
                 android:textStyle="bold" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/invitations_list"
+                android:id="@+id/invitations_list1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/create_button"
+                android:layout_below="@+id/create_button1"
                 android:layout_margin="10dp"
                 android:layout_marginTop="20dp" />
 
@@ -202,7 +202,7 @@
                 android:paddingBottom="24dp">
 
                 <TextView
-                    android:id="@+id/invitations_group_name"
+                    android:id="@+id/group_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
@@ -217,7 +217,7 @@
                     android:id="@+id/group_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/invitations_group_name"
+                    android:layout_below="@+id/group_name"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:textColor="#fff"

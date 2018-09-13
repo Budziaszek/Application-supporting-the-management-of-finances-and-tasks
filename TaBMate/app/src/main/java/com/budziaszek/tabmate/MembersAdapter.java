@@ -43,4 +43,10 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.MyViewHo
     public int getItemCount() {
         return usersList.size();
     }
+
+    public void update(List<User> data) {
+        usersList.clear();
+        usersList.addAll(data);
+        notifyDataSetChanged();
+    }
 }

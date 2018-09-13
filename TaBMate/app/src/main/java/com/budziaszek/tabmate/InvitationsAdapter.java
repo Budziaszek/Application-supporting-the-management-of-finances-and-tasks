@@ -1,6 +1,5 @@
 package com.budziaszek.tabmate;
 
-import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,12 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class InvitationsAdapter extends RecyclerView.Adapter<InvitationsAdapter.MyViewHolder> {
 
     ClickListener clickListener;
-    private List<String> invitationsList;
+    private List<String> invitationsList = new ArrayList<>();
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView group_name;
@@ -22,7 +22,7 @@ public class InvitationsAdapter extends RecyclerView.Adapter<InvitationsAdapter.
 
         public MyViewHolder(View view) {
             super(view);
-            group_name = view.findViewById(R.id.invitations_group_name);
+            group_name = view.findViewById(R.id.group_name);
 
             accept_invitation = view.findViewById(R.id.accept_button);
             accept_invitation.setOnClickListener(new View.OnClickListener() {
@@ -65,5 +65,11 @@ public class InvitationsAdapter extends RecyclerView.Adapter<InvitationsAdapter.
     @Override
     public int getItemCount() {
         return invitationsList.size();
+    }
+
+    public void update(List<String> data) {
+        invitationsList.clear();
+        invitationsList.addAll(data);
+        notifyDataSetChanged();
     }
 }
