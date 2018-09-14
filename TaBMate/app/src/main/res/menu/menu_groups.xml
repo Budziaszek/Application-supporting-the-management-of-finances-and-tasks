@@ -2,23 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_new_group"
-        android:orderInCategory="100"
-        android:title="@string/join_or_create"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/action_new_member"
         android:orderInCategory="100"
         android:title="@string/invite_new_member"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_edit_group"
+        android:id="@+id/action_new_group"
         android:orderInCategory="100"
-        android:title="@string/edit_group"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_leave"
-        android:orderInCategory="100"
-        android:title="@string/leave_group"
+        android:title="@string/join_or_create"
         app:showAsAction="never" />
 </menu>

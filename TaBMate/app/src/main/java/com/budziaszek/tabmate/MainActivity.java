@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity
         return null;
     }
 
+    //TODO onBackPressed
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,10 +78,7 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (getFragmentManager().getBackStackEntryCount() > 0) {
-            getFragmentManager().popBackStack();
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }
@@ -138,41 +137,32 @@ public class MainActivity extends AppCompatActivity
 
     public void startFragment(Class fragmentClass){
         try {
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, (Fragment) fragmentClass.newInstance())
-                    .addToBackStack("fragment").commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, (Fragment) fragmentClass.newInstance()).commit();
         } catch (Exception e) {
             Log.e(TAG, "Error in fragment transaction " + e.getMessage());
         }
-    }
-
-    public void startEditFragment(){
-        try {
-            AddGroupFragment newFragment = (AddGroupFragment)AddGroupFragment.class.newInstance();
-            newFragment.setEdit();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent,  newFragment).addToBackStack("fragment")
-                    .commit();
-
-        } catch (Exception e) {
-            Log.e(TAG, "Error in fragment transaction " + e.getMessage());
-        }
-    }
-
-    public void setCurrentGroup(int index){
-        currentGroup = index;
     }
 
     public Boolean setNextGroup(){
-        if(currentGroup < groups.size()) {
+        if(currentGroup < groups.size() - 1) {
             currentGroup++;
         }
-        return currentGroup == groups.size() - 1;
+        if(currentGroup == groups.size())
+            return false;
+        else
+            return true;
     }
 
     public Boolean setPreviousGroup(){
         if(currentGroup != 0) {
             currentGroup--;
         }
-        return currentGroup == 0;
+        if(currentGroup == 0){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 
     public void resetGroups(){

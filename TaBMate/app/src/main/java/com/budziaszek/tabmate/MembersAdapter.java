@@ -9,17 +9,17 @@ import java.util.List;
 public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.MyViewHolder> {
 
     private List<User> usersList;
+    //private  List<String> usersList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
-        public TextView email;
 
         public MyViewHolder(View view) {
             super(view);
             title = view.findViewById(R.id.title);
-            email = view.findViewById(R.id.email_item);
         }
     }
+
 
     public MembersAdapter(List<User> usersList) {
         this.usersList = usersList;
@@ -37,7 +37,6 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.MyViewHo
     public void onBindViewHolder(MyViewHolder holder, int position) {
         User user = usersList.get(position);
         holder.title.setText(user.getName());
-        holder.email.setText(user.getEmail());
     }
 
     @Override

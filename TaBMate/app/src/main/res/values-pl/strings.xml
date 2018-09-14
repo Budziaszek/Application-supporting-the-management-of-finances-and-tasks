@@ -51,15 +51,8 @@
     <string name="user_is_a_member">Użytkownik należy juz do tej grupy</string>
     <string name="user_not_found">Użytkownik nie istnieje</string>
     <string name="join_or_create">Dołącz do grupy lub stwórz nową</string>
-    <string name="invitation_incorrect">Nieprawidłowe zaproszenie, grupa mogła zostać usunięta</string>
+    <string name="invitation_incorrect">Nieprawidłowe zaproszenie</string>
     <string name="invitation_removed">Zaproszenie usunięcie</string>
-    <string name="leave_group">Opuść grupę</string>
-    <string name="left_group">Opuściłeś grupę</string>
-    <string name="confirm_leave_group">Jesteś pewien, że chcesz opuścić tą grupę?</string>
-    <string name="edit_group">Edytuj grupę</string>
-    <string name="save">Zapisz</string>
-    <string name="edit_profile">Edytuj profil</string>
-    <string name="saved">Zmiany zostały zapisane</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Ustawienia</string>
