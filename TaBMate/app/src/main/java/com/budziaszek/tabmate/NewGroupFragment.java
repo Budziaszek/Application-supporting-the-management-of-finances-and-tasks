@@ -83,7 +83,18 @@ public class NewGroupFragment extends Fragment {
                                     InformUser.inform(getActivity(), R.string.invitation_incorrect);
                                     showProgress(false);
                                     });
-                onRemoveClicked(position);
+                firestoreRequests.removeInvitation(invitationsList.get(position), ((MainActivity)getActivity()).getCurrentUserId(),
+                        (aVoid) -> {
+                            showProgress(false);
+                            Log.d(TAG, "(Invalid) Invitation removed.");
+                        },
+                        (e) -> {
+                            InformUser.informFailure(getActivity(), e);
+                            Log.e(TAG, e.getMessage());
+                            showProgress(false);
+                        });
+                firestoreRequests.getGroupByField("members", ((MainActivity)getActivity()).getCurrentUserId(),
+                        NewGroupFragment.this::checkGroupsTask);
             }
             @Override
             public void onRemoveClicked(int position) {
@@ -121,9 +132,10 @@ public class NewGroupFragment extends Fragment {
             swipeLayout.setRefreshing(false);
             if(task.getResult().getDocuments().isEmpty()){
                 Log.d(TAG, "No group found");
-                //TODO Activity might be null?
+                //TODO Activity might be null? exception occurred once
                 firestoreRequests.getUser(((MainActivity)getActivity()).getCurrentUserId(), this::checkAndManageInvitations);
             }
+            firestoreRequests.getUser(((MainActivity)getActivity()).getCurrentUserId(), this::checkAndManageInvitations);
         } else {
             swipeLayout.setRefreshing(false);
             Exception exception = task.getException();
@@ -144,7 +156,6 @@ public class NewGroupFragment extends Fragment {
                 Log.d(TAG, "Invitations " +invitationsList.toString());
                 mInvitationsAdapter.update(invitationsList);
             }
-            //TODO get name from Firebase (now id is sent), what if it was removed
         }
     }
 

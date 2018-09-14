@@ -20,7 +20,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -33,6 +32,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO edit group
+//TODO bug displaying members
+//TODO administrator
 public class DisplayGroupFragment extends Fragment {
 
     private static final String TAG = "DisplayGroupProcedure";
@@ -53,14 +55,13 @@ public class DisplayGroupFragment extends Fragment {
 
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         fView = inflater.inflate(R.layout.display_group, container, false);
 
         //Refresh
-        swipeLayout = (SwipeRefreshLayout) fView.findViewById(R.id.swipe_container);
+        swipeLayout = fView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -102,10 +103,10 @@ public class DisplayGroupFragment extends Fragment {
         previous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!((MainActivity)getActivity()).setPreviousGroup()){
+                if(((MainActivity)getActivity()).setPreviousGroup()){
                     previous.setVisibility(View.INVISIBLE);
-                    next.setVisibility(View.VISIBLE);
                 }
+                next.setVisibility(View.VISIBLE);
                 showGroup();
             }
         });
@@ -131,7 +132,6 @@ public class DisplayGroupFragment extends Fragment {
     }
 
     @Override
-    //TODO set some options visible or invisible
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -144,6 +144,12 @@ public class DisplayGroupFragment extends Fragment {
             return true;
         }else if(id == R.id.action_new_group){
             ((MainActivity)getActivity()).startFragment(NewGroupFragment.class);
+            return true;
+        }else if(id == R.id.action_leave){
+            alertLeaveGroup();
+            return true;
+        }else if(id == R.id.action_edit_group){
+            ((MainActivity)getActivity()).startEditFragment();
             return true;
         }
 
@@ -179,7 +185,6 @@ public class DisplayGroupFragment extends Fragment {
     /**
      * Proceeds documents and update user groups if found.
      */
-    //TODO add multiple groups to view
     private void checkGroups(QuerySnapshot documents){
         ((MainActivity)getActivity()).resetGroups();
         if(documents.isEmpty()) {
@@ -189,6 +194,8 @@ public class DisplayGroupFragment extends Fragment {
         else {
             if(documents.size() > 1){
                 next.setVisibility(View.VISIBLE);
+                previous.setVisibility(View.INVISIBLE);
+                ((MainActivity)getActivity()).setCurrentGroup(0);
             }
             else{
                 previous.setVisibility(View.INVISIBLE);
@@ -303,6 +310,51 @@ public class DisplayGroupFragment extends Fragment {
         });
 
         builder.show();
+    }
+
+    /**
+     * Displays alert and removes user group group if submitted.
+     */
+    private void alertLeaveGroup(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
+
+        builder.setTitle(R.string.leave_group)
+                .setMessage(R.string.confirm_leave_group)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Group currentGroup = ((MainActivity)getActivity()).getCurrentGroup();
+                        if(currentGroup.getMembers().size() > 1) {
+                            //Remove only user
+                            firestoreRequests.removeGroupMember(currentGroup.getId(),
+                                    ((MainActivity) getActivity()).getCurrentUserId(),
+                                    (aVoid) -> {
+                                        InformUser.inform(getActivity(), R.string.left_group);
+                                        firestoreRequests.getGroupByField("members", ((MainActivity) getActivity()).getCurrentUserId(),
+                                                DisplayGroupFragment.this::checkGroupsTask);
+                                    },
+                                    (e) -> InformUser.informFailure(getActivity(), e)
+                            );
+                        }
+                        else{
+                            //Remove whole group
+                            firestoreRequests.removeGroup(currentGroup.getId(),
+                                    (aVoid) -> {
+                                        InformUser.inform(getActivity(), R.string.left_group);
+                                        firestoreRequests.getGroupByField("members", ((MainActivity) getActivity()).getCurrentUserId(),
+                                                DisplayGroupFragment.this::checkGroupsTask);
+
+                                    },
+                                    (e) -> InformUser.informFailure(getActivity(), e)
+                            );
+                        }
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)

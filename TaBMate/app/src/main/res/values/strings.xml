@@ -50,8 +50,15 @@
     <string name="user_is_a_member">User is already a group member</string>
     <string name="user_not_found">User do not exist</string>
     <string name="join_or_create">Join or create new group</string>
-    <string name="invitation_incorrect">Incorrect invitation</string>
+    <string name="invitation_incorrect">Incorrect invitation, group might not exist</string>
     <string name="invitation_removed">Invitation removed</string>
+    <string name="leave_group">Leave group</string>
+    <string name="left_group">You left group</string>
+    <string name="confirm_leave_group">Are you sure you want to leave this group?</string>
+    <string name="edit_group">Edit group</string>
+    <string name="save">Save</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="saved">Changes saved</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Settings</string>
