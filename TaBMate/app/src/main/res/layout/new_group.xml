@@ -25,14 +25,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="?attr/actionBarSize"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:visibility="visible">
 
             <RelativeLayout
                 android:id="@+id/no_group_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorAccentLightSemi"
-                android:gravity="center">
+                android:gravity="center"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/create_or_join"
