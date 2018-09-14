@@ -3,19 +3,24 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,7 +32,7 @@ import com.google.firebase.auth.FirebaseUser;
 /**
  * A login screen that offers login (and register) via email/password.
  */
-//TODO Forgot password, email verification, sign out (maybe not here)
+//TODO Forgot password, sign out (maybe not here)
 public class LoginActivity extends Activity {
 
     private static final String TAG =  "LoginProcedure";
@@ -40,6 +45,7 @@ public class LoginActivity extends Activity {
     private Button mEmailSignInButton;
     private Button mEmailSignUpButton;
     private Button mEmailRegisterButton;
+    private Button  mForgotPasswordButton;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -70,6 +76,7 @@ public class LoginActivity extends Activity {
             mNameView.setVisibility(View.GONE);
             mPasswordConfirmView.setVisibility(View.GONE);
             mEmailRegisterButton.setVisibility(View.GONE);
+            mLoginFormView.setVisibility(View.GONE);
             mEmailSignInButton.setVisibility(View.VISIBLE);
             mEmailSignUpButton.setVisibility(View.VISIBLE);
             doRegister = false;
@@ -84,11 +91,11 @@ public class LoginActivity extends Activity {
         initializeForm();
 
         if(currentUser != null){
-            InformUser.log(TAG, "User is logged in.");
+            Log.d(TAG, "User is logged in.");
             startMain();
         }
         //TODO remove auto login
-        doLoginTask("ananke.moro@gmail.com", "zabcia3");
+        //doLoginTask("ananke.moro@gmail.com", "zabcia3");
     }
 
     private void initializeForm(){
@@ -147,6 +154,14 @@ public class LoginActivity extends Activity {
             public void onClick(View view) {
                 Manager.hideKeyboard(LoginActivity.this);
                 attempt(false);
+            }
+        });
+
+        mForgotPasswordButton = findViewById(R.id.forgot_password_button);
+        mForgotPasswordButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertForgotPassword();
             }
         });
 
@@ -279,11 +294,13 @@ public class LoginActivity extends Activity {
                         if (!task.isSuccessful()) {
                             Exception exception = task.getException();
                             if(exception != null) {
-                                InformUser.informFailure(LoginActivity.this, TAG, exception);
+                                InformUser.informFailure(LoginActivity.this, exception);
+                                Log.e(TAG, "Login user failure.");
                             }
+                            mForgotPasswordButton.setVisibility(View.VISIBLE);
                             showProgress(false);
                         } else {
-                            InformUser.log(TAG, "Login user success.");
+                            Log.d(TAG, "Login user success.");
                             showProgress(false);
                             startMain();
                         }
@@ -302,17 +319,32 @@ public class LoginActivity extends Activity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            InformUser.log(TAG, "Register user in Firestore success.");
+                            Log.d(TAG, "Register user in Firestore success.");
                             addUser(LoginActivity.this, task.getResult().getUser().getUid(), name, email);
                             currentUser = mAuth.getCurrentUser();
+                            sendVerificationEmail();
                             doLoginTask(email, password);
                         } else {
                             // If sign in fails, display a message to the user.
                             Exception exception = task.getException();
                             if(exception != null) {
-                                InformUser.informFailure(LoginActivity.this, TAG, task.getException());
+                                InformUser.informFailure(LoginActivity.this, task.getException());
+                                Log.e(TAG, "Sign in failure.");
                             }
                             showProgress(false);
+                        }
+                    }
+                });
+    }
+
+    private void sendVerificationEmail(){
+        currentUser.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            InformUser.inform(LoginActivity.this, R.string.verification_email_sent);
+                            Log.d(TAG, "Verification email sent.");
                         }
                     }
                 });
@@ -325,8 +357,58 @@ public class LoginActivity extends Activity {
         User newUser = new User(id, name, email);
         FirestoreRequests firestoreRequests = new FirestoreRequests();
         firestoreRequests.addUser(newUser, id,
-                (Void) -> InformUser.log(TAG, "Add user document to Firestore success."),
-                (e) -> InformUser.informFailure(activity, TAG, e));
+                (Void) -> Log.d(TAG, "Add user document to Firestore success."),
+                (e) -> InformUser.informFailure(activity, e));
+    }
+
+
+    /**
+     * Alert to enter email if user forgot password.
+     */
+    public void alertForgotPassword(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+        builder.setTitle(R.string.enter_email);
+
+        // Set up the input
+        final EditText input = new EditText(LoginActivity.this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        input.setPadding(20, 20, 20, 20);
+        input.setBackgroundColor(getResources().getColor(R.color.colorAccentLightSemi, LoginActivity.this.getTheme()));
+
+        FrameLayout container = new FrameLayout(LoginActivity.this);
+        FrameLayout.LayoutParams params = new  FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(30, 10, 30, 10);
+        input.setLayoutParams(params);
+        container.addView(input);
+
+        builder.setView(container);
+
+        // Set up the buttons
+        builder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String emailAddress = input.getText().toString();
+                mAuth.sendPasswordResetEmail(emailAddress)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                   InformUser.inform(LoginActivity.this, R.string.email_reset_sent);
+                                }
+                            }
+                        });
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 }
 

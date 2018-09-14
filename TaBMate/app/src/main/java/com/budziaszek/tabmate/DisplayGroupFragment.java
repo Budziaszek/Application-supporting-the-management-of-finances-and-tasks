@@ -1,19 +1,26 @@
 package com.budziaszek.tabmate;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -28,17 +35,21 @@ import java.util.List;
 
 public class DisplayGroupFragment extends Fragment {
 
-    private static final String TAG = "GroupProcedure";
+    private static final String TAG = "DisplayGroupProcedure";
 
     private View fView;
     private SwipeRefreshLayout swipeLayout;
 
     private RecyclerView membersRecycler;
     private MembersAdapter mMembersAdapter;
-    private List<User> users;
+
+    private FloatingActionButton next;
+    private FloatingActionButton previous;
 
     private String mNewMemberEmail = null;
     private String mNewMemberId = null;
+
+    private List<User> users = new ArrayList<>();
 
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
@@ -46,7 +57,6 @@ public class DisplayGroupFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        users = new ArrayList<>();
         fView = inflater.inflate(R.layout.display_group, container, false);
 
         //Refresh
@@ -65,8 +75,6 @@ public class DisplayGroupFragment extends Fragment {
                 getResources().getColor(R.color.colorAccentDark, getResources().newTheme()),
                 getResources().getColor(R.color.colorAccent, getResources().newTheme()));
 
-
-        swipeLayout.setRefreshing(true);
         firestoreRequests.getGroupByField("members", ((MainActivity)getActivity()).getCurrentUserId(), this::checkGroupsTask);
 
         // Members
@@ -77,6 +85,30 @@ public class DisplayGroupFragment extends Fragment {
         membersRecycler.setItemAnimator(new DefaultItemAnimator());
         membersRecycler.setAdapter(mMembersAdapter);
 
+        //Navigation buttons
+        next = fView.findViewById(R.id.next_button);
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(((MainActivity)getActivity()).setNextGroup()) {
+                    next.setVisibility(View.INVISIBLE);
+                }
+                previous.setVisibility(View.VISIBLE);
+                showGroup();
+            }
+        });
+
+        previous = fView.findViewById(R.id.previous_button);
+        previous.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!((MainActivity)getActivity()).setPreviousGroup()){
+                    previous.setVisibility(View.INVISIBLE);
+                    next.setVisibility(View.VISIBLE);
+                }
+                showGroup();
+            }
+        });
         return fView;
     }
 
@@ -107,10 +139,11 @@ public class DisplayGroupFragment extends Fragment {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return false;
-        }else if(id == R.id.action_new_member){
+        if(id == R.id.action_new_member){
             alertNewMember();
+            return true;
+        }else if(id == R.id.action_new_group){
+            ((MainActivity)getActivity()).startFragment(NewGroupFragment.class);
             return true;
         }
 
@@ -122,6 +155,7 @@ public class DisplayGroupFragment extends Fragment {
      */
     private void addUserToList(DocumentSnapshot documentSnapshot){
         User user = documentSnapshot.toObject(User.class);
+        ((MainActivity)getActivity()).addUser(user);
         users.add(user);
         mMembersAdapter.update(users);
     }
@@ -133,10 +167,11 @@ public class DisplayGroupFragment extends Fragment {
         if (task.isSuccessful()) {
             checkGroups(task.getResult());
             swipeLayout.setRefreshing(false);
+            showProgress(false);
         } else {
             Exception exception = task.getException();
             if(exception != null)
-                InformUser.informFailure(getActivity(), TAG, exception);
+                InformUser.informFailure(getActivity(), exception);
             swipeLayout.setRefreshing(false);
         }
     }
@@ -144,36 +179,48 @@ public class DisplayGroupFragment extends Fragment {
     /**
      * Proceeds documents and update user groups if found.
      */
+    //TODO add multiple groups to view
     private void checkGroups(QuerySnapshot documents){
-        //TODO on refresh different acttion - update only current group, don't ask for all!
-        users = new ArrayList<>();
-        boolean foundGroup = false;
-        //TODO add multiple groups to view
-        for (QueryDocumentSnapshot document : documents) {
-
-            Group group = document.toObject(Group.class);
-            InformUser.log(TAG, "User group: " + group.getId());
-
-            TextView groupName =  fView.findViewById(R.id.group_name);
-            TextView groupDescription = fView.findViewById(R.id.group_description);
-
-
-            for(String uid : group.getMembers()){
-                firestoreRequests.getUser(uid, this::addUserToList);
-            }
-            groupName.setText(group.getName());
-            groupDescription.setText(group.getDescription());
-
-
-
-            ((MainActivity)getActivity()).addGroup(group);
-            foundGroup = true;
-
-            break;
+        ((MainActivity)getActivity()).resetGroups();
+        if(documents.isEmpty()) {
+            ((MainActivity) getActivity()).startFragment(NewGroupFragment.class);
+            Log.d(TAG, "Group not found");
         }
-        if(!foundGroup){
-            InformUser.log(TAG, "Group not found");
-            ((MainActivity)getActivity()).startFragment(NewGroupFragment.class);
+        else {
+            if(documents.size() > 1){
+                next.setVisibility(View.VISIBLE);
+            }
+            else{
+                previous.setVisibility(View.INVISIBLE);
+                next.setVisibility(View.INVISIBLE);
+            }
+            for (QueryDocumentSnapshot document : documents) {
+                Group group = document.toObject(Group.class);
+                Log.d(TAG, "User group: " + group.getId());
+                ((MainActivity) getActivity()).addGroup(group);
+            }
+            showGroup();
+        }
+    }
+
+    /**
+     * Displays current group data.
+     */
+    private void showGroup(){
+        users = new ArrayList<>();
+        ((MainActivity)getActivity()).clearUsers();
+        mMembersAdapter.update(users);
+
+        Group group = ((MainActivity)getActivity()).getCurrentGroup();
+
+        TextView groupName = fView.findViewById(R.id.group_name);
+        TextView groupDescription = fView.findViewById(R.id.group_description);
+
+        groupName.setText(group.getName());
+        groupDescription.setText(group.getDescription());
+
+        for (String uid : group.getMembers()) {
+            firestoreRequests.getUser(uid, this::addUserToList);
         }
     }
 
@@ -182,7 +229,7 @@ public class DisplayGroupFragment extends Fragment {
      */
     private void checkNewMember(List<DocumentSnapshot> documents){
         if(documents.isEmpty()){
-            InformUser.inform(getActivity(), TAG, "User" + mNewMemberEmail +" not found");
+            InformUser.inform(getActivity(), R.string.user_not_found);
         }
         else {
             User user = documents.get(0).toObject(User.class);
@@ -191,12 +238,14 @@ public class DisplayGroupFragment extends Fragment {
             Group currentGroup = ((MainActivity)getActivity()).getCurrentGroup();
             if(currentGroup.getMembers().contains(mNewMemberId)){
                 // Is already a member
-                InformUser.inform(getActivity(), TAG, "User " + mNewMemberEmail + " is already a group member.");
+                InformUser.inform(getActivity(), R.string.user_is_a_member);
             }
             else {
                 //Add
-                firestoreRequests.addInvitation(mNewMemberId, currentGroup.getId());
-                InformUser.inform(getActivity(), TAG, "Invitation sent to " + mNewMemberEmail);
+                firestoreRequests.addInvitation(mNewMemberId, currentGroup.getId(),
+                        (aVoid) ->  InformUser.inform(getActivity(), R.string.invitation_sent),
+                        (e) -> InformUser.inform(getActivity(), R.string.invitation_incorrect));
+               ;
             }
         }
     }
@@ -210,7 +259,7 @@ public class DisplayGroupFragment extends Fragment {
         } else {
             Exception exception = task.getException();
             if(exception != null) {
-                InformUser.informFailure(getActivity(), TAG, exception);
+                InformUser.informFailure(getActivity(), exception);
             }
         }
     }
@@ -254,6 +303,32 @@ public class DisplayGroupFragment extends Fragment {
         });
 
         builder.show();
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        View mDisplayView= fView.findViewById(R.id.show_groups_layout);
+        View mProgressView = fView.findViewById(R.id.progress_display);
+
+        mDisplayView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mDisplayView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mDisplayView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
 }

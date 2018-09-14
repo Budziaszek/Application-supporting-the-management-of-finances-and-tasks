@@ -9,6 +9,12 @@
     <string name="sign_in">Sign in</string>
     <string name="register">Register</string>
     <string name="not_a_member">Not a member? Join here</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="enter_email">Enter your email</string>
+    <string name="cancel">Cancel</string>
+    <string name="email_reset_sent">Password reset email sent</string>
+    <string name="verification_email_sent">Verification email sent</string>
+
         <!-- Strings related to login errors-->
         <string name="error_invalid_email">This email address is invalid</string>
         <string name="error_invalid_password">This password is invalid</string>
@@ -17,6 +23,7 @@
         <string name="error_field_required">This field is required</string>
         <string name="error_passwords_not_match">Given passwords do not match</string>
         <string name="error_no_internet_connection">No internet connection</string>
+        <string name="error_email_not_verified">Email not verified</string>
 
     <!-- Strings related to main activity-->
     <string name="title_activity_main">TaB Mate</string>
@@ -38,6 +45,13 @@
     <string name="group_name_title">Name</string>
     <string name="group_description_title">Description</string>
     <string name="submit">Submit</string>
+    <string name="group_created">Group created</string>
+    <string name="invitation_sent">Invitation sent</string>
+    <string name="user_is_a_member">User is already a group member</string>
+    <string name="user_not_found">User do not exist</string>
+    <string name="join_or_create">Join or create new group</string>
+    <string name="invitation_incorrect">Incorrect invitation</string>
+    <string name="invitation_removed">Invitation removed</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Settings</string>

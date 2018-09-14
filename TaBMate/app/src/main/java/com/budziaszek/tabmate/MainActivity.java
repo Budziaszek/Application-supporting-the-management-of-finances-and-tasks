@@ -83,10 +83,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -98,14 +98,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }else if(id == R.id.action_new_member){
+        if(id == R.id.action_new_member){
+            return false;
+        }else if(id == R.id.action_new_group){
             return false;
         }
+
         return false;
         //return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity
         }else if (id == R.id.nav_tasks) {
             //TODO add tasks fragment
         }else if (id == R.id.nav_group) {
-            newFragment = NewGroupFragment.class;
+            newFragment = DisplayGroupFragment.class;
         }else if (id == R.id.nav_logOut) {
             alertAndLogOut();
         }
@@ -141,37 +142,38 @@ public class MainActivity extends AppCompatActivity
             Log.e(TAG, "Error in fragment transaction " + e.getMessage());
         }
     }
-    /*
-    public void startAddGroupFragment(){
-        try {
-            AddGroupFragment addGroupFragment = AddGroupFragment.class.newInstance();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, addGroupFragment).commit();
-        } catch (Exception e) {
-            Log.e(TAG, "Error in fragment transaction " + e.getMessage());
+
+    public Boolean setNextGroup(){
+        if(currentGroup < groups.size() - 1) {
+            currentGroup++;
+        }
+        if(currentGroup == groups.size())
+            return false;
+        else
+            return true;
+    }
+
+    public Boolean setPreviousGroup(){
+        if(currentGroup != 0) {
+            currentGroup--;
+        }
+        if(currentGroup == 0){
+            return false;
+        }
+        else{
+            return true;
         }
     }
 
-    public void startDisplayGroupFragment(){
-        try {
-            DisplayGroupFragment displayGroupFragment = DisplayGroupFragment.class.newInstance();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, displayGroupFragment).commit();
-        } catch (Exception e) {
-            Log.e(TAG, "Error in fragment transaction " + e.getMessage());
-        }
+    public void resetGroups(){
+        groups = new ArrayList<>();
     }
 
-    public void startNewGroupFragment(){
-        try {
-            DisplayGroupFragment displayGroupFragment = DisplayGroupFragment.class.newInstance();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, displayGroupFragment).commit();
-        } catch (Exception e) {
-            Log.e(TAG, "Error in fragment transaction " + e.getMessage());
-        }
-    }
-*/
     public void addGroup(Group group){
         groups.add(group);
-        currentGroup++;
+        if(currentGroup == -1){
+            currentGroup = 0;
+        }
     }
 
     public Group getCurrentGroup(){
@@ -184,6 +186,10 @@ public class MainActivity extends AppCompatActivity
 
     public List<User> getUsers(){
         return users;
+    }
+
+    public void clearUsers(){
+        users.clear();
     }
 
     private void initializeDrawer(){

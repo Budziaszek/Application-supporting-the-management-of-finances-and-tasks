@@ -1,10 +1,15 @@
 package com.budziaszek.tabmate;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +23,7 @@ import java.util.List;
 
 public class NewGroupFragment extends Fragment {
 
-    private static final String TAG = "myNewFragment";
+    private static final String TAG = "NewGroupProcedure";
 
     private View fView;
     private SwipeRefreshLayout swipeLayout;
@@ -60,7 +65,7 @@ public class NewGroupFragment extends Fragment {
         });
 
         //Check data and display or go on
-        swipeLayout.setRefreshing(true);
+        showProgress(true);
         firestoreRequests.getGroupByField("members", ((MainActivity)getActivity()).getCurrentUserId(), this::checkGroupsTask);
 
         //Invitations
@@ -68,14 +73,31 @@ public class NewGroupFragment extends Fragment {
         mInvitationsAdapter = new InvitationsAdapter(invitationsList, new ClickListener() {
             @Override
             public void onAcceptClicked(int position) {
-                firestoreRequests.addGroupMember(invitationsList.get(position), ((MainActivity)getActivity()).getCurrentUserId());
-                //TODO remove invitation from database, from list, inform adapter
-                //Toast.makeText(fView.getContext(), "Accepted " + position, Toast.LENGTH_SHORT).show();
+                showProgress(true);
+                firestoreRequests.addGroupMember(invitationsList.get(position), ((MainActivity)getActivity()).getCurrentUserId(),
+                        (aVoid) -> {
+                                    showProgress(false);
+                                    Log.d(TAG, "Invitation accepted.");
+                                    },
+                        (e) -> {
+                                    InformUser.inform(getActivity(), R.string.invitation_incorrect);
+                                    showProgress(false);
+                                    });
+                onRemoveClicked(position);
             }
-
             @Override
             public void onRemoveClicked(int position) {
-                //Toast.makeText(fView.getContext(), "Removed " + position, Toast.LENGTH_SHORT).show();
+                firestoreRequests.removeInvitation(invitationsList.get(position), ((MainActivity)getActivity()).getCurrentUserId(),
+                        (aVoid) -> {
+                            showProgress(false);
+                            Log.d(TAG, "Invitation removed.");
+                            ((MainActivity)getActivity()).startFragment(DisplayGroupFragment.class);
+                        },
+                        (e) -> {
+                            InformUser.informFailure(getActivity(), e);
+                            Log.e(TAG, e.getMessage());
+                            showProgress(false);
+                        });
             }
         });
         invitationsRecycler.setAdapter(mInvitationsAdapter);
@@ -94,22 +116,19 @@ public class NewGroupFragment extends Fragment {
     }
 
     private void checkGroupsTask(Task<QuerySnapshot> task) {
+        showProgress(false);
         if (task.isSuccessful()) {
+            swipeLayout.setRefreshing(false);
             if(task.getResult().getDocuments().isEmpty()){
-                InformUser.log(TAG, "No group found");
+                Log.d(TAG, "No group found");
                 //TODO Activity might be null?
                 firestoreRequests.getUser(((MainActivity)getActivity()).getCurrentUserId(), this::checkAndManageInvitations);
-            }
-            else{
-                InformUser.log(TAG, "Group found");
-                swipeLayout.setRefreshing(false);
-                ((MainActivity)getActivity()).startFragment(DisplayGroupFragment.class);
             }
         } else {
             swipeLayout.setRefreshing(false);
             Exception exception = task.getException();
             if(exception != null)
-                InformUser.informFailure(getActivity(), TAG, exception);
+                InformUser.informFailure(getActivity(), exception);
         }
     }
 
@@ -122,10 +141,36 @@ public class NewGroupFragment extends Fragment {
         if(user != null) {
             if(user.getInvitations() != null) {
                 invitationsList = user.getInvitations();
-                InformUser.log(TAG, "Invitations " +invitationsList.toString());
+                Log.d(TAG, "Invitations " +invitationsList.toString());
                 mInvitationsAdapter.update(invitationsList);
             }
             //TODO get name from Firebase (now id is sent), what if it was removed
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        View mDisplayView= fView.findViewById(R.id.no_group_layout);
+        View mProgressView = fView.findViewById(R.id.progress_no_group);
+
+        mDisplayView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mDisplayView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mDisplayView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 }

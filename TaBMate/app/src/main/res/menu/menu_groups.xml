@@ -6,4 +6,9 @@
         android:orderInCategory="100"
         android:title="@string/invite_new_member"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_new_group"
+        android:orderInCategory="100"
+        android:title="@string/join_or_create"
+        app:showAsAction="never" />
 </menu>

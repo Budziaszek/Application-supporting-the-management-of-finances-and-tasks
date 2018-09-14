@@ -101,6 +101,19 @@
 
                     </android.support.design.widget.TextInputLayout>
 
+                    <Button
+                        android:id="@+id/forgot_password_button"
+                        style="?android:textAppearanceSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="0dp"
+                        android:background="@null"
+                        android:text="@string/forgot_password"
+                        android:textColor="@color/common_google_signin_btn_text_dark_default"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -150,6 +163,7 @@
                         android:text="@string/not_a_member"
                         android:textColor="@color/common_google_signin_btn_text_dark_default"
                         android:textStyle="bold" />
+
                 </LinearLayout>
             </ScrollView>
 

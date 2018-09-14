@@ -105,18 +105,62 @@ public class FirestoreRequests {
                 });
     }
 
-    public void addGroupMember(String gid, String uid){
+    public void addGroupMember(String gid, String uid, Consumer succes, Consumer<Exception> failure){
         db.collection(GROUP_COLLECTION)
                 .document(gid)
                 .update(GROUP_COLLECTION_MEMBERS_FIELD,
-                        FieldValue.arrayUnion(uid));
+                        FieldValue.arrayUnion(uid))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        succes.accept(aVoid);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        failure.accept(e);
+                    }
+                });
+
     }
 
-    public void addInvitation(String uid, String gid){
+    public void addInvitation(String uid, String gid, Consumer succes, Consumer<Exception> failure){
         db.collection(USER_COLLECTION)
                 .document(uid)
                 .update(USER_COLLECTION_INVITATIONS_FIELD,
-                        FieldValue.arrayUnion(gid));
+                        FieldValue.arrayUnion(gid))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                       succes.accept(aVoid);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                       failure.accept(e);
+                    }
+                });
+    }
+
+    public void removeInvitation(String gid, String uid, Consumer succes, Consumer<Exception> failure){
+        db.collection(USER_COLLECTION)
+                .document(uid)
+                .update(USER_COLLECTION_INVITATIONS_FIELD,
+                        FieldValue.arrayRemove(gid))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        succes.accept(aVoid);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        failure.accept(e);
+                    }
+                });
     }
 
 }

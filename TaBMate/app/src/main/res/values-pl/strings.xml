@@ -9,6 +9,13 @@
     <string name="sign_in">Zaloguj</string>
     <string name="register">Zarejestruj</string>
     <string name="not_a_member">Nie masz konta? Dołącz tutaj</string>
+    <string name="forgot_password">Nie pamiętasz hasłą?</string>
+    <string name="enter_email">Podaj swój email</string>
+    <string name="cancel">Anuluj</string>
+    <string name="email_reset_sent">Email do zmiany hasła wysłany</string>
+    <string name="verification_email_sent">Email weryfikacyjny wyslany</string>
+
+
     <!-- Strings related to login errors-->
     <string name="error_invalid_email">Podany adres email jest nieprawidłowy</string>
     <string name="error_invalid_password">Podane hasło jest nieprawidłowe</string>
@@ -17,6 +24,7 @@
     <string name="error_field_required">To pole jest wymagane</string>
     <string name="error_passwords_not_match">Podane hasła są różne</string>
     <string name="error_no_internet_connection">Brak połączenia z internetem</string>
+    <string name="error_email_not_verified">Email adres nie został zwerfikowany</string>
 
     <!-- Strings related to main activity-->
     <string name="title_activity_main">TaB Mate</string>
@@ -38,6 +46,13 @@
     <string name="group_name_title">Nazwa</string>
     <string name="group_description_title">Opis</string>
     <string name="submit">Zatwierdź</string>
+    <string name="group_created">Grupa utworzona</string>
+    <string name="invitation_sent">Zaproszenie wysłane</string>
+    <string name="user_is_a_member">Użytkownik należy juz do tej grupy</string>
+    <string name="user_not_found">Użytkownik nie istnieje</string>
+    <string name="join_or_create">Dołącz do grupy lub stwórz nową</string>
+    <string name="invitation_incorrect">Nieprawidłowe zaproszenie</string>
+    <string name="invitation_removed">Zaproszenie usunięcie</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Ustawienia</string>

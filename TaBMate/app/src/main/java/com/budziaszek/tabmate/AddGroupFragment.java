@@ -49,16 +49,16 @@ public class AddGroupFragment extends Fragment{
      * Attempts to create new group and save it to Firestore.
      */
     private void addNewGroup(String id, String name, String description) {
-        Group newGroup = new Group(name + "_" + id, name, description);
+        Group newGroup = new Group(name + " " + id, name, description);
         newGroup.addMember(id);
 
         firestoreRequests.addGroup(newGroup, name + " " + id,
                 (Void) ->  {
-                    InformUser.inform(getActivity(), TAG, "Group created");
+                    InformUser.inform(getActivity(), R.string.group_created);
                     ((MainActivity)getActivity()).startFragment(DisplayGroupFragment.class);
                 },
                 (e) ->
-                    InformUser.informFailure(getActivity(), TAG, e)
+                    InformUser.informFailure(getActivity(), e)
                 );
     }
 
