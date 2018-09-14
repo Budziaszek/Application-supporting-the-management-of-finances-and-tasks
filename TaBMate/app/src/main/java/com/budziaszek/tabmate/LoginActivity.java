@@ -32,7 +32,7 @@ import com.google.firebase.auth.FirebaseUser;
 /**
  * A login screen that offers login (and register) via email/password.
  */
-//TODO Forgot password, sign out (maybe not here)
+//TODO Sign out (maybe not here)
 public class LoginActivity extends Activity {
 
     private static final String TAG =  "LoginProcedure";
@@ -94,8 +94,6 @@ public class LoginActivity extends Activity {
             Log.d(TAG, "User is logged in.");
             startMain();
         }
-        //TODO remove auto login
-        //doLoginTask("ananke.moro@gmail.com", "zabcia3");
     }
 
     private void initializeForm(){

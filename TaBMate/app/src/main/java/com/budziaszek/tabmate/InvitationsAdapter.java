@@ -2,10 +2,14 @@ package com.budziaszek.tabmate;
 
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +18,7 @@ public class InvitationsAdapter extends RecyclerView.Adapter<InvitationsAdapter.
 
     ClickListener clickListener;
     private List<String> invitationsList = new ArrayList<>();
+    private FirestoreRequests firestoreRequests;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView group_name;
@@ -59,7 +64,16 @@ public class InvitationsAdapter extends RecyclerView.Adapter<InvitationsAdapter.
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         String invitation = invitationsList.get(position);
-        holder.group_name.setText(invitation);
+        /*String[] s = invitation.split(" ");
+        StringBuilder str = new StringBuilder(s[0]);
+        for(int i = 1; i < s.length - 1; i++){
+            str.append(" ");
+            str.append(s);
+        }
+        holder.group_name.setText(str.toString());*/
+        firestoreRequests = new FirestoreRequests();
+        firestoreRequests.getGroup(invitation,
+                (DocumentSnapshot) -> holder.group_name.setText(DocumentSnapshot.toObject(Group.class).getName()));
     }
 
     @Override

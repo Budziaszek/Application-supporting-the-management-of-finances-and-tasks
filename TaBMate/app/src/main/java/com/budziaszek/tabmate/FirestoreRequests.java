@@ -21,8 +21,7 @@ public class FirestoreRequests {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public void addUser(User user, String targetDocument, Consumer succes, Consumer<Exception> failure){
-        FirebaseFirestore.getInstance()
-                .collection(FirestoreRequests.USER_COLLECTION)
+        db.collection(FirestoreRequests.USER_COLLECTION)
                 .document(targetDocument)
                 .set(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -93,6 +92,24 @@ public class FirestoreRequests {
                 });
     }
 
+    public void removeGroup(String gid, Consumer succes, Consumer<Exception> failure){
+        db.collection(GROUP_COLLECTION)
+                .document(gid)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        succes.accept(aVoid);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        failure.accept(e);
+                    }
+                });
+    }
+
     public void getGroupByField(String field, String value, Consumer<Task<QuerySnapshot>> action){
         db.collection(GROUP_COLLECTION)
                 .whereArrayContains(field, value)
@@ -123,6 +140,25 @@ public class FirestoreRequests {
                     }
                 });
 
+    }
+
+    public void removeGroupMember(String gid, String uid, Consumer succes, Consumer<Exception> failure){
+        db.collection(GROUP_COLLECTION)
+                .document(gid)
+                .update(GROUP_COLLECTION_MEMBERS_FIELD,
+                        FieldValue.arrayRemove(uid))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        succes.accept(aVoid);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        failure.accept(e);
+                    }
+                });
     }
 
     public void addInvitation(String uid, String gid, Consumer succes, Consumer<Exception> failure){
@@ -162,5 +198,4 @@ public class FirestoreRequests {
                     }
                 });
     }
-
 }
