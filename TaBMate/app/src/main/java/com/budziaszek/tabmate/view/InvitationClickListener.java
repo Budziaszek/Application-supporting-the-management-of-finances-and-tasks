@@ -1,6 +1,6 @@
-package com.budziaszek.tabmate;
+package com.budziaszek.tabmate.view;
 
-public interface ClickListener {
+public interface InvitationClickListener {
     void onAcceptClicked(int position);
     void onRemoveClicked(int position);
 }

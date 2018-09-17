@@ -1,4 +1,4 @@
-package com.budziaszek.tabmate;
+package com.budziaszek.tabmate.view;
 
 import android.app.Activity;
 import android.view.View;
@@ -14,6 +14,8 @@ public class Manager {
         if (view == null) {
             view = new View(activity);
         }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        if(imm !=null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }

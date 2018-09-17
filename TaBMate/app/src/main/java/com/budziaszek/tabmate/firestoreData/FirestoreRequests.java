@@ -1,6 +1,7 @@
-package com.budziaszek.tabmate;
+package com.budziaszek.tabmate.firestoreData;
 
 import android.support.annotation.NonNull;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -9,14 +10,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.function.Consumer;
 
 public class FirestoreRequests {
 
-    public static final String USER_COLLECTION = "users";
-    public static final String USER_COLLECTION_INVITATIONS_FIELD = "invitations";
-    public static final String GROUP_COLLECTION = "groups";
-    public static final String GROUP_COLLECTION_MEMBERS_FIELD = "members";
+    private static final String USER_COLLECTION = "users";
+    private static final String USER_COLLECTION_INVITATIONS_FIELD = "invitations";
+    private static final String GROUP_COLLECTION = "groups";
+    private static final String GROUP_COLLECTION_MEMBERS_FIELD = "members";
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 

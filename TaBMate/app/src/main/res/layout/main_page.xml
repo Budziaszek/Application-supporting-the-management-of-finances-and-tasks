@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:ndroid="http://schemas.android.com/tools"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:gravity="center">
+
+    <ProgressBar
+        android:id="@+id/progress_groups"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center"
+        android:background="@drawable/gradient_background_trio"
+        android:visibility="visible">
+
+        <ScrollView
+            android:id="@+id/show_groups_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="10dp"
+            android:visibility="visible">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:id="@+id/user_groups_layout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/groups_title"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:background="@drawable/bar_background"
+                        android:elevation="4dp"
+                        android:padding="20dp"
+                        android:text="@string/groups"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="21sp"
+                        android:textStyle="bold"/>
+
+                    <Button
+                        android:id="@+id/new_task_button"
+                        style="?android:textAppearanceSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tasks_list"
+                        android:layout_margin="5dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@color/colorAccentLight"
+                        android:text="@string/join_or_create"
+                        android:textColor="@color/colorPrimaryDark"
+                        ndroid:textAllCaps="false" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/tasks_list"
+                        android:layout_below="@+id/groups_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:elevation="0dp" />
+
+                </RelativeLayout>
+            </RelativeLayout>
+        </ScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+</RelativeLayout>

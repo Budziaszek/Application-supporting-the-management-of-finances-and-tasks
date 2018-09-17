@@ -1,4 +1,4 @@
-package com.budziaszek.tabmate;
+package com.budziaszek.tabmate.firestoreData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ public class Group {
     private String name;
     private String description;
     private List<String> members;
+    //private List<String> invitationsSent;
 
     public Group() {}
 
@@ -17,13 +18,15 @@ public class Group {
         this.description = description;
         this.id = id;
         this.members = new ArrayList<>();
+        //this.invitationsSent = new ArrayList<>();
     }
 
-    public Group(String id,  String name, String description, List<String> members) {
+    public Group(String id,  String name, String description, List<String> members){//, List<String> invitationsSent) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.members = members;
+        //this.invitationsSent = invitationsSent;
     }
 
     public void setName(String name) {
@@ -46,6 +49,10 @@ public class Group {
         members.add(memberId);
     }
 
+    /*public void setInvitationsSent(List<String> invitationsSent) {
+        this.invitationsSent = invitationsSent;
+    }*/
+
     public String getName() {
         return name;
     }
@@ -61,4 +68,8 @@ public class Group {
     public List<String> getMembers() {
         return members;
     }
+
+    /*public List<String> getInvitationsSent() {
+        return invitationsSent;
+    }*/
 }

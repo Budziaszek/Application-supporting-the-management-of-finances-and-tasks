@@ -1,8 +1,6 @@
-package com.budziaszek.tabmate;
+package com.budziaszek.tabmate.view;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.util.Log;
 import android.widget.Toast;
 
 public class InformUser {

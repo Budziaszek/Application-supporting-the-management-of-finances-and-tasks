@@ -1,4 +1,4 @@
-package com.budziaszek.tabmate;
+package com.budziaszek.tabmate.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -22,6 +22,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import com.budziaszek.tabmate.view.InformUser;
+import com.budziaszek.tabmate.R;
+import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
+import com.budziaszek.tabmate.firestoreData.User;
+import com.budziaszek.tabmate.view.Manager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -38,19 +44,19 @@ public class LoginActivity extends Activity {
     private static final String TAG =  "LoginProcedure";
 
     // UI references
-    private EditText mNameView;
-    private EditText mEmailView;
-    private EditText mPasswordView;
-    private EditText mPasswordConfirmView;
-    private Button mEmailSignInButton;
-    private Button mEmailSignUpButton;
-    private Button mEmailRegisterButton;
-    private Button  mForgotPasswordButton;
-    private View mProgressView;
-    private View mLoginFormView;
+    private EditText nameView;
+    private EditText emailView;
+    private EditText passwordView;
+    private EditText passwordConfirmView;
+    private Button emailSignInButton;
+    private Button emailSignUpButton;
+    private Button emailRegisterButton;
+    private Button forgotPasswordButton;
+    private View progressView;
+    private View loginFormView;
 
     //Firebase
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
     private FirebaseUser currentUser;
 
     private Boolean doRegister = false;
@@ -73,12 +79,12 @@ public class LoginActivity extends Activity {
             super.onBackPressed();
         }
         else{
-            mNameView.setVisibility(View.GONE);
-            mPasswordConfirmView.setVisibility(View.GONE);
-            mEmailRegisterButton.setVisibility(View.GONE);
-            mLoginFormView.setVisibility(View.GONE);
-            mEmailSignInButton.setVisibility(View.VISIBLE);
-            mEmailSignUpButton.setVisibility(View.VISIBLE);
+            nameView.setVisibility(View.GONE);
+            passwordConfirmView.setVisibility(View.GONE);
+            emailRegisterButton.setVisibility(View.GONE);
+            loginFormView.setVisibility(View.GONE);
+            emailSignInButton.setVisibility(View.VISIBLE);
+            emailSignUpButton.setVisibility(View.VISIBLE);
             doRegister = false;
         }
     }
@@ -97,11 +103,11 @@ public class LoginActivity extends Activity {
     }
 
     private void initializeForm(){
-        mNameView = findViewById(R.id.user_name);
+        nameView = findViewById(R.id.user_name);
 
-        mEmailView = findViewById(R.id.email);
-        mPasswordView = findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        emailView = findViewById(R.id.email);
+        passwordView = findViewById(R.id.password);
+        passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
@@ -111,8 +117,8 @@ public class LoginActivity extends Activity {
                 return false;
             }
         });
-        mPasswordConfirmView = findViewById(R.id.password_confirm);
-        mPasswordConfirmView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        passwordConfirmView = findViewById(R.id.password_confirm);
+        passwordConfirmView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
@@ -123,8 +129,8 @@ public class LoginActivity extends Activity {
             }
         });
 
-        mEmailRegisterButton = findViewById(R.id.email_register_button);
-        mEmailRegisterButton.setOnClickListener(new OnClickListener() {
+        emailRegisterButton = findViewById(R.id.email_register_button);
+        emailRegisterButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Manager.hideKeyboard(LoginActivity.this);
@@ -132,22 +138,22 @@ public class LoginActivity extends Activity {
             }
         });
 
-        mEmailSignUpButton = findViewById(R.id.email_sign_up_button);
-        mEmailSignUpButton.setOnClickListener(new OnClickListener() {
+        emailSignUpButton = findViewById(R.id.email_sign_up_button);
+        emailSignUpButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 doRegister = true;
-                mEmailSignInButton.setVisibility(View.GONE);
-                mEmailSignUpButton.setVisibility(View.GONE);
-                mNameView.setVisibility(View.VISIBLE);
-                mNameView.requestFocus();
-                mPasswordConfirmView.setVisibility(View.VISIBLE);
-                mEmailRegisterButton.setVisibility(View.VISIBLE);
+                emailSignInButton.setVisibility(View.GONE);
+                emailSignUpButton.setVisibility(View.GONE);
+                nameView.setVisibility(View.VISIBLE);
+                nameView.requestFocus();
+                passwordConfirmView.setVisibility(View.VISIBLE);
+                emailRegisterButton.setVisibility(View.VISIBLE);
             }
         });
 
-        mEmailSignInButton = findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        emailSignInButton = findViewById(R.id.email_sign_in_button);
+        emailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Manager.hideKeyboard(LoginActivity.this);
@@ -155,19 +161,19 @@ public class LoginActivity extends Activity {
             }
         });
 
-        mForgotPasswordButton = findViewById(R.id.forgot_password_button);
-        mForgotPasswordButton.setOnClickListener(new OnClickListener() {
+        forgotPasswordButton = findViewById(R.id.forgot_password_button);
+        forgotPasswordButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 alertForgotPassword();
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        loginFormView = findViewById(R.id.login_form);
+        progressView = findViewById(R.id.login_progress);
 
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
+        auth = FirebaseAuth.getInstance();
+        currentUser = auth.getCurrentUser();
     }
 
     /**
@@ -177,16 +183,16 @@ public class LoginActivity extends Activity {
      */
     private void attempt(Boolean register) {
         // Reset errors.
-        mNameView.setError(null);
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
-        mPasswordConfirmView.setError(null);
+        nameView.setError(null);
+        emailView.setError(null);
+        passwordView.setError(null);
+        passwordConfirmView.setError(null);
 
         // Store values at the time of the login attempt.
-        String name = mNameView.getText().toString();
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
-        String confirm = mPasswordConfirmView.getText().toString();
+        String name = nameView.getText().toString();
+        String email = emailView.getText().toString();
+        String password = passwordView.getText().toString();
+        String confirm = passwordConfirmView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -195,39 +201,39 @@ public class LoginActivity extends Activity {
         if(register){
             if(!password.equals(confirm)) {
                 cancel = true;
-                focusView = mPasswordConfirmView;
-                mPasswordConfirmView.setError(getString(R.string.error_passwords_not_match));
+                focusView = passwordConfirmView;
+                passwordConfirmView.setError(getString(R.string.error_passwords_not_match));
             }
         }
 
         // Check for a valid confirm password, if the user entered one.
         if (register && confirm.length() == 0 ) {
-            mPasswordConfirmView.setError(getString(R.string.error_field_required));
-            focusView = mPasswordConfirmView;
+            passwordConfirmView.setError(getString(R.string.error_field_required));
+            focusView = passwordConfirmView;
             cancel = true;
         }
 
         // Check for a valid password, if the user entered one.
         if (password.length() == 0 || !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_too_short_password));
-            focusView = mPasswordView;
+            passwordView.setError(getString(R.string.error_too_short_password));
+            focusView = passwordView;
             cancel = true;
         }
 
         //Check for a valid name.
         if (register && TextUtils.isEmpty(name)) {
-            mNameView.setError(getString(R.string.error_field_required));
-            focusView = mNameView;
+            nameView.setError(getString(R.string.error_field_required));
+            focusView = nameView;
             cancel = true;
         }
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            emailView.setError(getString(R.string.error_field_required));
+            focusView = emailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+            emailView.setError(getString(R.string.error_invalid_email));
+            focusView = emailView;
             cancel = true;
         }
 
@@ -261,21 +267,21 @@ public class LoginActivity extends Activity {
     private void showProgress(final boolean show) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+            loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            loginFormView.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                    loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
             });
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            progressView.animate().setDuration(shortAnimTime).alpha(
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                    progressView.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
     }
@@ -285,7 +291,7 @@ public class LoginActivity extends Activity {
      */
     protected void doLoginTask(final String email, final String password) {
         showProgress(true);
-        mAuth.signInWithEmailAndPassword(email, password)
+        auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -295,7 +301,7 @@ public class LoginActivity extends Activity {
                                 InformUser.informFailure(LoginActivity.this, exception);
                                 Log.e(TAG, "Login user failure.");
                             }
-                            mForgotPasswordButton.setVisibility(View.VISIBLE);
+                            forgotPasswordButton.setVisibility(View.VISIBLE);
                             showProgress(false);
                         } else {
                             Log.d(TAG, "Login user success.");
@@ -311,7 +317,7 @@ public class LoginActivity extends Activity {
      */
     protected void doRegisterTask(final String name, final String email, final String password) {
         showProgress(true);
-        mAuth.createUserWithEmailAndPassword(email, password)
+        auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -319,7 +325,7 @@ public class LoginActivity extends Activity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "Register user in Firestore success.");
                             addUser(LoginActivity.this, task.getResult().getUser().getUid(), name, email);
-                            currentUser = mAuth.getCurrentUser();
+                            currentUser = auth.getCurrentUser();
                             sendVerificationEmail();
                             doLoginTask(email, password);
                         } else {
@@ -388,7 +394,7 @@ public class LoginActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String emailAddress = input.getText().toString();
-                mAuth.sendPasswordResetEmail(emailAddress)
+                auth.sendPasswordResetEmail(emailAddress)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {

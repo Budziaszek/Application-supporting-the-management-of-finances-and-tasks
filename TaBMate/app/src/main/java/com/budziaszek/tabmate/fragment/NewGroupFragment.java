@@ -1,10 +1,6 @@
-package com.budziaszek.tabmate;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-import android.os.Build;
+package com.budziaszek.tabmate.fragment;
+
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
+import com.budziaszek.tabmate.view.InformUser;
+import com.budziaszek.tabmate.firestoreData.User;
+import com.budziaszek.tabmate.view.InvitationClickListener;
+import com.budziaszek.tabmate.view.InvitationsAdapter;
+import com.budziaszek.tabmate.activity.MainActivity;
+import com.budziaszek.tabmate.R;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -21,26 +25,24 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewGroupFragment extends Fragment {
+public class NewGroupFragment extends BasicFragment {
 
     private static final String TAG = "NewGroupProcedure";
 
-    private View fView;
-    private SwipeRefreshLayout swipeLayout;
+    private InvitationsAdapter invitationsAdapter;
+    private List<String> invitationsList = new ArrayList<>();
 
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
-
-    private RecyclerView invitationsRecycler;
-    private InvitationsAdapter mInvitationsAdapter;
-    private List<String> invitationsList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        fView = inflater.inflate(R.layout.new_group, container,false);
+        View fView = inflater.inflate(R.layout.fragment_new_group, container,false);
+        mDisplayView = fView.findViewById(R.id.no_group_layout);
+        mProgressView = fView.findViewById(R.id.progress_no_group);
 
         //Refresh
-        swipeLayout = (SwipeRefreshLayout) fView.findViewById(R.id.swipe_container);
+        swipeLayout = fView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -69,8 +71,8 @@ public class NewGroupFragment extends Fragment {
         firestoreRequests.getGroupByField("members", ((MainActivity)getActivity()).getCurrentUserId(), this::checkGroupsTask);
 
         //Invitations
-        invitationsRecycler = fView.findViewById(R.id.invitations_list);
-        mInvitationsAdapter = new InvitationsAdapter(invitationsList, new ClickListener() {
+        RecyclerView invitationsRecycler = fView.findViewById(R.id.invitations_list);
+        invitationsAdapter = new InvitationsAdapter(invitationsList, new InvitationClickListener() {
             @Override
             public void onAcceptClicked(int position) {
                 showProgress(true);
@@ -102,7 +104,9 @@ public class NewGroupFragment extends Fragment {
                         (aVoid) -> {
                             showProgress(false);
                             Log.d(TAG, "Invitation removed.");
-                            ((MainActivity)getActivity()).startFragment(DisplayGroupFragment.class);
+                            //((MainActivity)getActivity()).startFragment(DisplayGroupFragment.class);
+                            firestoreRequests.getGroupByField("members", ((MainActivity)getActivity()).getCurrentUserId(),
+                                     NewGroupFragment.this::checkGroupsTask);
                         },
                         (e) -> {
                             InformUser.informFailure(getActivity(), e);
@@ -111,11 +115,11 @@ public class NewGroupFragment extends Fragment {
                         });
             }
         });
-        invitationsRecycler.setAdapter(mInvitationsAdapter);
+        invitationsRecycler.setAdapter(invitationsAdapter);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
         invitationsRecycler.setLayoutManager(mLayoutManager);
         invitationsRecycler.setItemAnimator(new DefaultItemAnimator());
-        invitationsRecycler.setAdapter(mInvitationsAdapter);
+        invitationsRecycler.setAdapter(invitationsAdapter);
 
         return fView;
     }
@@ -154,34 +158,8 @@ public class NewGroupFragment extends Fragment {
             if(user.getInvitations() != null) {
                 invitationsList = user.getInvitations();
                 Log.d(TAG, "Invitations " +invitationsList.toString());
-                mInvitationsAdapter.update(invitationsList);
+                invitationsAdapter.update(invitationsList);
             }
         }
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-        View mDisplayView= fView.findViewById(R.id.no_group_layout);
-        View mProgressView = fView.findViewById(R.id.progress_no_group);
-
-        mDisplayView.setVisibility(show ? View.GONE : View.VISIBLE);
-        mDisplayView.animate().setDuration(shortAnimTime).alpha(
-                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mDisplayView.setVisibility(show ? View.GONE : View.VISIBLE);
-            }
-        });
-
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mProgressView.animate().setDuration(shortAnimTime).alpha(
-                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            }
-        });
     }
 }

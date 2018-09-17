@@ -61,6 +61,9 @@
     <string name="edit_profile">Edytuj profil</string>
     <string name="saved">Zmiany zostały zapisane</string>
 
+    <!-- Related to tasks fragment-->
+    <string name="add_new_task">Dodaj nowe zadanie</string>
+
     <!-- Strings related to menu -->
     <string name="settings">Ustawienia</string>
     <string name="invite_new_member">Zaproś nowego członka</string>
@@ -68,6 +71,7 @@
     <!-- Strings related to drawer -->
     <string name="navigation_drawer_open">Otwórz</string>
     <string name="navigation_drawer_close">Zamknij</string>
+    <string name="home">Strona główna</string>
     <string name="dashboard">Tablica</string>
     <string name="tasks">Zadania</string>
     <string name="groups">Grupy</string>

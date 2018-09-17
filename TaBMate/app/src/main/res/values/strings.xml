@@ -60,6 +60,9 @@
     <string name="edit_profile">Edit profile</string>
     <string name="saved">Changes saved</string>
 
+    <!-- Related to tasks fragment-->
+    <string name="add_new_task">Add new task</string>
+
     <!-- Strings related to menu -->
     <string name="settings">Settings</string>
     <string name="invite_new_member">Invite new member</string>
@@ -67,6 +70,7 @@
     <!-- Strings related to drawer -->
     <string name="navigation_drawer_open">Open</string>
     <string name="navigation_drawer_close">Close</string>
+    <string name="home">Home</string>
     <string name="dashboard">Dashboard</string>
     <string name="tasks">Tasks</string>
     <string name="groups">Groups</string>

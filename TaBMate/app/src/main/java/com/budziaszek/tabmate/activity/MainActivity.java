@@ -1,4 +1,4 @@
-package com.budziaszek.tabmate;
+package com.budziaszek.tabmate.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -14,29 +15,41 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.budziaszek.tabmate.R;
+import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
+import com.budziaszek.tabmate.firestoreData.Group;
+import com.budziaszek.tabmate.firestoreData.User;
+import com.budziaszek.tabmate.fragment.AddGroupFragment;
+import com.budziaszek.tabmate.fragment.BasicFragment;
+import com.budziaszek.tabmate.fragment.DisplayGroupFragment;
+import com.budziaszek.tabmate.fragment.DisplayTasksFragment;
+import com.budziaszek.tabmate.fragment.MainPageFragment;
+import com.budziaszek.tabmate.view.InformUser;
+import com.budziaszek.tabmate.view.ProgressInform;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        ProgressInform {
 
     private static final String TAG =  "MainProcedure";
 
     private Class newFragment = null;
 
-    private FirebaseUser user = null;
+    private GroupsManager groupsManager;
+    private Integer currentGroupIndex = 0;
 
-    private List<User> users = new ArrayList<>();
-    private List<Group> groups = new ArrayList<>();
-    private Integer currentGroup = -1;
+    private FirebaseUser user = null;
 
     public String getCurrentUserEmail(){
         if(user!=null)
@@ -69,6 +82,9 @@ public class MainActivity extends AppCompatActivity
         user = FirebaseAuth.getInstance().getCurrentUser();
 
         user_email.setText(getCurrentUserEmail());
+
+        groupsManager = new GroupsManager(this);
+        startFragment(MainPageFragment.class);
     }
 
     @Override
@@ -84,40 +100,16 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if(id == R.id.action_new_member){
-            return false;
-        }else if(id == R.id.action_new_group){
-            return false;
-        }
-
-        return false;
-        //return super.onOptionsItemSelected(item);
-    }*/
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if (id == R.id.nav_dashboard){
-
+        if(id == R.id.nav_home){
+            newFragment = MainPageFragment.class;
+        }else if (id == R.id.nav_dashboard){
             //TODO add dashboard fragment
         }else if (id == R.id.nav_tasks) {
-            //TODO add tasks fragment
+            newFragment = DisplayTasksFragment.class;
         }else if (id == R.id.nav_group) {
             newFragment = DisplayGroupFragment.class;
         }else if (id == R.id.nav_logOut) {
@@ -136,6 +128,18 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void informInProgress(Boolean isInProgress){
+        FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        if(fragments != null){
+            for(Fragment fragment : fragments){
+                if(fragment != null && fragment.isVisible())
+                    ((BasicFragment)fragment).informInProgress(isInProgress);
+            }
+        }
+    }
+
     public void startFragment(Class fragmentClass){
         try {
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent, (Fragment) fragmentClass.newInstance())
@@ -147,7 +151,7 @@ public class MainActivity extends AppCompatActivity
 
     public void startEditFragment(){
         try {
-            AddGroupFragment newFragment = (AddGroupFragment)AddGroupFragment.class.newInstance();
+            AddGroupFragment newFragment = AddGroupFragment.class.newInstance();
             newFragment.setEdit();
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent,  newFragment).addToBackStack("fragment")
                     .commit();
@@ -157,49 +161,42 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void setCurrentGroup(int index){
-        currentGroup = index;
+    public void refreshGroupsAndUsers(){
+        groupsManager.refresh();
     }
 
-    public Boolean setNextGroup(){
-        if(currentGroup < groups.size()) {
-            currentGroup++;
-        }
-        return currentGroup == groups.size() - 1;
+    public Map<String, User> getUsers(){
+        return groupsManager.getUsers();
     }
 
-    public Boolean setPreviousGroup(){
-        if(currentGroup != 0) {
-            currentGroup--;
-        }
-        return currentGroup == 0;
-    }
-
-    public void resetGroups(){
-        groups = new ArrayList<>();
-    }
-
-    public void addGroup(Group group){
-        groups.add(group);
-        if(currentGroup == -1){
-            currentGroup = 0;
-        }
+    public List<Group> getGroups(){
+        return groupsManager.getGroups();
     }
 
     public Group getCurrentGroup(){
-        return groups.get(currentGroup);
+        return groupsManager.getGroups().get(currentGroupIndex);
     }
 
-    public void addUser(User user){
-        users.add(user);
+    public int getCurrentGroupIndex(){
+        return currentGroupIndex;
     }
 
-    public List<User> getUsers(){
-        return users;
+    public void setCurrentGroupIndex(int index){
+        currentGroupIndex = index;
     }
 
-    public void clearUsers(){
-        users.clear();
+    public Boolean setNextGroup(){
+        if(currentGroupIndex < groupsManager.getGroups().size()) {
+            currentGroupIndex++;
+        }
+        return currentGroupIndex == groupsManager.getGroups().size() - 1;
+    }
+
+    public Boolean setPreviousGroupIndex(){
+        if(currentGroupIndex != 0) {
+            currentGroupIndex--;
+        }
+        return currentGroupIndex == 0;
     }
 
     private void initializeDrawer(){
@@ -257,6 +254,35 @@ public class MainActivity extends AppCompatActivity
                         MainActivity.this.startActivity(myIntent);
                         Log.d(TAG, "User logged out.");
                         finish();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    /**
+     * Displays alert and removes user group group if submitted.
+     */
+    public void alertLeaveGroup(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+
+        builder.setTitle(R.string.leave_group)
+                .setMessage(R.string.confirm_leave_group)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Group currentGroup = getCurrentGroup();
+                        if(currentGroup.getMembers().size() > 1) {
+                            //Remove only user
+                            groupsManager.removeGroupMember(getCurrentUserId(), currentGroup.getId());
+                        }
+                        else{
+                            //Remove whole group
+                            groupsManager.removeGroup(currentGroup.getId());
+                        }
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/group_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="@color/colorPrimaryDarkTransparent"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/group_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:padding="20dp"
+        android:text="name"
+        android:textColor="@color/colorAccentLight"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/leave_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:clickable="true"
+        android:elevation="0dp"
+        android:focusable="true"
+        android:visibility="invisible"
+        app:backgroundTint="#00000000"
+        app:elevation="0dp"
+        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/edit_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/leave_button"
+        android:clickable="true"
+        android:elevation="0dp"
+        android:focusable="true"
+        android:visibility="invisible"
+        app:backgroundTint="#00000000"
+        app:elevation="0dp"
+        app:srcCompat="@android:drawable/ic_menu_edit" />
+
+
+</RelativeLayout>
