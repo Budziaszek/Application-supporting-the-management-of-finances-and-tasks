@@ -1,8 +1,6 @@
-package com.budziaszek.tabmate.view;
+package com.budziaszek.tabmate.view.listener;
 
 public interface GroupsClickListener {
     void onItemLongClicked(int position);
     void onItemClicked(int position);
-    void onEditClicked(int position);
-    void onLeaveClicked(int position);
 }

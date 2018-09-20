@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,7 +20,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.User;
 import com.budziaszek.tabmate.fragment.AddGroupFragment;
@@ -27,15 +27,12 @@ import com.budziaszek.tabmate.fragment.BasicFragment;
 import com.budziaszek.tabmate.fragment.DisplayGroupFragment;
 import com.budziaszek.tabmate.fragment.DisplayTasksFragment;
 import com.budziaszek.tabmate.fragment.MainPageFragment;
-import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.view.ProgressInform;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 
 public class MainActivity extends AppCompatActivity
@@ -129,6 +126,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //getMenuInflater().inflate(R.menu.menu_groups, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.action_edit_group){
+            return false;
+        }
+        return false;
+    }
+
+    @Override
     public void informInProgress(Boolean isInProgress){
         FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
         List<Fragment> fragments = fragmentManager.getFragments();
@@ -162,7 +174,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void refreshGroupsAndUsers(){
-        groupsManager.refresh();
+        groupsManager.refreshGroupsAndUsers();
     }
 
     public Map<String, User> getUsers(){
@@ -185,7 +197,7 @@ public class MainActivity extends AppCompatActivity
         currentGroupIndex = index;
     }
 
-    public Boolean setNextGroup(){
+    public Boolean setNextGroupIndex(){
         if(currentGroupIndex < groupsManager.getGroups().size()) {
             currentGroupIndex++;
         }

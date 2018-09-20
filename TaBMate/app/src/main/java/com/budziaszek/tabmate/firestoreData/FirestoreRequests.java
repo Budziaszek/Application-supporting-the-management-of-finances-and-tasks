@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -19,6 +20,8 @@ public class FirestoreRequests {
     private static final String USER_COLLECTION_INVITATIONS_FIELD = "invitations";
     private static final String GROUP_COLLECTION = "groups";
     private static final String GROUP_COLLECTION_MEMBERS_FIELD = "members";
+    private static final String TASK_COLLECTION = "tasks";
+    private static final String GROUP_COLLECTION_GROUP_FIELD = "group";
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -64,20 +67,58 @@ public class FirestoreRequests {
                 });
     }
 
-    public void addGroup(Group group, String targetDocument, Consumer succes, Consumer<Exception> failure){
+    public void addGroup(Group group,Consumer success, Consumer<Exception> failure){
+        db.collection(GROUP_COLLECTION)
+                //.document(targetDocument)
+                //.set(group)
+                .add(group)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        success.accept(documentReference);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        failure.accept(e);
+                    }
+                });
+    }
+
+    public void addTask(UserTask userTask,Consumer success, Consumer<Exception> failure){
+        db.collection(TASK_COLLECTION)
+                //.document(targetDocument)
+                //.set(group)
+                .add(userTask)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        success.accept(documentReference);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        failure.accept(e);
+                    }
+                });
+    }
+
+    public void updateGroup(Group group, String targetDocument, Consumer success, Consumer<Exception> failure){
         db.collection(GROUP_COLLECTION)
                 .document(targetDocument)
                 .set(group)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                       succes.accept(aVoid);
+                        success.accept(aVoid);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                       failure.accept(e);
+                        failure.accept(e);
                     }
                 });
     }

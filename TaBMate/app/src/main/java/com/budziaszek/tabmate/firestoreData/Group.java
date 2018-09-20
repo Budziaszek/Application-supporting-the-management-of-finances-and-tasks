@@ -13,20 +13,22 @@ public class Group {
 
     public Group() {}
 
-    public Group(String id,  String name, String description) {
+    public Group(String name, String description) {
         this.name = name;
         this.description = description;
-        this.id = id;
         this.members = new ArrayList<>();
         //this.invitationsSent = new ArrayList<>();
     }
 
-    public Group(String id,  String name, String description, List<String> members){//, List<String> invitationsSent) {
+    public Group(String name, String description, List<String> members){//, List<String> invitationsSent) {
         this.name = name;
         this.description = description;
-        this.id = id;
         this.members = members;
         //this.invitationsSent = invitationsSent;
+    }
+
+    public void setId(String id){
+        this.id = id;
     }
 
     public void setName(String name) {
@@ -35,10 +37,6 @@ public class Group {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setMembers(List<String> members) {
@@ -53,16 +51,16 @@ public class Group {
         this.invitationsSent = invitationsSent;
     }*/
 
+    public String getId(){
+        return id;
+    }
+
     public String getName() {
         return name;
     }
 
     public String getDescription() {
         return description;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public List<String> getMembers() {

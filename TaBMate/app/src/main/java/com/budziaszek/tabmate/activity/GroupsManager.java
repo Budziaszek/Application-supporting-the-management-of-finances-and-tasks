@@ -45,7 +45,7 @@ public class GroupsManager implements ProgressInform {
         ((MainActivity)activity).informInProgress(isInProgress);
     }
 
-    public void refresh(){
+    public void refreshGroupsAndUsers(){
         groups = new ArrayList<>();
         firestoreRequests.getGroupByField("members", ((MainActivity)activity).getCurrentUserId(), this::checkGroups);
     }
@@ -56,7 +56,7 @@ public class GroupsManager implements ProgressInform {
                 (aVoid) -> {
                     InformUser.inform(activity, R.string.left_group);
                     informInProgress(true);
-                    refresh();
+                    refreshGroupsAndUsers();
                 },
                 (e) -> InformUser.informFailure(activity, e)
         );
@@ -67,7 +67,7 @@ public class GroupsManager implements ProgressInform {
                 (aVoid) -> {
                     InformUser.inform(activity, R.string.left_group);
                     informInProgress(true);
-                    refresh();
+                    refreshGroupsAndUsers();
                 },
                 (e) -> InformUser.informFailure(activity, e)
         );
@@ -77,6 +77,7 @@ public class GroupsManager implements ProgressInform {
         if (task.isSuccessful()) {
             if(task.getResult().getDocuments().isEmpty()){
                 Log.d(TAG, "No group found");
+                informInProgress(false);
             }
             else{
                 addGroups(task.getResult().getDocuments());
@@ -85,14 +86,16 @@ public class GroupsManager implements ProgressInform {
             Exception exception = task.getException();
             if(exception != null)
                 InformUser.informFailure(activity, exception);
+            informInProgress(false);
         }
     }
 
     private void addGroups(List<DocumentSnapshot> documents){
         for (DocumentSnapshot document : documents) {
             Group group = document.toObject(Group.class);
-            groups.add(group);
             if(group!=null) {
+                group.setId(document.getId());
+                groups.add(group);
                 Log.d(TAG, "User group: " + group.getId());
 
                 for (String uid : group.getMembers()) {

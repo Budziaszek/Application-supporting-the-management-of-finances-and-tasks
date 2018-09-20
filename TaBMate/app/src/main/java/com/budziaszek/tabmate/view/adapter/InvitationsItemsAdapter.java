@@ -1,4 +1,4 @@
-package com.budziaszek.tabmate.view;
+package com.budziaszek.tabmate.view.adapter;
 
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
@@ -10,10 +10,11 @@ import android.widget.TextView;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
+import com.budziaszek.tabmate.view.listener.InvitationClickListener;
 
 import java.util.List;
 
-public class InvitationsAdapter extends RecyclerView.Adapter<InvitationsAdapter.MyViewHolder> {
+public class InvitationsItemsAdapter extends RecyclerView.Adapter<InvitationsItemsAdapter.MyViewHolder> {
 
     private InvitationClickListener invitationClickListener;
     private List<String> invitationsList;
@@ -46,7 +47,7 @@ public class InvitationsAdapter extends RecyclerView.Adapter<InvitationsAdapter.
     }
 
 
-    public InvitationsAdapter(List<String> invitationsList, InvitationClickListener invitationClickListener) {
+    public InvitationsItemsAdapter(List<String> invitationsList, InvitationClickListener invitationClickListener) {
         this.invitationsList = invitationsList;
         this.invitationClickListener = invitationClickListener;
     }
@@ -65,7 +66,12 @@ public class InvitationsAdapter extends RecyclerView.Adapter<InvitationsAdapter.
 
         FirestoreRequests firestoreRequests = new FirestoreRequests();
         firestoreRequests.getGroup(invitation,
-                (DocumentSnapshot) -> holder.groupName.setText(DocumentSnapshot.toObject(Group.class).getName()));
+                (DocumentSnapshot) -> {
+                        Group group = DocumentSnapshot.toObject(Group.class);
+                        if(group != null){
+                            holder.groupName.setText(group.getName());
+                        }
+                });
     }
 
     @Override

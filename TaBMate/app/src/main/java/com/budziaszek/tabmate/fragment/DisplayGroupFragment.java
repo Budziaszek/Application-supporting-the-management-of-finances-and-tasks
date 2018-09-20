@@ -11,6 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,8 +26,8 @@ import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.activity.MainActivity;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.User;
-import com.budziaszek.tabmate.view.MemberClickListener;
-import com.budziaszek.tabmate.view.MembersAdapter;
+import com.budziaszek.tabmate.view.listener.MemberClickListener;
+import com.budziaszek.tabmate.view.adapter.MembersItemsAdapter;
 import com.budziaszek.tabmate.R;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -43,7 +46,7 @@ public class DisplayGroupFragment extends BasicFragment{
     private FloatingActionButton next;
     private FloatingActionButton previous;
 
-    private MembersAdapter membersAdapter;
+    private MembersItemsAdapter membersAdapter;
     private List<User> users = new ArrayList<>();
 
     private String newMemberEmail = null;
@@ -75,7 +78,7 @@ public class DisplayGroupFragment extends BasicFragment{
 
         // Members
         RecyclerView membersRecycler = fView.findViewById(R.id.tasks_list);
-        membersAdapter = new MembersAdapter(users, new MemberClickListener() {
+        membersAdapter = new MembersItemsAdapter(users, new MemberClickListener() {
             @Override
             public void onLeaveClicked(int position) {
                 ((MainActivity)getActivity()).alertLeaveGroup();
@@ -99,7 +102,7 @@ public class DisplayGroupFragment extends BasicFragment{
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(((MainActivity)getActivity()).setNextGroup()) {
+                if(((MainActivity)getActivity()).setNextGroupIndex()) {
                     next.setVisibility(View.INVISIBLE);
                 }
                 previous.setVisibility(View.VISIBLE);
@@ -133,14 +136,14 @@ public class DisplayGroupFragment extends BasicFragment{
             Log.d(TAG, "Group not found");
         }
         else {
-            previous.setVisibility(View.VISIBLE);
-            next.setVisibility(View.VISIBLE);
+            previous.setVisibility(View.INVISIBLE);
+            next.setVisibility(View.INVISIBLE);
 
-            if(groups.size() < 2 || currentGroupIndex == groups.size() - 1){
-                next.setVisibility(View.INVISIBLE);
+            if(currentGroupIndex < groups.size() - 1){
+                next.setVisibility(View.VISIBLE);
             }
-            if(groups.size() - 1 == currentGroupIndex){
-                next.setVisibility(View.INVISIBLE);
+            if(currentGroupIndex > 0){
+                previous.setVisibility(View.VISIBLE);
             }
         }
         showGroup();
@@ -149,10 +152,10 @@ public class DisplayGroupFragment extends BasicFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(false);
+        setHasOptionsMenu(true);
     }
 
-    /*@Override
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -168,23 +171,12 @@ public class DisplayGroupFragment extends BasicFragment{
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(id == R.id.action_new_member){
-            alertNewMember();
-            return true;
-        }else if(id == R.id.action_leave){
-            alertLeaveGroup();
-            return true;
-        }else
         if(id == R.id.action_edit_group){
             ((MainActivity)getActivity()).startEditFragment();
             return true;
-        }else if(id == R.id.action_new_group){
-            ((MainActivity)getActivity()).startFragment(NewGroupFragment.class);
-            return true;
         }
         return false;
-    }*/
-
+    }
     /**
      * Displays current group data.
      */

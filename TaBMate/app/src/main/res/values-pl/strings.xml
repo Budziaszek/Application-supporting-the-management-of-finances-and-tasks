@@ -63,6 +63,7 @@
 
     <!-- Related to tasks fragment-->
     <string name="add_new_task">Dodaj nowe zadanie</string>
+    <string name="task_created">Zadanie utworzone</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Ustawienia</string>

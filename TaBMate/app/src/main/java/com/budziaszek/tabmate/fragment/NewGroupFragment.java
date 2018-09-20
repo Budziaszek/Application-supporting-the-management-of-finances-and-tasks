@@ -14,8 +14,8 @@ import android.widget.Button;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.firestoreData.User;
-import com.budziaszek.tabmate.view.InvitationClickListener;
-import com.budziaszek.tabmate.view.InvitationsAdapter;
+import com.budziaszek.tabmate.view.listener.InvitationClickListener;
+import com.budziaszek.tabmate.view.adapter.InvitationsItemsAdapter;
 import com.budziaszek.tabmate.activity.MainActivity;
 import com.budziaszek.tabmate.R;
 import com.google.android.gms.tasks.Task;
@@ -29,7 +29,7 @@ public class NewGroupFragment extends BasicFragment {
 
     private static final String TAG = "NewGroupProcedure";
 
-    private InvitationsAdapter invitationsAdapter;
+    private InvitationsItemsAdapter invitationsAdapter;
     private List<String> invitationsList = new ArrayList<>();
 
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
@@ -72,7 +72,7 @@ public class NewGroupFragment extends BasicFragment {
 
         //Invitations
         RecyclerView invitationsRecycler = fView.findViewById(R.id.invitations_list);
-        invitationsAdapter = new InvitationsAdapter(invitationsList, new InvitationClickListener() {
+        invitationsAdapter = new InvitationsItemsAdapter(invitationsList, new InvitationClickListener() {
             @Override
             public void onAcceptClicked(int position) {
                 showProgress(true);

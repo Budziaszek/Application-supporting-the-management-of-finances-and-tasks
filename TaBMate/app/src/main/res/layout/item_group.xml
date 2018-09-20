@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="@color/colorPrimaryDarkTransparent"
+    android:background="@drawable/bar_background"
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical">
@@ -18,14 +18,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:padding="20dp"
-        android:text="name"
-        android:textColor="@color/colorAccentLight"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:paddingLeft="5dp"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
 
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/leave_button"
+        android:id="@+id/show_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -33,24 +32,11 @@
         android:clickable="true"
         android:elevation="0dp"
         android:focusable="true"
-        android:visibility="invisible"
-        app:backgroundTint="#00000000"
+        android:rotation="-90"
+        android:visibility="visible"
+        app:backgroundTint="#0000"
         app:elevation="0dp"
-        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/edit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@+id/leave_button"
-        android:clickable="true"
-        android:elevation="0dp"
-        android:focusable="true"
-        android:visibility="invisible"
-        app:backgroundTint="#00000000"
-        app:elevation="0dp"
-        app:srcCompat="@android:drawable/ic_menu_edit" />
+        app:srcCompat="@drawable/arrow" />
 
 
 </RelativeLayout>

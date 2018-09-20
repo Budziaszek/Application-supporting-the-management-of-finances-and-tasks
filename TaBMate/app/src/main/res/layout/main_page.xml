@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ndroid="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:ndroid="http://schemas.android.com/tools"
     android:layout_marginTop="?attr/actionBarSize"
     android:gravity="center">
 
@@ -34,7 +34,10 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:background="@color/colorAccentLightTransparent"
+                android:padding="2dp">
 
                 <RelativeLayout
                     android:id="@+id/user_groups_layout"
@@ -48,35 +51,42 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
-                        android:background="@drawable/bar_background"
                         android:elevation="4dp"
-                        android:padding="20dp"
+                        android:padding="10dp"
                         android:text="@string/groups"
                         android:textColor="@color/colorPrimaryDark"
-                        android:textSize="21sp"
-                        android:textStyle="bold"/>
-
-                    <Button
-                        android:id="@+id/new_task_button"
-                        style="?android:textAppearanceSmall"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/tasks_list"
-                        android:layout_margin="5dp"
-                        android:layout_marginTop="16dp"
-                        android:background="@color/colorAccentLight"
-                        android:text="@string/join_or_create"
-                        android:textColor="@color/colorPrimaryDark"
-                        ndroid:textAllCaps="false" />
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/tasks_list"
-                        android:layout_below="@+id/groups_title"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_below="@+id/groups_title"
                         android:elevation="0dp" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/invitations_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/tasks_list"
+                        android:elevation="0dp" />
+
+                    <Button
+                        android:id="@+id/new_group_button"
+                        style="?android:textAppearanceSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/invitations_list"
+                        android:layout_margin="5dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@color/colorPrimaryTransparent"
+                        android:padding="0dp"
+                        android:text="@string/create_group_long"
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorAccentLight"
+                        ndroid:textAllCaps="false" />
 
                 </RelativeLayout>
             </RelativeLayout>

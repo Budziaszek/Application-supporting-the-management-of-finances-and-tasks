@@ -1,4 +1,4 @@
-package com.budziaszek.tabmate.view;
+package com.budziaszek.tabmate.view.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,15 +7,16 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.firestoreData.Task;
+import com.budziaszek.tabmate.firestoreData.UserTask;
+import com.budziaszek.tabmate.view.listener.TasksClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.MyViewHolder> {
+public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.MyViewHolder> {
 
     private TasksClickListener tasksClickListener;
-    private List<Task> tasksList;
+    private List<UserTask> tasksList;
     //private int selectedItem;
     private ArrayList<RelativeLayout> layoutList = new ArrayList<>();
 
@@ -47,7 +48,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.MyViewHolder
     }
 
 
-    public TasksAdapter(List<Task> groupsList, TasksClickListener tasksClickListener) {
+    public TasksItemsAdapter(List<UserTask> groupsList, TasksClickListener tasksClickListener) {
         this.tasksList = groupsList;
         this.tasksClickListener = tasksClickListener;
     }
@@ -62,7 +63,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        Task task = tasksList.get(position);
+        UserTask task = tasksList.get(position);
         holder.taskName.setText(task.getTitle());
         layoutList.add(holder.taskItemLayout);
     }
@@ -72,7 +73,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.MyViewHolder
         return tasksList.size();
     }
 
-    public void update(List<Task> data) {
+    public void update(List<UserTask> data) {
         tasksList.clear();
         tasksList.addAll(data);
         notifyDataSetChanged();

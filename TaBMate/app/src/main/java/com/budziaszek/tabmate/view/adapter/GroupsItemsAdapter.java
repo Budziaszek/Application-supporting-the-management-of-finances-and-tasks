@@ -1,4 +1,4 @@
-package com.budziaszek.tabmate.view;
+package com.budziaszek.tabmate.view.adapter;
 
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
@@ -10,11 +10,12 @@ import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
+import com.budziaszek.tabmate.view.listener.GroupsClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.MyViewHolder> {
+public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.MyViewHolder> {
 
     private GroupsClickListener groupsClickListener;
     private List<Group> groupsList;
@@ -25,8 +26,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.MyViewHold
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView groupName;
         private RelativeLayout groupItemLayout;
-        private FloatingActionButton editGroup;
-        private FloatingActionButton leaveGroup;
+        private FloatingActionButton showGroup;
 
         private MyViewHolder(View view) {
             super(view);
@@ -36,17 +36,13 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.MyViewHold
                 @Override
                 public void onClick(View view) {
                     // All items
-                    for(RelativeLayout layout : layoutList) {
+                    /*for(RelativeLayout layout : layoutList) {
                         layout.setBackgroundColor(itemView.getResources()
-                                .getColor(R.color.colorPrimaryDarkTransparent, itemView.getContext().getTheme()));
-                        layout.findViewById(R.id.leave_button).setVisibility(View.INVISIBLE);
-                        layout.findViewById(R.id.edit_button).setVisibility(View.INVISIBLE);
+                                .getColor(R.color.colorPrimarySemi, itemView.getContext().getTheme()));
                     }
                     // Selected item
                     groupItemLayout.setBackgroundColor(itemView.getResources()
-                            .getColor(R.color.colorPrimaryDarkSemi, itemView.getContext().getTheme()));
-                    groupItemLayout.findViewById(R.id.leave_button).setVisibility(View.VISIBLE);
-                    groupItemLayout.findViewById(R.id.edit_button).setVisibility(View.VISIBLE);
+                            .getColor(R.color.colorPrimary, itemView.getContext().getTheme()));*/
                     groupsClickListener.onItemClicked(getAdapterPosition());
                 }
             });
@@ -62,26 +58,18 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.MyViewHold
 
             groupName = view.findViewById(R.id.group_name);
 
-            editGroup = view.findViewById(R.id.edit_button);
-            editGroup.setOnClickListener(new View.OnClickListener() {
+            showGroup = view.findViewById(R.id.show_button);
+            showGroup.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    groupsClickListener.onEditClicked(getAdapterPosition());
-                }
-            });
-
-            leaveGroup = view.findViewById(R.id.leave_button);
-            leaveGroup.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    groupsClickListener.onLeaveClicked(getAdapterPosition());
+                    groupsClickListener.onItemClicked(getAdapterPosition());
                 }
             });
         }
     }
 
 
-    public GroupsAdapter(List<Group> groupsList, GroupsClickListener groupsClickListener, int selectedItem) {
+    public GroupsItemsAdapter(List<Group> groupsList, GroupsClickListener groupsClickListener, int selectedItem) {
         this.groupsList = groupsList;
         this.groupsClickListener = groupsClickListener;
         this.selectedItem = selectedItem;

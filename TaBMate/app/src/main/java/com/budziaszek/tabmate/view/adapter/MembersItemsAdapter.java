@@ -1,4 +1,4 @@
-package com.budziaszek.tabmate.view;
+package com.budziaszek.tabmate.view.adapter;
 
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
@@ -9,10 +9,11 @@ import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.User;
+import com.budziaszek.tabmate.view.listener.MemberClickListener;
 
 import java.util.List;
 
-public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.MyViewHolder> {
+public class MembersItemsAdapter extends RecyclerView.Adapter<MembersItemsAdapter.MyViewHolder> {
 
     private MemberClickListener clickListener;
     private List<User> usersList;
@@ -38,7 +39,7 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.MyViewHo
         }
     }
 
-    public MembersAdapter(List<User> usersList, MemberClickListener clickListener, String currentUser) {
+    public MembersItemsAdapter(List<User> usersList, MemberClickListener clickListener, String currentUser) {
         this.usersList = usersList;
         this.clickListener = clickListener;
         this.currentUser = currentUser;

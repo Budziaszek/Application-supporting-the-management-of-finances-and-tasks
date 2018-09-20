@@ -2,10 +2,11 @@ package com.budziaszek.tabmate.firestoreData;
 
 import java.util.ArrayList;
 
-public class Task {
+public class UserTask {
 
     private String title;
     private String description;
+    private String group;
     private ArrayList<String> tag;
     private Status status;
     //private String[] requirements;
@@ -25,17 +26,19 @@ public class Task {
         }
     }
 
-    public Task(){
+    public UserTask(){
         this.title = null;
         this.description = null;
+        this.group = null;
         this.tag = null;
         this.status = Status.UNKNOWN;
         //this.requirements = null;
     }
 
-    public Task(String title, String description) {
+    public UserTask(String title, String description, String group) {
         this.title = title;
         this.description = description;
+        this.group = group;
         this.status = Status.TODO;
     }
 
@@ -49,6 +52,10 @@ public class Task {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getGroup() {
+        return group;
     }
 
     public ArrayList<String> getTag() {
@@ -65,6 +72,10 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     public void setTag(ArrayList<String> tag) {

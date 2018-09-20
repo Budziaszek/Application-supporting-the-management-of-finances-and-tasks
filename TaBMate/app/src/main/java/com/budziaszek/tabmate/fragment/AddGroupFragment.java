@@ -84,11 +84,11 @@ public class AddGroupFragment extends BasicFragment {
      */
     private void addNewGroup(String id, String name, String description) {
         showProgress(true);
-        Group newGroup = new Group(name + " " + id, name, description);
+        Group newGroup = new Group(name, description);
         newGroup.addMember(id);
 
-        firestoreRequests.addGroup(newGroup, name + " " + id,
-                (Void) ->  {
+        firestoreRequests.addGroup(newGroup,
+                (documentReference) ->  {
                     showProgress(false);
                     InformUser.inform(getActivity(), R.string.group_created);
                     ((MainActivity)getActivity()).startFragment(DisplayGroupFragment.class);
@@ -104,10 +104,10 @@ public class AddGroupFragment extends BasicFragment {
      */
     private void editGroup(String name, String description) {
         showProgress(true);
-        Group newGroup = new Group(oldGroup.getId(), name, description);
+        Group newGroup = new Group(name, description);
         newGroup.setMembers(oldGroup.getMembers());
 
-        firestoreRequests.addGroup(newGroup, oldGroup.getId(),
+        firestoreRequests.updateGroup(newGroup, oldGroup.getId(),
                 (Void) ->  {
                     showProgress(false);
                     InformUser.inform(getActivity(), R.string.saved);

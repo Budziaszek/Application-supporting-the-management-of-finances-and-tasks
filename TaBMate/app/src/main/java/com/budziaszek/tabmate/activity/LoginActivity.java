@@ -82,7 +82,7 @@ public class LoginActivity extends Activity {
             nameView.setVisibility(View.GONE);
             passwordConfirmView.setVisibility(View.GONE);
             emailRegisterButton.setVisibility(View.GONE);
-            loginFormView.setVisibility(View.GONE);
+            //loginFormView.setVisibility(View.GONE);
             emailSignInButton.setVisibility(View.VISIBLE);
             emailSignUpButton.setVisibility(View.VISIBLE);
             doRegister = false;

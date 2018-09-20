@@ -7,12 +7,12 @@
     android:gravity="center">
 
     <ProgressBar
-        android:id="@+id/progress_display"
+        android:id="@+id/progress_tasks"
         style="?android:attr/progressBarStyle"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_centerInParent="true"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_container"
@@ -22,29 +22,22 @@
         android:background="@drawable/gradient_background_trio">
 
         <ScrollView
-            android:id="@+id/show_groups_layout"
+            android:id="@+id/show_tasks_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="10dp"
             android:visibility="visible">
 
             <RelativeLayout
+                android:id="@+id/tasks_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:id="@+id/members_layout"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/user_profile_layout"
-                    android:layout_marginTop="5dp"
-                    android:orientation="vertical">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/tasks_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/tasks_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </LinearLayout>
             </RelativeLayout>
         </ScrollView>
 
