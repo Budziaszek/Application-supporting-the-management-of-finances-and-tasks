@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/task_item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="@color/colorAccentSemi"
+    android:background="@android:color/white"
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical"
     android:padding="5dp">
+
+    <TextView
+        android:id="@+id/task_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/task_title"
+        android:layout_margin="5dp"
+        android:text="name"
+        android:textColor="@color/colorAccentDark"
+        android:textSize="14sp"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/task_title"
@@ -22,5 +34,19 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <!--android.support.design.widget.FloatingActionButton
+        android:id="@+id/show_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:clickable="true"
+        android:elevation="0dp"
+        android:focusable="true"
+        android:rotation="-90"
+        android:visibility="visible"
+        app:backgroundTint="#0000"
+        app:elevation="0dp"
+        app:srcCompat="@drawable/arrow" /-->
 
 </RelativeLayout>

@@ -1,5 +1,6 @@
 package com.budziaszek.tabmate.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.activity.MainActivity;
@@ -38,13 +40,13 @@ import java.util.List;
 import java.util.Map;
 
 //TODO administrator
+//TODO remove or fix refresh
 public class DisplayGroupFragment extends BasicFragment{
 
     private static final String TAG = "DisplayGroupProcedure";
+    private Activity activity;
 
     private View fView;
-    private FloatingActionButton next;
-    private FloatingActionButton previous;
 
     private MembersItemsAdapter membersAdapter;
     private List<User> users = new ArrayList<>();
@@ -59,6 +61,8 @@ public class DisplayGroupFragment extends BasicFragment{
                              Bundle savedInstanceState) {
         fView = inflater.inflate(R.layout.fragment_display_group, container, false);
 
+        activity = getActivity();
+
         mDisplayView = fView.findViewById(R.id.show_groups_layout);
         mProgressView = fView.findViewById(R.id.progress_display);
 
@@ -67,7 +71,7 @@ public class DisplayGroupFragment extends BasicFragment{
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((MainActivity)getActivity()).refreshGroupsAndUsers();
+                DataManager.getInstance().refreshGroupsAndUsers(((MainActivity)activity).getCurrentUserId());
             }
         });
         swipeLayout.setColorSchemeColors(
@@ -81,9 +85,10 @@ public class DisplayGroupFragment extends BasicFragment{
         membersAdapter = new MembersItemsAdapter(users, new MemberClickListener() {
             @Override
             public void onLeaveClicked(int position) {
-                ((MainActivity)getActivity()).alertLeaveGroup();
+                //((MainActivity)activity).alertLeaveGroup();
+                alertLeaveGroup();
             }
-        }, ((MainActivity)getActivity()).getCurrentUserId());
+        }, ((MainActivity)activity).getCurrentUserId());
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
         membersRecycler.setLayoutManager(mLayoutManager);
         membersRecycler.setItemAnimator(new DefaultItemAnimator());
@@ -97,56 +102,9 @@ public class DisplayGroupFragment extends BasicFragment{
             }
         });
 
-        //Navigation buttons
-        next = fView.findViewById(R.id.next_button);
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(((MainActivity)getActivity()).setNextGroupIndex()) {
-                    next.setVisibility(View.INVISIBLE);
-                }
-                previous.setVisibility(View.VISIBLE);
-                showGroup();
-            }
-        });
-
-        previous = fView.findViewById(R.id.previous_button);
-        previous.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(((MainActivity)getActivity()).setPreviousGroupIndex()){
-                    previous.setVisibility(View.INVISIBLE);
-                }
-                next.setVisibility(View.VISIBLE);
-                showGroup();
-            }
-        });
-
-        showProgress(true);
-        ((MainActivity)getActivity()).refreshGroupsAndUsers();
-        return fView;
-    }
-
-    @Override
-    public void afterRefresh(){
-        List<Group> groups = ((MainActivity)getActivity()).getGroups();
-        int currentGroupIndex = ((MainActivity)getActivity()).getCurrentGroupIndex();
-        if(groups.isEmpty()) {
-            ((MainActivity) getActivity()).startFragment(NewGroupFragment.class);
-            Log.d(TAG, "Group not found");
-        }
-        else {
-            previous.setVisibility(View.INVISIBLE);
-            next.setVisibility(View.INVISIBLE);
-
-            if(currentGroupIndex < groups.size() - 1){
-                next.setVisibility(View.VISIBLE);
-            }
-            if(currentGroupIndex > 0){
-                previous.setVisibility(View.VISIBLE);
-            }
-        }
+        ((MainActivity)activity).enableBack(true);
         showGroup();
+        return fView;
     }
 
     @Override
@@ -172,7 +130,7 @@ public class DisplayGroupFragment extends BasicFragment{
         int id = item.getItemId();
 
         if(id == R.id.action_edit_group){
-            ((MainActivity)getActivity()).startEditFragment();
+            ((MainActivity)activity).startEditFragment();
             return true;
         }
         return false;
@@ -181,7 +139,7 @@ public class DisplayGroupFragment extends BasicFragment{
      * Displays current group data.
      */
     private void showGroup(){
-        Group group = ((MainActivity)getActivity()).getCurrentGroup();
+        Group group = ((MainActivity)activity).getCurrentGroup();
 
         TextView groupName = fView.findViewById(R.id.group_name);
         TextView groupDescription = fView.findViewById(R.id.group_description);
@@ -189,7 +147,7 @@ public class DisplayGroupFragment extends BasicFragment{
         groupName.setText(group.getName());
         groupDescription.setText(group.getDescription());
 
-        Map<String, User> allUsers =  ((MainActivity)getActivity()).getUsers();
+        Map<String, User> allUsers =  DataManager.getInstance().getUsers();
         users = new ArrayList<>();
         List<String> members = group.getMembers();
         for(int i = 0; i<members.size(); i++){
@@ -212,7 +170,7 @@ public class DisplayGroupFragment extends BasicFragment{
             User user = documents.get(0).toObject(User.class);
             if(user != null)
                 newMemberId = user.getId();
-            Group currentGroup = ((MainActivity)getActivity()).getCurrentGroup();
+            Group currentGroup = ((MainActivity)activity).getCurrentGroup();
             if(currentGroup.getMembers().contains(newMemberId)){
                 // Is already a member
                 InformUser.inform(getActivity(), R.string.user_is_a_member);
@@ -277,6 +235,37 @@ public class DisplayGroupFragment extends BasicFragment{
         });
 
         builder.show();
+    }
+
+    /**
+     * Displays alert and removes user group group if submitted.
+     */
+    public void alertLeaveGroup(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity, android.R.style.Theme_Material_Dialog_Alert);
+
+        builder.setTitle(R.string.leave_group)
+                .setMessage(R.string.confirm_leave_group)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Group currentGroup = ((MainActivity)activity).getCurrentGroup();
+                        if(currentGroup.getMembers().size() > 1) {
+                            //Remove only user
+                            DataManager.getInstance().removeGroupMember(((MainActivity)activity).getCurrentUserId(),
+                                    currentGroup.getId(), activity);
+                        }
+                        else{
+                            //Remove whole group
+                            DataManager.getInstance().removeGroup(currentGroup.getId(), activity);
+                        }
+                        ((MainActivity)activity).onBackPressed();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
 }

@@ -27,7 +27,7 @@ import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.User;
-import com.budziaszek.tabmate.view.Manager;
+import com.budziaszek.tabmate.view.KeyboardManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -65,7 +65,7 @@ public class LoginActivity extends Activity {
      * Starts MainActivity. Called after successful login/register of if user is already logged in.
      */
     public void startMain(){
-        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);//MainActivity.class);
+        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
         LoginActivity.this.startActivity(myIntent);
         finish();
     }
@@ -100,6 +100,8 @@ public class LoginActivity extends Activity {
             Log.d(TAG, "User is logged in.");
             startMain();
         }
+
+        //doLoginTask("ananke.moro@gmail.com", "zabcia3");
     }
 
     private void initializeForm(){
@@ -133,7 +135,7 @@ public class LoginActivity extends Activity {
         emailRegisterButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Manager.hideKeyboard(LoginActivity.this);
+                KeyboardManager.hideKeyboard(LoginActivity.this);
                 attempt(true);
             }
         });
@@ -156,7 +158,7 @@ public class LoginActivity extends Activity {
         emailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Manager.hideKeyboard(LoginActivity.this);
+                KeyboardManager.hideKeyboard(LoginActivity.this);
                 attempt(false);
             }
         });

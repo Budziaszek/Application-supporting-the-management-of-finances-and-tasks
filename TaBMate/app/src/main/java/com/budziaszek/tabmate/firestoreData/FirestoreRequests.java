@@ -87,7 +87,9 @@ public class FirestoreRequests {
     }
 
     public void addTask(UserTask userTask,Consumer success, Consumer<Exception> failure){
-        db.collection(TASK_COLLECTION)
+        db.collection(GROUP_COLLECTION)
+                .document(userTask.getGroup())
+                .collection(TASK_COLLECTION)
                 //.document(targetDocument)
                 //.set(group)
                 .add(userTask)
@@ -101,6 +103,19 @@ public class FirestoreRequests {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         failure.accept(e);
+                    }
+                });
+    }
+
+    public void getGroupTasks(String gid,Consumer<Task<QuerySnapshot>> action){
+        db.collection(GROUP_COLLECTION)
+                .document(gid)
+                .collection(TASK_COLLECTION)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        action.accept(task);
                     }
                 });
     }

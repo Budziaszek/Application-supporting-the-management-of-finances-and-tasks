@@ -9,6 +9,7 @@ public class Group {
     private String name;
     private String description;
     private List<String> members;
+    private List<UserTask> tasks = new ArrayList<>();
     //private List<String> invitationsSent;
 
     public Group() {}
@@ -25,6 +26,10 @@ public class Group {
         this.description = description;
         this.members = members;
         //this.invitationsSent = invitationsSent;
+    }
+
+    public void addTask(UserTask task){
+        tasks.add(task);
     }
 
     public void setId(String id){
@@ -47,6 +52,10 @@ public class Group {
         members.add(memberId);
     }
 
+    public List<UserTask> getTasks() {
+        return tasks;
+    }
+
     /*public void setInvitationsSent(List<String> invitationsSent) {
         this.invitationsSent = invitationsSent;
     }*/
@@ -65,6 +74,10 @@ public class Group {
 
     public List<String> getMembers() {
         return members;
+    }
+
+    public void setTasks(List<UserTask> tasks) {
+        this.tasks = tasks;
     }
 
     /*public List<String> getInvitationsSent() {

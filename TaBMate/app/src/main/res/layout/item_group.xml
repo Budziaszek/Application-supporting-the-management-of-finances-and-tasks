@@ -22,21 +22,4 @@
         android:textColor="@android:color/white"
         android:textSize="18sp" />
 
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/show_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:clickable="true"
-        android:elevation="0dp"
-        android:focusable="true"
-        android:rotation="-90"
-        android:visibility="visible"
-        app:backgroundTint="#0000"
-        app:elevation="0dp"
-        app:srcCompat="@drawable/arrow" />
-
-
 </RelativeLayout>

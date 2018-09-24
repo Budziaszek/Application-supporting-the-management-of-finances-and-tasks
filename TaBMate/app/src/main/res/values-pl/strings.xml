@@ -44,7 +44,7 @@
     <string name="create_group_short">Utwórz</string>
     <string name="create_group_long">Tworzenie nowej grupy</string>
     <string name="group_name_title">Nazwa</string>
-    <string name="group_description_title">Opis</string>
+    <string name="group_description_title">Opis (opcjonalny)</string>
     <string name="submit">Zatwierdź</string>
     <string name="group_created">Grupa utworzona</string>
     <string name="invitation_sent">Zaproszenie wysłane</string>
@@ -60,6 +60,7 @@
     <string name="save">Zapisz</string>
     <string name="edit_profile">Edytuj profil</string>
     <string name="saved">Zmiany zostały zapisane</string>
+    <string name="name_required">Nazwa jest wywmagana</string>
 
     <!-- Related to tasks fragment-->
     <string name="add_new_task">Dodaj nowe zadanie</string>

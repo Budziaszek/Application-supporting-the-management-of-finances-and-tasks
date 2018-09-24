@@ -1,5 +1,7 @@
 package com.budziaszek.tabmate.view.adapter;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +20,13 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
     private TasksClickListener tasksClickListener;
     private List<UserTask> tasksList;
     //private int selectedItem;
+    private Context context;
+    private int color;
     private ArrayList<RelativeLayout> layoutList = new ArrayList<>();
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView taskName;
+        private TextView taskDescription;
         private RelativeLayout taskItemLayout;
 
         private MyViewHolder(View view) {
@@ -40,17 +45,21 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
                     return false;
                 }
             });
+            taskItemLayout.setBackgroundColor(context.getResources().getColor(color, context.getTheme()));
             //if(selectedItem == getAdapterPosition())
             //    taskItemLayout.callOnClick();
 
             taskName = view.findViewById(R.id.task_title);
+            taskDescription = view.findViewById(R.id.task_description);
         }
     }
 
 
-    public TasksItemsAdapter(List<UserTask> groupsList, TasksClickListener tasksClickListener) {
+    public TasksItemsAdapter(List<UserTask> groupsList, Context context, int color, TasksClickListener tasksClickListener) {
         this.tasksList = groupsList;
         this.tasksClickListener = tasksClickListener;
+        this.context = context;
+        this.color = color;
     }
 
     @Override
@@ -65,6 +74,16 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
     public void onBindViewHolder(MyViewHolder holder, int position) {
         UserTask task = tasksList.get(position);
         holder.taskName.setText(task.getTitle());
+
+        String description = task.getDescription();
+        if(!description.equals("")) {
+            holder.taskDescription.setText(description);
+            holder.taskDescription.setVisibility(View.VISIBLE);
+        }
+        else{
+            holder.taskDescription.setVisibility(View.GONE);
+        }
+
         layoutList.add(holder.taskItemLayout);
     }
 

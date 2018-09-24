@@ -1,5 +1,6 @@
 package com.budziaszek.tabmate.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +14,13 @@ import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.activity.MainActivity;
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.view.Manager;
+import com.budziaszek.tabmate.view.KeyboardManager;
 
 public class AddGroupFragment extends BasicFragment {
 
     private static final String TAG = "GroupProcedure";
+
+    private Activity activity;
 
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
@@ -31,6 +34,10 @@ public class AddGroupFragment extends BasicFragment {
                              Bundle savedInstanceState) {
         View fView = inflater.inflate(R.layout.fragment_add_group, container, false);
 
+
+
+        activity = getActivity();
+
         mDisplayView = fView.findViewById(R.id.add_group_layout);
         mProgressView = fView.findViewById(R.id.progress_add_group);
 
@@ -40,7 +47,7 @@ public class AddGroupFragment extends BasicFragment {
         if(edit){
             TextView textView = fView.findViewById(R.id.create_title);
             textView.setText(R.string.edit_group);
-            Group group = ((MainActivity)getActivity()).getCurrentGroup();
+            Group group = ((MainActivity)activity).getCurrentGroup();
             oldGroup = group;
 
             groupNameEdit.setText(group.getName());
@@ -52,7 +59,7 @@ public class AddGroupFragment extends BasicFragment {
                 public void onClick(View view) {
                     String name = groupNameEdit.getText().toString();
                     String description = groupDescriptionEdit.getText().toString();
-                    Manager.hideKeyboard(getActivity());
+                    KeyboardManager.hideKeyboard(getActivity());
                     editGroup(name, description);
                 }
             });
@@ -63,10 +70,15 @@ public class AddGroupFragment extends BasicFragment {
                 @Override
                 public void onClick(View view) {
                     String name = groupNameEdit.getText().toString();
-                    String description = groupDescriptionEdit.getText().toString();
-                    String id = ((MainActivity) getActivity()).getCurrentUserId();
-                    Manager.hideKeyboard(getActivity());
-                    addNewGroup(id, name, description);
+                    if(!name.equals("")) {
+                        String description = groupDescriptionEdit.getText().toString();
+                        String id = ((MainActivity) getActivity()).getCurrentUserId();
+                        KeyboardManager.hideKeyboard(getActivity());
+                        addNewGroup(id, name, description);
+                    }
+                    else{
+                        InformUser.inform(activity, R.string.name_required);
+                    }
                 }
             });
         }
@@ -90,12 +102,13 @@ public class AddGroupFragment extends BasicFragment {
         firestoreRequests.addGroup(newGroup,
                 (documentReference) ->  {
                     showProgress(false);
-                    InformUser.inform(getActivity(), R.string.group_created);
-                    ((MainActivity)getActivity()).startFragment(DisplayGroupFragment.class);
+                    InformUser.inform(activity, R.string.group_created);
+                    ((MainActivity)activity).enableBack(false);
+                    ((MainActivity)activity).startFragment(MainPageFragment.class);
                 },
                 (e) -> {
                     showProgress(false);
-                    InformUser.informFailure(getActivity(), e);
+                    InformUser.informFailure(activity, e);
                 });
     }
 
@@ -110,8 +123,9 @@ public class AddGroupFragment extends BasicFragment {
         firestoreRequests.updateGroup(newGroup, oldGroup.getId(),
                 (Void) ->  {
                     showProgress(false);
-                    InformUser.inform(getActivity(), R.string.saved);
-                    ((MainActivity)getActivity()).startFragment(DisplayGroupFragment.class);
+                    InformUser.inform(activity, R.string.saved);
+                    ((MainActivity)activity).enableBack(false);
+                    ((MainActivity)activity).startFragment(MainPageFragment.class);
                 },
                 (e) ->{
                     showProgress(false);

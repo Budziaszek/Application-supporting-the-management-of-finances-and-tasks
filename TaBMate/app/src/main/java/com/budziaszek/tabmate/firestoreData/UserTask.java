@@ -1,5 +1,7 @@
 package com.budziaszek.tabmate.firestoreData;
 
+import com.budziaszek.tabmate.R;
+
 import java.util.ArrayList;
 
 public class UserTask {
@@ -14,15 +16,19 @@ public class UserTask {
 
     public enum Status {
 
-        TODO(0),
-        DOING(1),
-        DONE(2),
-        UNKNOWN(3);
+        TODO(0, "ToDo", R.color.item_todo),
+        DOING(1, "Doing", R.color.item_doing),
+        DONE(2, "Done", R.color.item_done),
+        UNKNOWN(3, "Unknown", R.color.item_todo);
 
-        int status;
+        public int status;
+        public String name;
+        public int color;
 
-        Status(int status) {
+        Status(int status, String name, int color) {
             this.status = status;
+            this.name = name;
+            this.color = color;
         }
     }
 

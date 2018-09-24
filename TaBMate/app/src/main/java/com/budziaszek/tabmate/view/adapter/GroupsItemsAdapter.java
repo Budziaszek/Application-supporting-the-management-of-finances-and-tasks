@@ -1,6 +1,5 @@
 package com.budziaszek.tabmate.view.adapter;
 
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,9 +23,8 @@ public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.
     private ArrayList<RelativeLayout> layoutList = new ArrayList<>();
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView groupName;
+        private TextView groupName;
         private RelativeLayout groupItemLayout;
-        private FloatingActionButton showGroup;
 
         private MyViewHolder(View view) {
             super(view);
@@ -35,6 +33,7 @@ public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.
             groupItemLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //TODO use items view design change
                     // All items
                     /*for(RelativeLayout layout : layoutList) {
                         layout.setBackgroundColor(itemView.getResources()
@@ -57,14 +56,6 @@ public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.
                 groupItemLayout.callOnClick();
 
             groupName = view.findViewById(R.id.group_name);
-
-            showGroup = view.findViewById(R.id.show_button);
-            showGroup.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    groupsClickListener.onItemClicked(getAdapterPosition());
-                }
-            });
         }
     }
 

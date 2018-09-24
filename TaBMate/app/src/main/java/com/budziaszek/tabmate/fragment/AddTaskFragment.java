@@ -1,29 +1,31 @@
 package com.budziaszek.tabmate.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
+import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.view.InformUser;
-import com.budziaszek.tabmate.view.Manager;
+import com.budziaszek.tabmate.view.KeyboardManager;
+import com.budziaszek.tabmate.view.adapter.GroupSpinnerAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AddTaskFragment extends BasicFragment {
 
     private static final String TAG = "AddGroupProcedure";
+
+    private Activity activity;
 
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
@@ -35,22 +37,25 @@ public class AddTaskFragment extends BasicFragment {
                              Bundle savedInstanceState) {
         View fView = inflater.inflate(R.layout.fragment_add_task, container, false);
 
+        activity = getActivity();
+
         mDisplayView = fView.findViewById(R.id.add_task_layout);
         mProgressView = fView.findViewById(R.id.progress_add_task);
 
         taskNameEdit = fView.findViewById(R.id.edit_task_name);
         taskDescriptionEdit = fView.findViewById(R.id.edit_task_description);
 
+        // Groups spinner
         Spinner spinner = (Spinner) fView.findViewById(R.id.spinner_group);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item, android.R.id.text1);
+
+        List<Group> groupsList = DataManager.getInstance().getGroups();
+        Group groups[] = new Group[groupsList.size()];
+        groups = groupsList.toArray(groups);
+
+        GroupSpinnerAdapter adapter = new GroupSpinnerAdapter(getActivity(),
+                android.R.layout.simple_spinner_item, groups);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        List<Group> groups = ((MainActivity)getActivity()).getGroups();
-        for(Group g :groups){
-            adapter.add(g.getName());
-        }
-        // Apply the adapter to the spinner
+
         spinner.setAdapter(adapter);
 
         Button submitTaskButton = fView.findViewById(R.id.submit_create_task);
@@ -58,11 +63,16 @@ public class AddTaskFragment extends BasicFragment {
             @Override
             public void onClick(View view) {
                 String name = taskNameEdit.getText().toString();
-                String description = taskDescriptionEdit.getText().toString();
-                String group = spinner.getSelectedItem().toString();
+                if(!name.equals("")) {
+                    String description = taskDescriptionEdit.getText().toString();
+                    String group = ((Group) spinner.getSelectedItem()).getId();
 
-                Manager.hideKeyboard(getActivity());
-                addNewTask(name, description, group);
+                    KeyboardManager.hideKeyboard(getActivity());
+                    addNewTask(name, description, group);
+                }
+                else{
+                    InformUser.inform(activity, R.string.name_required);
+                }
             }
         });
         return fView;
@@ -85,7 +95,8 @@ public class AddTaskFragment extends BasicFragment {
                 (documentReference) ->  {
                     showProgress(false);
                     InformUser.inform(getActivity(), R.string.task_created);
-                    ((MainActivity)getActivity()).startFragment(DisplayTasksFragment.class);
+                    ((MainActivity)activity).enableBack(false);
+                    ((MainActivity)activity).startFragment(DisplayTasksFragment.class);
                 },
                 (e) -> {
                     showProgress(false);

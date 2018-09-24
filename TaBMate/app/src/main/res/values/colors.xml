@@ -33,4 +33,9 @@
     <color name="colorAccentDarkTransparent">#500A2463</color>
     <color name="colorAccentTransparent">#50054478</color>
     <color name="colorAccentLightTransparent">#50d7f9f1</color>
+
+    <color name="item_todo">#fffccc</color>
+    <color name="item_doing">#ccf4ff</color>
+    <color name="item_done">#d2ffcc</color>
+
 </resources>

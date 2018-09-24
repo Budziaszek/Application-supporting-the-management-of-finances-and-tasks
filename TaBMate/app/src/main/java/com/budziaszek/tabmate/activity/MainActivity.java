@@ -20,33 +20,68 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
+import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.User;
+import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.fragment.AddGroupFragment;
+import com.budziaszek.tabmate.fragment.AddTaskFragment;
 import com.budziaszek.tabmate.fragment.BasicFragment;
 import com.budziaszek.tabmate.fragment.DisplayGroupFragment;
 import com.budziaszek.tabmate.fragment.DisplayTasksFragment;
 import com.budziaszek.tabmate.fragment.MainPageFragment;
-import com.budziaszek.tabmate.view.ProgressInform;
+import com.budziaszek.tabmate.view.DataChangeListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-        ProgressInform {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG =  "MainProcedure";
 
-    private Class newFragment = null;
+    private DrawerLayout drawer;
+    private ActionBarDrawerToggle toggle;
+    private Boolean listenerIsRegistered;
 
-    private GroupsManager groupsManager;
+    private Class newFragment = null;
     private Integer currentGroupIndex = 0;
 
     private FirebaseUser user = null;
+
+    public void enableBack(boolean enable) {
+        if(enable) {
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            // Remove hamburger
+            toggle.setDrawerIndicatorEnabled(false);
+            // Show back button
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            if(!listenerIsRegistered) {
+                toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "Back arrow clicked");
+                        onBackPressed();
+                    }
+                });
+                listenerIsRegistered = true;
+            }
+
+        } else {
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            // Remove back button
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            // Show hamburger
+            toggle.setDrawerIndicatorEnabled(true);
+            // Remove the/any drawer toggle listener
+            toggle.setToolbarNavigationClickListener(null);
+            listenerIsRegistered = false;
+        }
+    }
 
     public String getCurrentUserEmail(){
         if(user!=null)
@@ -66,7 +101,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(null);
 
         setContentView(R.layout.activity_main);
         initializeDrawer();
@@ -80,17 +115,15 @@ public class MainActivity extends AppCompatActivity
 
         user_email.setText(getCurrentUserEmail());
 
-        groupsManager = new GroupsManager(this);
+        //groupsManager = new DataManager(this);
         startFragment(MainPageFragment.class);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        enableBack(false);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (getFragmentManager().getBackStackEntryCount() > 0) {
-            getFragmentManager().popBackStack();
         }
         else {
             super.onBackPressed();
@@ -100,6 +133,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
+
         int id = item.getItemId();
         if(id == R.id.nav_home){
             newFragment = MainPageFragment.class;
@@ -107,8 +141,6 @@ public class MainActivity extends AppCompatActivity
             //TODO add dashboard fragment
         }else if (id == R.id.nav_tasks) {
             newFragment = DisplayTasksFragment.class;
-        }else if (id == R.id.nav_group) {
-            newFragment = DisplayGroupFragment.class;
         }else if (id == R.id.nav_logOut) {
             alertAndLogOut();
         }
@@ -121,6 +153,7 @@ public class MainActivity extends AppCompatActivity
         // Close the navigation drawer
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
 
         return true;
     }
@@ -140,22 +173,11 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
-    @Override
-    public void informInProgress(Boolean isInProgress){
-        FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
-        List<Fragment> fragments = fragmentManager.getFragments();
-        if(fragments != null){
-            for(Fragment fragment : fragments){
-                if(fragment != null && fragment.isVisible())
-                    ((BasicFragment)fragment).informInProgress(isInProgress);
-            }
-        }
-    }
-
     public void startFragment(Class fragmentClass){
         try {
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent, (Fragment) fragmentClass.newInstance())
-                    .addToBackStack("fragment").commit();
+                    .addToBackStack("Fragment")
+                    .commit();
         } catch (Exception e) {
             Log.e(TAG, "Error in fragment transaction " + e.getMessage());
         }
@@ -165,28 +187,14 @@ public class MainActivity extends AppCompatActivity
         try {
             AddGroupFragment newFragment = AddGroupFragment.class.newInstance();
             newFragment.setEdit();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent,  newFragment).addToBackStack("fragment")
-                    .commit();
-
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent,  newFragment).commit();
         } catch (Exception e) {
             Log.e(TAG, "Error in fragment transaction " + e.getMessage());
         }
     }
 
-    public void refreshGroupsAndUsers(){
-        groupsManager.refreshGroupsAndUsers();
-    }
-
-    public Map<String, User> getUsers(){
-        return groupsManager.getUsers();
-    }
-
-    public List<Group> getGroups(){
-        return groupsManager.getGroups();
-    }
-
     public Group getCurrentGroup(){
-        return groupsManager.getGroups().get(currentGroupIndex);
+        return DataManager.getInstance().getGroups().get(currentGroupIndex);
     }
 
     public int getCurrentGroupIndex(){
@@ -197,25 +205,11 @@ public class MainActivity extends AppCompatActivity
         currentGroupIndex = index;
     }
 
-    public Boolean setNextGroupIndex(){
-        if(currentGroupIndex < groupsManager.getGroups().size()) {
-            currentGroupIndex++;
-        }
-        return currentGroupIndex == groupsManager.getGroups().size() - 1;
-    }
-
-    public Boolean setPreviousGroupIndex(){
-        if(currentGroupIndex != 0) {
-            currentGroupIndex--;
-        }
-        return currentGroupIndex == 0;
-    }
-
     private void initializeDrawer(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         drawer.addDrawerListener(
                 new DrawerLayout.DrawerListener() {
                     @Override
@@ -244,10 +238,11 @@ public class MainActivity extends AppCompatActivity
                 }
         );
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+        enableBack(false);
     }
 
     /**
@@ -276,32 +271,4 @@ public class MainActivity extends AppCompatActivity
                 .show();
     }
 
-    /**
-     * Displays alert and removes user group group if submitted.
-     */
-    public void alertLeaveGroup(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-
-        builder.setTitle(R.string.leave_group)
-                .setMessage(R.string.confirm_leave_group)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Group currentGroup = getCurrentGroup();
-                        if(currentGroup.getMembers().size() > 1) {
-                            //Remove only user
-                            groupsManager.removeGroupMember(getCurrentUserId(), currentGroup.getId());
-                        }
-                        else{
-                            //Remove whole group
-                            groupsManager.removeGroup(currentGroup.getId());
-                        }
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-    }
 }
