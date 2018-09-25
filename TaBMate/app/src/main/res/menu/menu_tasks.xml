@@ -7,4 +7,9 @@
             android:icon="@android:drawable/ic_menu_add"
             android:title="@string/add_new_task"
             app:showAsAction="always" />
+        <item
+            android:id="@+id/action_find_tasks"
+            android:icon="@android:drawable/ic_menu_search"
+            android:title="@string/find_tasks"
+            app:showAsAction="ifRoom" />
 </menu>

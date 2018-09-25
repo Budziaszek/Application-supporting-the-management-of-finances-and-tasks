@@ -21,7 +21,7 @@ public class FirestoreRequests {
     private static final String GROUP_COLLECTION = "groups";
     private static final String GROUP_COLLECTION_MEMBERS_FIELD = "members";
     private static final String TASK_COLLECTION = "tasks";
-    private static final String GROUP_COLLECTION_GROUP_FIELD = "group";
+    //private static final String GROUP_COLLECTION_GROUP_FIELD = "group";
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -97,6 +97,26 @@ public class FirestoreRequests {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         success.accept(documentReference);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        failure.accept(e);
+                    }
+                });
+    }
+
+    public void updateTask(UserTask task, Consumer success, Consumer<Exception> failure){
+        db.collection(GROUP_COLLECTION)
+                .document(task.getGroup())
+                .collection(TASK_COLLECTION)
+                .document(task.getId())
+                .set(task)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        success.accept(aVoid);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

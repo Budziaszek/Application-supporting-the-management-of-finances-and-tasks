@@ -1,8 +1,8 @@
 package com.budziaszek.tabmate.view.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,12 +42,11 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
             taskItemLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    return false;
+                    tasksClickListener.onLongClick(getAdapterPosition());
+                    return true;
                 }
             });
-            taskItemLayout.setBackgroundColor(context.getResources().getColor(color, context.getTheme()));
-            //if(selectedItem == getAdapterPosition())
-            //    taskItemLayout.callOnClick();
+            taskItemLayout.setBackground(context.getResources().getDrawable(color, context.getTheme()));
 
             taskName = view.findViewById(R.id.task_title);
             taskDescription = view.findViewById(R.id.task_description);
@@ -83,7 +82,6 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
         else{
             holder.taskDescription.setVisibility(View.GONE);
         }
-
         layoutList.add(holder.taskItemLayout);
     }
 

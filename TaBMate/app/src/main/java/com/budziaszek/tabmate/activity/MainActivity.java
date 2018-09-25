@@ -42,7 +42,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String TAG =  "MainProcedure";
+    private static final String TAG = "MainProcedure";
 
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
@@ -54,13 +54,13 @@ public class MainActivity extends AppCompatActivity
     private FirebaseUser user = null;
 
     public void enableBack(boolean enable) {
-        if(enable) {
+        if (enable) {
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             // Remove hamburger
             toggle.setDrawerIndicatorEnabled(false);
             // Show back button
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            if(!listenerIsRegistered) {
+            if (!listenerIsRegistered) {
                 toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -83,16 +83,16 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public String getCurrentUserEmail(){
-        if(user!=null)
+    public String getCurrentUserEmail() {
+        if (user != null)
             return user.getEmail();
         else
             finish();
         return null;
     }
 
-    public String getCurrentUserId(){
-        if(user!=null)
+    public String getCurrentUserId() {
+        if (user != null)
             return user.getUid();
         else
             finish();
@@ -124,8 +124,7 @@ public class MainActivity extends AppCompatActivity
         enableBack(false);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }
@@ -135,13 +134,13 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
 
         int id = item.getItemId();
-        if(id == R.id.nav_home){
+        if (id == R.id.nav_home) {
             newFragment = MainPageFragment.class;
-        }else if (id == R.id.nav_dashboard){
+        } else if (id == R.id.nav_dashboard) {
             //TODO add dashboard fragment
-        }else if (id == R.id.nav_tasks) {
+        } else if (id == R.id.nav_tasks) {
             newFragment = DisplayTasksFragment.class;
-        }else if (id == R.id.nav_logOut) {
+        } else if (id == R.id.nav_logOut) {
             alertAndLogOut();
         }
 
@@ -167,13 +166,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_edit_group){
+        if (id == R.id.action_edit_group) {
             return false;
         }
         return false;
     }
 
-    public void startFragment(Class fragmentClass){
+    public void startFragment(Class fragmentClass) {
         try {
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent, (Fragment) fragmentClass.newInstance())
                     .addToBackStack("Fragment")
@@ -183,29 +182,31 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void startEditFragment(){
+    public void startEditFragment() {
         try {
             AddGroupFragment newFragment = AddGroupFragment.class.newInstance();
             newFragment.setEdit();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent,  newFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, newFragment)
+                    .addToBackStack("Fragment")
+                    .commit();
         } catch (Exception e) {
             Log.e(TAG, "Error in fragment transaction " + e.getMessage());
         }
     }
 
-    public Group getCurrentGroup(){
+    public Group getCurrentGroup() {
         return DataManager.getInstance().getGroups().get(currentGroupIndex);
     }
 
-    public int getCurrentGroupIndex(){
+    public int getCurrentGroupIndex() {
         return currentGroupIndex;
     }
 
-    public void setCurrentGroupIndex(int index){
+    public void setCurrentGroupIndex(int index) {
         currentGroupIndex = index;
     }
 
-    private void initializeDrawer(){
+    private void initializeDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -225,7 +226,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onDrawerClosed(View drawerView) {
                         // Respond when the drawer is closed
-                        if(newFragment != null) {
+                        if (newFragment != null) {
                             startFragment(newFragment);
                             newFragment = null;
                         }
@@ -249,7 +250,7 @@ public class MainActivity extends AppCompatActivity
      * Shows alert when user choose log out action. If action is confirmed Firebase signOut is called
      * and activity finishes.
      */
-    private void alertAndLogOut(){
+    private void alertAndLogOut() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
 
         builder.setTitle(R.string.log_out)

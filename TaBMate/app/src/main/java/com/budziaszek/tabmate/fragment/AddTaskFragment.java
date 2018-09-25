@@ -95,6 +95,7 @@ public class AddTaskFragment extends BasicFragment {
                 (documentReference) ->  {
                     showProgress(false);
                     InformUser.inform(getActivity(), R.string.task_created);
+                    DataManager.getInstance().refreshAllGroupsTasks();
                     ((MainActivity)activity).enableBack(false);
                     ((MainActivity)activity).startFragment(DisplayTasksFragment.class);
                 },

@@ -22,13 +22,11 @@ import com.google.android.gms.tasks.Tasks;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DisplayTasksFragment extends BasicFragment{
+public class DisplayTasksFragment extends BasicFragment {
 
     private static final String TAG = "DisplayTasksProcedure";
     private Activity activity;
     private TasksPagesAdapter adapter;
-
-    //private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,11 +36,11 @@ public class DisplayTasksFragment extends BasicFragment{
         activity = getActivity();
 
         // Pager initilization
-        ViewPager viewPager = (ViewPager)  fView.findViewById(R.id.viewpager);
+        ViewPager viewPager = fView.findViewById(R.id.viewpager);
         adapter = new TasksPagesAdapter(getActivity(), getChildFragmentManager());
         viewPager.setAdapter(adapter);
 
-        TabLayout tabLayout = (TabLayout) fView.findViewById(R.id.sliding_tabs);
+        TabLayout tabLayout = fView.findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
         return fView;
     }
@@ -69,10 +67,13 @@ public class DisplayTasksFragment extends BasicFragment{
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(id == R.id.action_add_task){
-            ((MainActivity)activity).enableBack(true);
-            ((MainActivity)activity).startFragment(AddTaskFragment.class);
+        if (id == R.id.action_add_task) {
+            ((MainActivity) activity).enableBack(true);
+            ((MainActivity) activity).startFragment(AddTaskFragment.class);
             return true;
+        }else if(id == R.id.action_find_tasks){
+            ((MainActivity)activity).enableBack(true);
+            ((MainActivity)activity).startFragment(FindTasksFragment.class);
         }
         return false;
     }

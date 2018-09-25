@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
@@ -16,6 +17,7 @@ import java.util.List;
 
 public class InvitationsItemsAdapter extends RecyclerView.Adapter<InvitationsItemsAdapter.MyViewHolder> {
 
+    private FirestoreRequests firestoreRequests = new FirestoreRequests();
     private InvitationClickListener invitationClickListener;
     private List<String> invitationsList;
 
@@ -64,7 +66,6 @@ public class InvitationsItemsAdapter extends RecyclerView.Adapter<InvitationsIte
     public void onBindViewHolder(MyViewHolder holder, int position) {
         String invitation = invitationsList.get(position);
 
-        FirestoreRequests firestoreRequests = new FirestoreRequests();
         firestoreRequests.getGroup(invitation,
                 (DocumentSnapshot) -> {
                         Group group = DocumentSnapshot.toObject(Group.class);

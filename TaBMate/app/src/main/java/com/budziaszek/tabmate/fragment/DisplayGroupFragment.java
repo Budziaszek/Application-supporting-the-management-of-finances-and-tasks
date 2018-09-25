@@ -4,13 +4,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,8 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 //TODO administrator
-//TODO remove or fix refresh
-public class DisplayGroupFragment extends BasicFragment{
+public class DisplayGroupFragment extends BasicFragment {
 
     private static final String TAG = "DisplayGroupProcedure";
     private Activity activity;
@@ -66,20 +62,6 @@ public class DisplayGroupFragment extends BasicFragment{
         mDisplayView = fView.findViewById(R.id.show_groups_layout);
         mProgressView = fView.findViewById(R.id.progress_display);
 
-        //Refresh
-        swipeLayout = fView.findViewById(R.id.swipe_container);
-        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                DataManager.getInstance().refreshGroupsAndUsers(((MainActivity)activity).getCurrentUserId());
-            }
-        });
-        swipeLayout.setColorSchemeColors(
-                getResources().getColor(R.color.colorPrimary, getResources().newTheme()),
-                getResources().getColor(R.color.colorAccent, getResources().newTheme()),
-                getResources().getColor(R.color.colorAccentDark, getResources().newTheme()),
-                getResources().getColor(R.color.colorAccent, getResources().newTheme()));
-
         // Members
         RecyclerView membersRecycler = fView.findViewById(R.id.tasks_list);
         membersAdapter = new MembersItemsAdapter(users, new MemberClickListener() {
@@ -87,8 +69,9 @@ public class DisplayGroupFragment extends BasicFragment{
             public void onLeaveClicked(int position) {
                 //((MainActivity)activity).alertLeaveGroup();
                 alertLeaveGroup();
+                DataManager.getInstance().refreshGroupsAndUsers(((MainActivity)activity).getCurrentUserId());
             }
-        }, ((MainActivity)activity).getCurrentUserId());
+        }, ((MainActivity) activity).getCurrentUserId());
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
         membersRecycler.setLayoutManager(mLayoutManager);
         membersRecycler.setItemAnimator(new DefaultItemAnimator());
@@ -102,7 +85,7 @@ public class DisplayGroupFragment extends BasicFragment{
             }
         });
 
-        ((MainActivity)activity).enableBack(true);
+        ((MainActivity) activity).enableBack(true);
         showGroup();
         return fView;
     }
@@ -129,17 +112,18 @@ public class DisplayGroupFragment extends BasicFragment{
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(id == R.id.action_edit_group){
-            ((MainActivity)activity).startEditFragment();
+        if (id == R.id.action_edit_group) {
+            ((MainActivity) activity).startEditFragment();
             return true;
         }
         return false;
     }
+
     /**
      * Displays current group data.
      */
-    private void showGroup(){
-        Group group = ((MainActivity)activity).getCurrentGroup();
+    private void showGroup() {
+        Group group = ((MainActivity) activity).getCurrentGroup();
 
         TextView groupName = fView.findViewById(R.id.group_name);
         TextView groupDescription = fView.findViewById(R.id.group_description);
@@ -147,12 +131,12 @@ public class DisplayGroupFragment extends BasicFragment{
         groupName.setText(group.getName());
         groupDescription.setText(group.getDescription());
 
-        Map<String, User> allUsers =  DataManager.getInstance().getUsers();
+        Map<String, User> allUsers = DataManager.getInstance().getUsers();
         users = new ArrayList<>();
         List<String> members = group.getMembers();
-        for(int i = 0; i<members.size(); i++){
+        for (int i = 0; i < members.size(); i++) {
             String memberId = members.get(i);
-            if(allUsers.containsKey(memberId)) {
+            if (allUsers.containsKey(memberId)) {
                 users.add(allUsers.get(memberId));
             }
         }
@@ -162,23 +146,21 @@ public class DisplayGroupFragment extends BasicFragment{
     /**
      * Check document with potential new member and send invitation if everything is correct.
      */
-    private void checkNewMember(List<DocumentSnapshot> documents){
-        if(documents.isEmpty()){
+    private void checkNewMember(List<DocumentSnapshot> documents) {
+        if (documents.isEmpty()) {
             InformUser.inform(getActivity(), R.string.user_not_found);
-        }
-        else {
+        } else {
             User user = documents.get(0).toObject(User.class);
-            if(user != null)
+            if (user != null)
                 newMemberId = user.getId();
-            Group currentGroup = ((MainActivity)activity).getCurrentGroup();
-            if(currentGroup.getMembers().contains(newMemberId)){
+            Group currentGroup = ((MainActivity) activity).getCurrentGroup();
+            if (currentGroup.getMembers().contains(newMemberId)) {
                 // Is already a member
                 InformUser.inform(getActivity(), R.string.user_is_a_member);
-            }
-            else {
+            } else {
                 //Add
                 firestoreRequests.addInvitation(newMemberId, currentGroup.getId(),
-                        (aVoid) ->  InformUser.inform(getActivity(), R.string.invitation_sent),
+                        (aVoid) -> InformUser.inform(getActivity(), R.string.invitation_sent),
                         (e) -> InformUser.inform(getActivity(), R.string.invitation_incorrect));
             }
         }
@@ -187,12 +169,12 @@ public class DisplayGroupFragment extends BasicFragment{
     /**
      * Check if task was successful and call checkMember if so.
      */
-    private void checkInvitationTask(Task<QuerySnapshot> task){
+    private void checkInvitationTask(Task<QuerySnapshot> task) {
         if (task.isSuccessful()) {
             checkNewMember(task.getResult().getDocuments());
         } else {
             Exception exception = task.getException();
-            if(exception != null) {
+            if (exception != null) {
                 InformUser.informFailure(getActivity(), exception);
             }
         }
@@ -201,8 +183,8 @@ public class DisplayGroupFragment extends BasicFragment{
     /**
      * Alert gets from user email of potential new member, finds it in database and call functions to proceed.
      */
-    private void alertNewMember(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),android.R.style.Theme_Material_Dialog_Alert);
+    private void alertNewMember() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
         builder.setTitle("Enter user email");
 
         // Set up the input
@@ -212,7 +194,7 @@ public class DisplayGroupFragment extends BasicFragment{
         input.setBackgroundColor(getResources().getColor(R.color.colorAccentLightSemi, getActivity().getTheme()));
 
         FrameLayout container = new FrameLayout(getActivity());
-        FrameLayout.LayoutParams params = new  FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(30, 10, 30, 10);
         input.setLayoutParams(params);
         container.addView(input);
@@ -240,24 +222,23 @@ public class DisplayGroupFragment extends BasicFragment{
     /**
      * Displays alert and removes user group group if submitted.
      */
-    public void alertLeaveGroup(){
+    public void alertLeaveGroup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, android.R.style.Theme_Material_Dialog_Alert);
 
         builder.setTitle(R.string.leave_group)
                 .setMessage(R.string.confirm_leave_group)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Group currentGroup = ((MainActivity)activity).getCurrentGroup();
-                        if(currentGroup.getMembers().size() > 1) {
+                        Group currentGroup = ((MainActivity) activity).getCurrentGroup();
+                        if (currentGroup.getMembers().size() > 1) {
                             //Remove only user
-                            DataManager.getInstance().removeGroupMember(((MainActivity)activity).getCurrentUserId(),
+                            DataManager.getInstance().removeGroupMember(((MainActivity) activity).getCurrentUserId(),
                                     currentGroup.getId(), activity);
-                        }
-                        else{
+                        } else {
                             //Remove whole group
                             DataManager.getInstance().removeGroup(currentGroup.getId(), activity);
                         }
-                        ((MainActivity)activity).onBackPressed();
+                        ((MainActivity) activity).onBackPressed();
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {

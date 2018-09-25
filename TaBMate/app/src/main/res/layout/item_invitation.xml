@@ -5,44 +5,44 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="@drawable/bar_background"
+    android:background="@drawable/background_item"
     android:gravity="right|center"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingLeft="5dp">
 
-        <TextView
-            android:id="@+id/group_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:paddingLeft="5dp"
-            android:textAlignment="viewStart"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
+    <TextView
+        android:id="@+id/group_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="5dp"
+        android:textAlignment="viewStart"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/remove_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#0000"
-            android:clickable="true"
-            android:elevation="0dp"
-            android:focusable="true"
-            app:backgroundTint="#0000"
-            app:elevation="0dp"
-            app:srcCompat="@drawable/no" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/remove_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#0000"
+        android:clickable="true"
+        android:elevation="0dp"
+        android:focusable="true"
+        app:backgroundTint="#0000"
+        app:elevation="0dp"
+        app:srcCompat="@drawable/no" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/accept_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:background="#0000"
-            android:clickable="true"
-            android:elevation="0dp"
-            android:focusable="true"
-            app:backgroundTint="#0000"
-            app:elevation="0dp"
-            app:srcCompat="@drawable/yes" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/accept_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:background="#0000"
+        android:clickable="true"
+        android:elevation="0dp"
+        android:focusable="true"
+        app:backgroundTint="#0000"
+        app:elevation="0dp"
+        app:srcCompat="@drawable/yes" />
 </LinearLayout>

@@ -17,14 +17,15 @@ import com.budziaszek.tabmate.activity.MainActivity;
 import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.firestoreData.User;
+import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.view.DataChangeListener;
 import com.budziaszek.tabmate.view.adapter.GroupsItemsAdapter;
+import com.budziaszek.tabmate.view.adapter.TasksItemsAdapter;
 import com.budziaszek.tabmate.view.listener.GroupsClickListener;
 import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.view.listener.InvitationClickListener;
 import com.budziaszek.tabmate.view.adapter.InvitationsItemsAdapter;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.budziaszek.tabmate.view.listener.TasksClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,9 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
     private GroupsItemsAdapter groupsAdapter;
     private List<Group> groups = new ArrayList<>();
 
+    private TasksItemsAdapter tasksAdapter;
+    private List<UserTask> tasks = new ArrayList<>();
+
     private InvitationsItemsAdapter invitationsAdapter;
     private List<String> invitationsList = new ArrayList<>();
 
@@ -54,6 +58,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
         invitationsList.clear();
         groups.clear();
+        tasks.clear();
 
         mDisplayView = fView.findViewById(R.id.user_groups_layout);
         mProgressView = fView.findViewById(R.id.progress_groups);
@@ -65,10 +70,11 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
             public void onRefresh() {
                 groups = new ArrayList<>();
                 Log.d(TAG, "Ask for refresh groups and users");
-                DataManager.getInstance().refreshGroupsAndUsers(((MainActivity)activity).getCurrentUserId());
+                DataManager.getInstance().refreshGroupsAndUsers(((MainActivity) activity).getCurrentUserId());
 
                 Log.d(TAG, "Ask for refresh invitations");
-                DataManager.getInstance().refreshInvitations(((MainActivity)activity).getCurrentUserId());
+                DataManager.getInstance().refreshInvitations(((MainActivity) activity).getCurrentUserId());
+
                 swipeLayout.setRefreshing(false);
             }
         });
@@ -80,28 +86,28 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
         // Groups
         setRecyclerGroups();
-        //Invitations
         setRecyclerInvitations();
+        setRecyclerTasks();
 
         groups = new ArrayList<>();
 
         DataManager instance = DataManager.getInstance();
-        if(instance.getGroups() == null) {
+        instance.addObserver(this);
+        if (instance.getGroups() == null) {
             Log.d(TAG, "Ask for refresh groups and users");
             instance.refreshGroupsAndUsers(((MainActivity) activity).getCurrentUserId());
-        }else{
+        } else {
             groupsChanged();
+            tasksChanged();
         }
 
-        if(instance.getInvitations() == null) {
+        if (instance.getInvitations() == null) {
             Log.d(TAG, "Ask for refresh invitations");
             instance.refreshInvitations(((MainActivity) activity).getCurrentUserId());
-        }else{
+        } else {
             invitationsChanged();
         }
 
-
-        DataManager.getInstance().addObserver((DataChangeListener)this);
         showProgress(false);
 
         return fView;
@@ -113,20 +119,21 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         setHasOptionsMenu(false);
     }
 
-    private void setRecyclerGroups(){
-        RecyclerView groupsRecycler = fView.findViewById(R.id.tasks_list);
-        groupsAdapter = new GroupsItemsAdapter(groups, new GroupsClickListener(){
+    private void setRecyclerGroups() {
+        RecyclerView groupsRecycler = fView.findViewById(R.id.groups_list);
+        groupsAdapter = new GroupsItemsAdapter(groups, new GroupsClickListener() {
             @Override
-            public void onItemLongClicked(int position){
-                ((MainActivity)activity).setCurrentGroupIndex(position);
-                ((MainActivity)activity).startFragment(DisplayGroupFragment.class);
+            public void onItemLongClicked(int position) {
+                ((MainActivity) activity).setCurrentGroupIndex(position);
+                ((MainActivity) activity).startFragment(DisplayGroupFragment.class);
             }
+
             @Override
-            public void onItemClicked(int position){
-                ((MainActivity)activity).setCurrentGroupIndex(position);
-                ((MainActivity)activity).startFragment(DisplayGroupFragment.class);
+            public void onItemClicked(int position) {
+                ((MainActivity) activity).setCurrentGroupIndex(position);
+                ((MainActivity) activity).startFragment(DisplayGroupFragment.class);
             }
-        }, ((MainActivity)activity).getCurrentGroupIndex());
+        }, ((MainActivity) activity).getCurrentGroupIndex());
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
         groupsRecycler.setLayoutManager(mLayoutManager);
@@ -137,19 +144,19 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         newGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity)activity).enableBack(true);
-                ((MainActivity)activity).startFragment(AddGroupFragment.class);
+                ((MainActivity) activity).enableBack(true);
+                ((MainActivity) activity).startFragment(AddGroupFragment.class);
             }
         });
     }
 
-    private void setRecyclerInvitations(){
+    private void setRecyclerInvitations() {
         RecyclerView invitationsRecycler = fView.findViewById(R.id.invitations_list);
         invitationsAdapter = new InvitationsItemsAdapter(invitationsList, new InvitationClickListener() {
             @Override
             public void onAcceptClicked(int position) {
                 showProgress(true);
-                firestoreRequests.addGroupMember(invitationsList.get(position), ((MainActivity)activity).getCurrentUserId(),
+                firestoreRequests.addGroupMember(invitationsList.get(position), ((MainActivity) activity).getCurrentUserId(),
                         (aVoid) -> {
                             showProgress(false);
                             Log.d(TAG, "Invitation accepted.");
@@ -158,7 +165,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
                             InformUser.inform(getActivity(), R.string.invitation_incorrect);
                             showProgress(false);
                         });
-                firestoreRequests.removeInvitation(invitationsList.get(position), ((MainActivity)activity).getCurrentUserId(),
+                firestoreRequests.removeInvitation(invitationsList.get(position), ((MainActivity) activity).getCurrentUserId(),
                         (aVoid) -> {
                             showProgress(false);
                             Log.d(TAG, "(Invalid) Invitation removed.");
@@ -168,17 +175,19 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
                             Log.e(TAG, e.getMessage());
                             showProgress(false);
                         });
-                DataManager.getInstance().refreshInvitations(((MainActivity)getActivity()).getCurrentUserId());
-                DataManager.getInstance().refreshGroupsAndUsers(((MainActivity)activity).getCurrentUserId());
+                DataManager.getInstance().refreshInvitations(((MainActivity) getActivity()).getCurrentUserId());
+                DataManager.getInstance().refreshGroupsAndUsers(((MainActivity) activity).getCurrentUserId());
 
             }
+
             @Override
             public void onRemoveClicked(int position) {
-                firestoreRequests.removeInvitation(invitationsList.get(position), ((MainActivity)activity).getCurrentUserId(),
+                firestoreRequests.removeInvitation(invitationsList.get(position), ((MainActivity) activity).getCurrentUserId(),
                         (aVoid) -> {
                             showProgress(false);
+                            //TODO snackbar
                             Log.d(TAG, "Invitation removed.");
-                            DataManager.getInstance().refreshInvitations(((MainActivity)getActivity()).getCurrentUserId());
+                            DataManager.getInstance().refreshInvitations(((MainActivity) getActivity()).getCurrentUserId());
                         },
                         (e) -> {
                             InformUser.informFailure(getActivity(), e);
@@ -187,22 +196,55 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
                         });
             }
         });
-        invitationsRecycler.setAdapter(invitationsAdapter);
-        RecyclerView.LayoutManager mLayoutManagerInvitations = new LinearLayoutManager(fView.getContext());
-        invitationsRecycler.setLayoutManager(mLayoutManagerInvitations);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
+        invitationsRecycler.setLayoutManager(mLayoutManager);
         invitationsRecycler.setItemAnimator(new DefaultItemAnimator());
         invitationsRecycler.setAdapter(invitationsAdapter);
     }
 
+    private void setRecyclerTasks() {
+        RecyclerView tasksRecycler = fView.findViewById(R.id.user_tasks_list);
+        tasksAdapter = new TasksItemsAdapter(tasks, getContext(), R.drawable.ripple_effect_doing,
+                new TasksClickListener() {
+                    @Override
+                    public void onClick(int position) {
+                        //TODO display task
+                    }
+                    @Override
+                    public void onLongClick(int position){
+
+                    }
+                });
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
+        tasksRecycler.setLayoutManager(mLayoutManager);
+        tasksRecycler.setItemAnimator(new DefaultItemAnimator());
+        tasksRecycler.setAdapter(tasksAdapter);
+    }
+
     @Override
-    public void invitationsChanged(){
+    public void invitationsChanged() {
         invitationsList = DataManager.getInstance().getInvitations();
         invitationsAdapter.update(invitationsList);
     }
 
     @Override
-    public void groupsChanged(){
+    public void groupsChanged() {
         groups = DataManager.getInstance().getGroups();
         groupsAdapter.update(groups);
+    }
+
+    @Override
+    public void tasksChanged(){
+        tasks = new ArrayList<>();
+        List<UserTask> allTasks = DataManager.getInstance().getTasks();
+        tasks = new ArrayList<>();
+        for (UserTask task : allTasks) {
+            if(task.getStatus() == UserTask.Status.DOING)
+            if (task.getDoers().contains(((MainActivity)activity).getCurrentUserId())) {
+                tasks.add(task);
+            }
+        }
+        tasksAdapter.update(tasks);
     }
 }
