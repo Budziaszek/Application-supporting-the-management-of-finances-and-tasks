@@ -83,7 +83,7 @@ public class TaskPageFragment extends BasicFragment {
                     @Override
                     public void onClick(int position) {
                         ((MainActivity) activity).setCurrentTask(tasks.get(position));
-                        ((MainActivity) activity).startFragment(DisplayTaskFragment.class);
+                        ((MainActivity) activity).startFragment(TaskFragment.class);
                     }
                     @Override
                     public void onLongClick(int position){

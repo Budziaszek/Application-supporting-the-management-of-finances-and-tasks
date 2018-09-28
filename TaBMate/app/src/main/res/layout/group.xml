@@ -8,7 +8,7 @@
     android:background="@drawable/gradient_background_trio">
 
     <TextView
-        android:id="@+id/display_title"
+        android:id="@+id/details_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
@@ -22,7 +22,7 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:layout_below="@id/display_title"
+        android:layout_below="@id/details_title"
         android:background="@color/colorAccent" />
 
     <ScrollView

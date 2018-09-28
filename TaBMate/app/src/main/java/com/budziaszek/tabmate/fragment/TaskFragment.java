@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.app.DatePickerDialog;
 
@@ -27,17 +28,15 @@ import com.budziaszek.tabmate.firestoreData.User;
 import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.view.KeyboardManager;
+import com.budziaszek.tabmate.view.adapter.GroupSpinnerAdapter;
 import com.budziaszek.tabmate.view.adapter.MembersItemsAdapter;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Calendar;
 
-public class DisplayTaskFragment extends BasicFragment implements DatePickerDialog.OnDateSetListener{
+public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDateSetListener {
 
     private static final String TAG = "DisplayTaskProcedure";
     private Activity activity;
@@ -49,11 +48,16 @@ public class DisplayTaskFragment extends BasicFragment implements DatePickerDial
     private Button joinTask;
 
     private Boolean isEdited;
+    private Boolean isCreated;
+
     private TextView taskTitle;
     private TextView taskDescription;
     private TextView taskTitleInput;
     private TextView taskDescriptionInput;
+    private TextView taskStatus;
     private TextView taskDeadline;
+    private TextView taskGroup;
+    private Spinner taskGroupInput;
 
     private MembersItemsAdapter doersAdapter;
     private List<User> doers = new ArrayList<>();
@@ -64,7 +68,7 @@ public class DisplayTaskFragment extends BasicFragment implements DatePickerDial
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "Created");
-        fView = inflater.inflate(R.layout.task_display, container, false);
+        fView = inflater.inflate(R.layout.task, container, false);
 
         activity = getActivity();
         task = ((MainActivity) activity).getCurrentTask();
@@ -73,9 +77,33 @@ public class DisplayTaskFragment extends BasicFragment implements DatePickerDial
         taskDescription = fView.findViewById(R.id.task_description);
         taskTitleInput = fView.findViewById(R.id.task_title_input);
         taskDescriptionInput = fView.findViewById(R.id.task_description_input);
+        taskStatus = fView.findViewById(R.id.task_status);
         taskDeadline = fView.findViewById(R.id.task_deadline);
+        taskGroup = fView.findViewById(R.id.task_group);
+        taskGroupInput = fView.findViewById(R.id.spinner_group);
 
-        setEditing(false);
+        // Add task
+        if (task == null) {
+            List<Group> groupsList = DataManager.getInstance().getGroups();
+            Group groups[] = new Group[groupsList.size()];
+            groups = groupsList.toArray(groups);
+
+            GroupSpinnerAdapter adapter = new GroupSpinnerAdapter(getActivity(),
+                    android.R.layout.simple_spinner_item, groups);
+            adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+
+            taskGroupInput.setAdapter(adapter);
+
+            fView.findViewById(R.id.doers_layout).setVisibility(View.INVISIBLE);
+            TextView title = fView.findViewById(R.id.details_title);
+            title.setText(R.string.add_new_task);
+            task = new UserTask("", "", "", "", new ArrayList<>(), new ArrayList<>(), UserTask.Status.TODO);
+            isCreated = true;
+            setEditing(true);
+        } else {
+            isCreated = false;
+            setEditing(false);
+        }
 
         // Doers
         RecyclerView membersRecycler = fView.findViewById(R.id.doers_list);
@@ -148,11 +176,13 @@ public class DisplayTaskFragment extends BasicFragment implements DatePickerDial
         int id = item.getItemId();
 
         if (id == R.id.action_edit) {
+            fView.findViewById(R.id.doers_layout).setVisibility(View.INVISIBLE);
             setEditing(true);
             activity.invalidateOptionsMenu();
             return true;
-        } else if (id == R.id.action_save){
-            if(update()){
+        } else if (id == R.id.action_save) {
+            fView.findViewById(R.id.doers_layout).setVisibility(View.VISIBLE);
+            if (update()) {
                 setEditing(false);
                 activity.invalidateOptionsMenu();
                 KeyboardManager.hideKeyboard(activity);
@@ -167,6 +197,7 @@ public class DisplayTaskFragment extends BasicFragment implements DatePickerDial
      */
     private void showTask() {
         // Details
+
         taskTitle.setText(task.getTitle());
         taskDescription.setText(task.getDescription());
         taskTitleInput.setText(task.getTitle());
@@ -175,7 +206,7 @@ public class DisplayTaskFragment extends BasicFragment implements DatePickerDial
 
         TextView taskGroup = fView.findViewById(R.id.task_group);
         Group group = DataManager.getInstance().getGroup(task.getGroup());
-        if(group != null)
+        if (group != null)
             taskGroup.setText(group.getName());
 
         //Status
@@ -186,7 +217,7 @@ public class DisplayTaskFragment extends BasicFragment implements DatePickerDial
         doers = new ArrayList<>();
         List<String> doersIds = task.getDoers();
 
-        if(doersIds.contains(((MainActivity)activity).getCurrentUserId())){
+        if (doersIds.contains(((MainActivity) activity).getCurrentUserId())) {
             joinTask.setVisibility(View.GONE);
         }
 
@@ -195,44 +226,64 @@ public class DisplayTaskFragment extends BasicFragment implements DatePickerDial
                 doers.add(allUsers.get(doer));
             }
         }
+
         doersAdapter.update(doers);
     }
 
-    private void setEditing(Boolean edit){
+    private void setEditing(Boolean edit) {
         isEdited = edit;
 
-        if(edit){
+        if (edit) {
             taskTitleInput.setVisibility(View.VISIBLE);
             taskDescriptionInput.setVisibility(View.VISIBLE);
 
             taskTitle.setVisibility(View.INVISIBLE);
             taskDescription.setVisibility(View.INVISIBLE);
 
-            taskTitleInput.setText(taskTitle.getText());
-            taskDescriptionInput.setText(taskDescription.getText());
+            if (isCreated) {
+                taskGroupInput.setVisibility(View.VISIBLE);
+                taskGroup.setVisibility(View.INVISIBLE);
+                taskTitleInput.setText("");
+                taskDescriptionInput.setText("");
+            } else {
+                taskGroupInput.setVisibility(View.INVISIBLE);
+                taskTitleInput.setText(taskTitle.getText());
+                taskDescriptionInput.setText(taskDescription.getText());
+            }
+
+            taskStatus.setOnClickListener(view -> {
+                task.setStatus(UserTask.getNextStatus(task.getStatus()));
+                taskStatus.setText(task.getStatus().name);
+            });
+            taskStatus.setBackgroundColor(getResources().getColor(R.color.colorAccentLight, activity.getTheme()));
 
             taskDeadline.setOnClickListener(view -> {
                 final Calendar calendar = Calendar.getInstance();
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
                 int month = calendar.get(Calendar.MONTH);
                 int year = calendar.get(Calendar.YEAR);
-                DatePickerDialog picker = new DatePickerDialog(getContext(), DisplayTaskFragment.this, year, month, day);
+                DatePickerDialog picker = new DatePickerDialog(getContext(), TaskFragment.this, year, month, day);
                 picker.show();
             });
             taskDeadline.setBackgroundColor(getResources().getColor(R.color.colorAccentLight, activity.getTheme()));
-        }
-        else{
+        } else {
             taskTitleInput.setVisibility(View.INVISIBLE);
             taskDescriptionInput.setVisibility(View.INVISIBLE);
+            taskGroupInput.setVisibility(View.INVISIBLE);
 
             taskTitle.setVisibility(View.VISIBLE);
+            taskTitle.setText(taskTitleInput.getText().toString());
+
             taskDescription.setVisibility(View.VISIBLE);
+            taskDescription.setText(taskDescriptionInput.getText().toString());
 
-            taskTitle.setText(taskTitleInput.getText());
-            taskDescription.setText(taskDescriptionInput.getText());
-
-            taskDeadline.setOnClickListener(view -> {});
+            taskDeadline.setOnClickListener(view -> {
+            });
             taskDeadline.setBackgroundColor(Color.TRANSPARENT);
+
+            taskStatus.setOnClickListener(view -> {
+            });
+            taskStatus.setBackgroundColor(Color.TRANSPARENT);
         }
     }
 
@@ -242,11 +293,19 @@ public class DisplayTaskFragment extends BasicFragment implements DatePickerDial
         if (!title.equals("")) {
             task.setTitle(title);
             task.setDescription(taskDescriptionInput.getText().toString());
-            firestoreRequests.updateTask(task,
-                    (x) -> {
-                    },
-                    (e) -> InformUser.informFailure(activity, e)
-            );
+            if (isCreated) {
+                task.setGroup(((Group) taskGroupInput.getSelectedItem()).getId());
+                firestoreRequests.addTask(task,
+                        (x) -> InformUser.inform(activity, R.string.task_created),
+                        (e) -> InformUser.informFailure(activity, e));
+                ((MainActivity) activity).startFragment(PagerTasksFragment.class);
+            } else {
+                firestoreRequests.updateTask(task,
+                        (x) -> {
+                        },
+                        (e) -> InformUser.informFailure(activity, e)
+                );
+            }
             DataManager.getInstance().refreshAllGroupsTasks();
             return true;
         } else {

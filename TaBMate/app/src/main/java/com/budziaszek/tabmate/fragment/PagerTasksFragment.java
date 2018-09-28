@@ -63,11 +63,12 @@ public class PagerTasksFragment extends BasicFragment {
 
         if (id == R.id.action_add_task) {
             ((MainActivity) activity).enableBack(true);
-            ((MainActivity) activity).startFragment(AddTaskFragment.class);
+            ((MainActivity) activity).setCurrentTask(null);
+            ((MainActivity) activity).startFragment(TaskFragment.class);
             return true;
-        }else if(id == R.id.action_find_tasks){
-            ((MainActivity)activity).enableBack(true);
-            ((MainActivity)activity).startFragment(FindTasksFragment.class);
+        } else if (id == R.id.action_find_tasks) {
+            ((MainActivity) activity).enableBack(true);
+            ((MainActivity) activity).startFragment(FindTasksFragment.class);
         }
         return false;
     }

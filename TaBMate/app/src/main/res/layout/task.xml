@@ -57,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
                     android:elevation="4dp"
                     android:padding="10dp"
                     android:text="@string/doers"
@@ -107,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
                     android:elevation="4dp"
                     android:padding="10dp"
                     android:text="@string/basic"
@@ -198,6 +198,16 @@
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="16sp" />
 
+                <Spinner
+                    android:id="@+id/spinner_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/label_task_group"
+                    android:padding="10dp"
+                    android:text="@string/group"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp"  />
+
             </RelativeLayout>
 
             <RelativeLayout
@@ -221,7 +231,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
                     android:elevation="4dp"
                     android:padding="10dp"
                     android:text="@string/performance"

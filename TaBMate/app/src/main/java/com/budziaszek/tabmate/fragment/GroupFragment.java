@@ -21,11 +21,13 @@ import android.widget.TextView;
 
 import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
+import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.activity.MainActivity;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.User;
 import com.budziaszek.tabmate.view.KeyboardManager;
+import com.budziaszek.tabmate.view.adapter.GroupSpinnerAdapter;
 import com.budziaszek.tabmate.view.adapter.MembersItemsAdapter;
 import com.budziaszek.tabmate.R;
 import com.google.android.gms.tasks.Task;
@@ -37,10 +39,12 @@ import java.util.List;
 import java.util.Map;
 
 //TODO administrator
-public class DisplayGroupFragment extends BasicFragment {
+public class GroupFragment extends BasicFragment {
 
     private static final String TAG = "DisplayGroupProcedure";
     private Activity activity;
+
+    private View fView;
 
     private Group group;
 
@@ -51,6 +55,8 @@ public class DisplayGroupFragment extends BasicFragment {
     private String newMemberId = null;
 
     private Boolean isEdited;
+    private Boolean isCreated;
+
     private TextView groupName;
     private TextView groupDescription;
     private TextView groupNameInput;
@@ -62,7 +68,7 @@ public class DisplayGroupFragment extends BasicFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "Created");
-        View fView = inflater.inflate(R.layout.group_display, container, false);
+        fView = inflater.inflate(R.layout.group, container, false);
 
         activity = getActivity();
         group = ((MainActivity) getActivity()).getCurrentGroup();
@@ -72,7 +78,18 @@ public class DisplayGroupFragment extends BasicFragment {
         groupNameInput = fView.findViewById(R.id.group_name_input);
         groupDescriptionInput = fView.findViewById(R.id.group_description_input);
 
-        setEditing(false);
+        // Add group
+        if (group == null) {
+            fView.findViewById(R.id.members_layout).setVisibility(View.INVISIBLE);
+            TextView title = fView.findViewById(R.id.details_title);
+            title.setText(R.string.create_group_short);
+            group = new Group("", "", new ArrayList<>());
+            isCreated = true;
+            setEditing(true);
+        } else {
+            isCreated = false;
+            setEditing(false);
+        }
 
         // Members
         RecyclerView membersRecycler = fView.findViewById(R.id.members_list);
@@ -128,9 +145,11 @@ public class DisplayGroupFragment extends BasicFragment {
 
         if (id == R.id.action_edit) {
             setEditing(true);
+            fView.findViewById(R.id.members_layout).setVisibility(View.INVISIBLE);
             activity.invalidateOptionsMenu();
             return true;
         } else if (id == R.id.action_save) {
+            fView.findViewById(R.id.members_layout).setVisibility(View.VISIBLE);
             if (update()) {
                 setEditing(false);
                 activity.invalidateOptionsMenu();
@@ -246,6 +265,7 @@ public class DisplayGroupFragment extends BasicFragment {
                         //Remove whole group
                         DataManager.getInstance().removeGroup(currentGroup.getId(), activity);
                     }
+                    DataManager.getInstance().refresh(((MainActivity)activity).getCurrentUserId());
                     activity.onBackPressed();
                 })
                 .setNegativeButton(android.R.string.no, (dialog, which) -> {
@@ -264,8 +284,14 @@ public class DisplayGroupFragment extends BasicFragment {
             groupName.setVisibility(View.INVISIBLE);
             groupDescription.setVisibility(View.INVISIBLE);
 
-            groupNameInput.setText(groupName.getText());
-            groupDescriptionInput.setText(groupDescription.getText());
+            if(isCreated) {
+                groupNameInput.setText("");
+                groupDescriptionInput.setText("");
+            }
+            else {
+                groupNameInput.setText(groupName.getText());
+                groupDescriptionInput.setText(groupDescription.getText());
+            }
         } else {
             groupNameInput.setVisibility(View.INVISIBLE);
             groupDescriptionInput.setVisibility(View.INVISIBLE);
@@ -285,11 +311,23 @@ public class DisplayGroupFragment extends BasicFragment {
             group.setName(name);
             group.setDescription(groupDescriptionInput.getText().toString());
 
-            firestoreRequests.updateGroup(group, group.getId(),
-                    (x) -> {
-                    },
-                    (e) -> InformUser.informFailure(activity, e)
-            );
+            if(isCreated){
+                group.addMember(((MainActivity)activity).getCurrentUserId());
+                firestoreRequests.addGroup(group,
+                        (documentReference) -> {
+                            InformUser.inform(activity, R.string.group_created);
+                            ((MainActivity) activity).enableBack(false);
+                            ((MainActivity) activity).startFragment(MainPageFragment.class);
+                        },
+                        (e) ->
+                            InformUser.informFailure(activity, e)
+                        );
+            }else {
+                firestoreRequests.updateGroup(group, group.getId(),
+                        (x) -> {},
+                        (e) -> InformUser.informFailure(activity, e)
+                );
+            }
             DataManager.getInstance().refresh(((MainActivity) getActivity()).getCurrentUserId());
             return true;
         } else {

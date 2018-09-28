@@ -48,7 +48,7 @@ public class UserTask {
         if(status == Status.DOING)
             return Status.DONE;
         if(status== Status.DONE)
-            return Status.DONE;
+            return Status.TODO;
         else
             return Status.UNKNOWN;
     }

@@ -21,7 +21,6 @@ import android.widget.TextView;
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.UserTask;
-import com.budziaszek.tabmate.fragment.AddGroupFragment;
 import com.budziaszek.tabmate.fragment.PagerTasksFragment;
 import com.budziaszek.tabmate.fragment.MainPageFragment;
 
@@ -144,6 +143,7 @@ public class MainActivity extends AppCompatActivity
     public Group getCurrentGroup() {
         return currentGroup;
     }
+
     public UserTask getCurrentTask() {
         return currentTask;
     }
@@ -202,21 +202,6 @@ public class MainActivity extends AppCompatActivity
     public void startFragment(Class fragmentClass) {
         try {
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent, (Fragment) fragmentClass.newInstance())
-                    .addToBackStack("Fragment")
-                    .commit();
-        } catch (Exception e) {
-            Log.e(TAG, "Error in fragment transaction " + e.getMessage());
-        }
-    }
-
-    /**
-     * Starts new edit fragment.
-     */
-    public void startEditFragment() {
-        try {
-            AddGroupFragment newFragment = AddGroupFragment.class.newInstance();
-            newFragment.setEdit();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, newFragment)
                     .addToBackStack("Fragment")
                     .commit();
         } catch (Exception e) {

@@ -123,13 +123,13 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
             @Override
             public void onItemLongClicked(int position) {
                 ((MainActivity) activity).setCurrentGroup(groups.get(position));
-                ((MainActivity) activity).startFragment(DisplayGroupFragment.class);
+                ((MainActivity) activity).startFragment(GroupFragment.class);
             }
 
             @Override
             public void onItemClicked(int position) {
                 ((MainActivity) activity).setCurrentGroup(groups.get(position));
-                ((MainActivity) activity).startFragment(DisplayGroupFragment.class);
+                ((MainActivity) activity).startFragment(GroupFragment.class);
             }
         });
 
@@ -141,7 +141,8 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         Button newGroupButton = fView.findViewById(R.id.new_group_button);
         newGroupButton.setOnClickListener(view -> {
             ((MainActivity) activity).enableBack(true);
-            ((MainActivity) activity).startFragment(AddGroupFragment.class);
+            ((MainActivity) activity).setCurrentGroup(null);
+            ((MainActivity) activity).startFragment(GroupFragment.class);
         });
     }
 
@@ -204,12 +205,12 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
                     @Override
                     public void onClick(int position) {
                         ((MainActivity) activity).setCurrentTask(tasks.get(position));
-                        ((MainActivity) activity).startFragment(DisplayTaskFragment.class);
+                        ((MainActivity) activity).startFragment(TaskFragment.class);
                     }
                     @Override
                     public void onLongClick(int position){
                         ((MainActivity) activity).setCurrentTask(tasks.get(position));
-                        ((MainActivity) activity).startFragment(DisplayTaskFragment.class);
+                        ((MainActivity) activity).startFragment(TaskFragment.class);
                     }
                 });
 
