@@ -4,13 +4,14 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.view.DataChangeListener;
+import com.budziaszek.tabmate.view.listener.DataChangeListener;
 import com.budziaszek.tabmate.view.InformUser;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,9 +29,9 @@ public class DataManager {
     private List<DataChangeListener> observers = new ArrayList<>();
 
     // All data from database
-    private Map<String, Group> groups;
+    private List <Group> groups;
     private Map<String, User> users;
-    private Map<String, UserTask> tasks;
+    private List<UserTask> tasks;
     private List<String> invitations;
 
     // Filtrated data and filters
@@ -81,6 +82,18 @@ public class DataManager {
         }
     }
 
+    private void informGroupItemInserted(int position){
+        for (DataChangeListener listener : observers) {
+            listener.groupItemInserted(position);
+        }
+    }
+
+    private void informGroupItemRemoved(int position){
+        for (DataChangeListener listener : observers) {
+            listener.groupItemRemoved(position);
+        }
+    }
+
     /**
      * Add new observer, that will be informed about data changes.
      *
@@ -92,13 +105,14 @@ public class DataManager {
     }
 
     public List<Group> getGroups() {
-        if (groups == null)
-            return null;
-        return new ArrayList<>(groups.values());
+        return groups;
     }
 
     public Group getGroup(String gid){
-        return groups.get(gid);
+        for(Group group:groups)
+            if(group.getId().equals(gid))
+                return group;
+        return null;
     }
 
     public List<String> getSelectedGroupsIds() {
@@ -110,9 +124,7 @@ public class DataManager {
     }
 
     public List<UserTask> getTasks() {
-        if (tasks == null)
-            return null;
-        return new ArrayList<>(tasks.values());
+        return tasks;
     }
 
     public List<UserTask> getFiltratedTasks() {
@@ -130,7 +142,7 @@ public class DataManager {
      * included in filtrated tasks set.
      */
     public void addFiltrationOptionGroup(String gid) {
-        for (UserTask task : tasks.values()) {
+        for (UserTask task : tasks) {
             if (gid.equals(task.getGroup())) {
                 filtratedTasks.add(task);
             }
@@ -158,10 +170,10 @@ public class DataManager {
      */
     public void refresh(String uid) {
         if (groups == null) {
-            groups = new TreeMap<>();
+            groups = new ArrayList<>();
             selectedGroupsIds = new ArrayList<>();
             users = new TreeMap<>();
-            tasks = new TreeMap<>();
+            tasks = new ArrayList<>();
             filtratedTasks = new ArrayList<>();
         }
         filtratedTasks.clear();
@@ -186,7 +198,7 @@ public class DataManager {
      */
     public void refreshAllGroupsTasks() {
         if (tasks == null) {
-            tasks = new TreeMap<>();
+            tasks = new ArrayList<>();
             filtratedTasks = new ArrayList<>();
         }
         filtratedTasks.clear();
@@ -194,7 +206,7 @@ public class DataManager {
 
         if (groups == null)
             return;
-        for (Group group : groups.values()) {
+        for (Group group : groups) {
             gid.add(group.getId());
         }
         for (String id : gid) {
@@ -261,22 +273,50 @@ public class DataManager {
      * Proceeds documents, checks and adds groups. Calls functions to refresh tasks and users.
      */
     private void addGroups(List<DocumentSnapshot> documents) {
+        List<Group> newGroups = new ArrayList<>();
         for (DocumentSnapshot document : documents) {
             Group group = document.toObject(Group.class);
             if (group != null) {
                 group.setId(document.getId());
-                groups.put(document.getId(), group);
-                selectedGroupsIds.add(group.getId());
-                informObserversGroupsChanged();
+                newGroups.add(group);
+
+                //informObserversGroupsChanged();
                 Log.d(TAG, "User group: " + group.getId());
                 refreshGroupTasks(group.getId());
-
                 for (String uid : group.getMembers()) {
                     firestoreRequests.getUser(uid, this::addUser);
                 }
             }
         }
+        groups.sort(Comparator.comparing(Group::getName));
+        newGroups.sort(Comparator.comparing(Group::getName));
+
+        if(groups.equals(newGroups)){
+            Log.d(TAG, "No group changes");
+            return;
+        }
+        //TODO optimalize
+        //Check if items added
+        for(Group group : newGroups) {
+            if (!groups.contains(group)) {
+                groups.add(group);
+                informGroupItemInserted(groups.lastIndexOf(group));
+                selectedGroupsIds.add(group.getId());
+                Log.d(TAG, "Group added");
+            }
+        }
+        //Check if items removed
+        for(Group group : groups)
+        {
+            if(!newGroups.contains(group)){
+                informGroupItemRemoved(groups.lastIndexOf(group));
+                selectedGroupsIds.remove(group.getId());
+                Log.d(TAG, "Group removed");
+            }
+        }
+        groups = newGroups;
     }
+
 
     /**
      * Proceeds documents, checks and adds tasks, apply filtration.
@@ -286,7 +326,7 @@ public class DataManager {
             UserTask task = document.toObject(UserTask.class);
             if (task != null) {
                 task.setId(document.getId());
-                tasks.put(document.getId(), task);
+                tasks.add(task);
                 checkIfMatchFiltration(task);
                 informObserversTasksChanged();
                 Log.d(TAG, "Task: " + task.getTitle() + " (" + task.getGroup() + ")");
