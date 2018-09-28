@@ -18,7 +18,7 @@
         android:layout_marginRight="5dp"
         android:layout_marginTop="5dp"
         android:background="@color/colorAccentLightSemi"
-        android:padding="20dp"
+        android:padding="10dp"
         android:text="name"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"
@@ -34,7 +34,7 @@
         android:layout_marginRight="5dp"
         android:background="@color/colorAccentLightSemi"
         android:paddingBottom="10dp"
-        android:paddingLeft="20dp"
+        android:paddingLeft="10dp"
         android:text="@string/email"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="14sp" />

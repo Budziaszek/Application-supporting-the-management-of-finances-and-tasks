@@ -3,7 +3,6 @@ package com.budziaszek.tabmate.fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,29 +14,24 @@ import android.view.ViewGroup;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
-import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.view.adapter.TasksPagesAdapter;
-import com.google.android.gms.tasks.Tasks;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class DisplayTasksFragment extends BasicFragment {
+public class PagerTasksFragment extends BasicFragment {
 
     private static final String TAG = "DisplayTasksProcedure";
     private Activity activity;
-    private TasksPagesAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "Created");
         View fView = inflater.inflate(R.layout.tasks_pager, container, false);
 
         activity = getActivity();
 
         // Pager initilization
         ViewPager viewPager = fView.findViewById(R.id.viewpager);
-        adapter = new TasksPagesAdapter(getActivity(), getChildFragmentManager());
+        TasksPagesAdapter adapter = new TasksPagesAdapter(getChildFragmentManager());
         viewPager.setAdapter(adapter);
 
         TabLayout tabLayout = fView.findViewById(R.id.sliding_tabs);

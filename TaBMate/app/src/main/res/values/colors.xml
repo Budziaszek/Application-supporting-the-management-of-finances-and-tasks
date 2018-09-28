@@ -13,7 +13,9 @@
     <color name="colorAccentDarkSemi">#aa0a2463</color>
     <color name="colorAccentSemi">#aa054478</color>
     <color name="colorAccentLightSemi">#aad7f9f1</color>
-    <color name="whiteSemi">#aaffffff</color>
+
+    <color name="colorSectionBackgroundLight">#3510495c</color>
+    <color name="colorSectionBackground">#c4e2ec</color>
 
     <color name="colorPrimaryTransparent">#502d728f</color>
     <color name="colorPrimaryDarkTransparent">#5010495c</color>
@@ -22,12 +24,13 @@
     <color name="colorAccentTransparent">#50054478</color>
     <color name="colorAccentLightTransparent">#50d7f9f1</color>
 
-    <color name="item_todo">#fffccc</color>
-    <color name="item_doing">#ccf4ff</color>
-    <color name="item_done">#d2ffcc</color>
 
-    <color name="item_todo_selected">#fff000</color>
-    <color name="item_doing_selected">#00c8ff</color>
-    <color name="item_done_selected">#1eff00</color>
+    <color name="colorItemTodo">#fffccc</color>
+    <color name="colorItemDoing">#ccf4ff</color>
+    <color name="colorItemDone">#d2ffcc</color>
+
+    <color name="colorItemTodoSelected">#fff000</color>
+    <color name="colorItemDoingSelected">#00c8ff</color>
+    <color name="colorItemDoneSelected">#1eff00</color>
 
 </resources>

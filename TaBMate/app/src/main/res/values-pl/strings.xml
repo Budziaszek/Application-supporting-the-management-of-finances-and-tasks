@@ -59,11 +59,12 @@
     <string name="leave_group">Opuść grupę</string>
     <string name="left_group">Opuściłeś grupę</string>
     <string name="confirm_leave_group">Jesteś pewien, że chcesz opuścić tą grupę?</string>
-    <string name="edit_group">Edytuj grupę</string>
+    <string name="edit">Edytuj</string>
     <string name="save">Zapisz</string>
     <string name="edit_profile">Edytuj profil</string>
     <string name="saved">Zmiany zostały zapisane</string>
     <string name="name_required">Nazwa jest wywmagana</string>
+    <string name="details_group">Szczegóły grupy</string>
 
     <!-- Related to tasks fragment-->
     <string name="add_new_task">Dodaj nowe zadanie</string>
@@ -71,6 +72,17 @@
     <string name="task_moved">Zadanie przeniesione na nastepny etap</string>
     <string name="find_tasks">Wyszukaj zadania</string>
     <string name="find">Szukaj</string>
+    <string name="details_task">Szczegóły zadania</string>
+    <string name="doers">Wykonawcy</string>
+    <string name="join_task">Dołącz do wykonywania</string>
+    <string name="status">Status</string>
+    <string name="group">Grupa</string>
+    <string name="performance">Wykonanie</string>
+    <string name="deadline">Termin ostateczny</string>
+
+    <string name="basic">Podstawowe</string>
+    <string name="title">Tytuł</string>
+    <string name="description">Opis</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Ustawienia</string>

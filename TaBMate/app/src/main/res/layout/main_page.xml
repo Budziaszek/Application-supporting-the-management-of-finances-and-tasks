@@ -44,10 +44,10 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/colorAccentLightTransparent">
+                    android:background="@color/colorSectionBackgroundLight">
 
                     <TextView
-                        android:id="@+id/tasks_title"
+                        android:id="@+id/basic_title"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
@@ -64,7 +64,7 @@
                         android:id="@+id/user_tasks_list"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_below="@+id/tasks_title"
+                        android:layout_below="@+id/basic_title"
                         android:elevation="0dp" />
 
                 </RelativeLayout>
@@ -77,7 +77,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="5dp"
-                    android:background="@color/colorAccentLightTransparent">
+                    android:background="@color/colorSectionBackgroundLight">
 
                     <TextView
                         android:id="@+id/groups_title"

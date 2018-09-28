@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
@@ -21,8 +20,8 @@ public class InvitationsItemsAdapter extends RecyclerView.Adapter<InvitationsIte
     private InvitationClickListener invitationClickListener;
     private List<String> invitationsList;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView groupName;
+    class MyViewHolder extends RecyclerView.ViewHolder {
+        private TextView groupName;
         private FloatingActionButton acceptInvitation;
         private FloatingActionButton removeInvitation;
 
@@ -31,20 +30,10 @@ public class InvitationsItemsAdapter extends RecyclerView.Adapter<InvitationsIte
             groupName = view.findViewById(R.id.group_name);
 
             acceptInvitation = view.findViewById(R.id.accept_button);
-            acceptInvitation.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    invitationClickListener.onAcceptClicked(getAdapterPosition());
-                }
-            });
+            acceptInvitation.setOnClickListener(view1 -> invitationClickListener.onAcceptClicked(getAdapterPosition()));
 
             removeInvitation = view.findViewById(R.id.remove_button);
-            removeInvitation.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    invitationClickListener.onRemoveClicked(getAdapterPosition());
-                }
-            });
+            removeInvitation.setOnClickListener(view12 -> invitationClickListener.onRemoveClicked(getAdapterPosition()));
         }
     }
 

@@ -11,18 +11,14 @@ import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.view.listener.GroupsClickListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.MyViewHolder> {
 
     private GroupsClickListener groupsClickListener;
     private List<Group> groupsList;
-    private int selectedItem;
-    private View itemView;
-    private ArrayList<RelativeLayout> layoutList = new ArrayList<>();
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView groupName;
         private RelativeLayout groupItemLayout;
 
@@ -30,45 +26,26 @@ public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.
             super(view);
 
             groupItemLayout = view.findViewById(R.id.group_item_layout);
-            groupItemLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //TODO use items view design change
-                    // All items
-                    /*for(RelativeLayout layout : layoutList) {
-                        layout.setBackgroundColor(itemView.getResources()
-                                .getColor(R.color.colorPrimarySemi, itemView.getContext().getTheme()));
-                    }
-                    // Selected item
-                    groupItemLayout.setBackgroundColor(itemView.getResources()
-                            .getColor(R.color.colorPrimary, itemView.getContext().getTheme()));*/
-                    groupsClickListener.onItemClicked(getAdapterPosition());
-                }
+            groupItemLayout.setOnClickListener(view1 ->
+                    groupsClickListener.onItemClicked(getAdapterPosition()));
+            groupItemLayout.setOnLongClickListener(view12 -> {
+                groupsClickListener.onItemLongClicked(getAdapterPosition());
+                return true;
             });
-            groupItemLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    groupsClickListener.onItemLongClicked(getAdapterPosition());
-                    return true;
-                }
-            });
-            if(selectedItem == getAdapterPosition())
-                groupItemLayout.callOnClick();
 
             groupName = view.findViewById(R.id.group_name);
         }
     }
 
 
-    public GroupsItemsAdapter(List<Group> groupsList, GroupsClickListener groupsClickListener, int selectedItem) {
+    public GroupsItemsAdapter(List<Group> groupsList, GroupsClickListener groupsClickListener) {
         this.groupsList = groupsList;
         this.groupsClickListener = groupsClickListener;
-        this.selectedItem = selectedItem;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        itemView = LayoutInflater.from(parent.getContext())
+        View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_group, parent, false);
 
         return new MyViewHolder(itemView);
@@ -78,7 +55,7 @@ public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Group group = groupsList.get(position);
         holder.groupName.setText(group.getName());
-        layoutList.add(holder.groupItemLayout);
+        //layoutList.add(holder.groupItemLayout);
     }
 
     @Override

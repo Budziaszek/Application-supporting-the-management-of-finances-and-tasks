@@ -2,6 +2,7 @@ package com.budziaszek.tabmate.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +36,8 @@ public class AddTaskFragment extends BasicFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View fView = inflater.inflate(R.layout.fragment_add_task, container, false);
+        Log.d(TAG, "Created");
+        View fView = inflater.inflate(R.layout.task_add, container, false);
 
         activity = getActivity();
 
@@ -46,7 +48,7 @@ public class AddTaskFragment extends BasicFragment {
         taskDescriptionEdit = fView.findViewById(R.id.edit_task_description);
 
         // Groups spinner
-        Spinner spinner = (Spinner) fView.findViewById(R.id.spinner_group);
+        Spinner spinner = fView.findViewById(R.id.spinner_group);
 
         List<Group> groupsList = DataManager.getInstance().getGroups();
         Group groups[] = new Group[groupsList.size()];
@@ -59,20 +61,16 @@ public class AddTaskFragment extends BasicFragment {
         spinner.setAdapter(adapter);
 
         Button submitTaskButton = fView.findViewById(R.id.submit_create_task);
-        submitTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String name = taskNameEdit.getText().toString();
-                if(!name.equals("")) {
-                    String description = taskDescriptionEdit.getText().toString();
-                    String group = ((Group) spinner.getSelectedItem()).getId();
+        submitTaskButton.setOnClickListener(view -> {
+            String name = taskNameEdit.getText().toString();
+            if (!name.equals("")) {
+                String description = taskDescriptionEdit.getText().toString();
+                String group = ((Group) spinner.getSelectedItem()).getId();
 
-                    KeyboardManager.hideKeyboard(getActivity());
-                    addNewTask(name, description, group);
-                }
-                else{
-                    InformUser.inform(activity, R.string.name_required);
-                }
+                KeyboardManager.hideKeyboard(getActivity());
+                addNewTask(name, description, group);
+            } else {
+                InformUser.inform(activity, R.string.name_required);
             }
         });
         return fView;
@@ -81,6 +79,7 @@ public class AddTaskFragment extends BasicFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "Created");
         setHasOptionsMenu(false);
     }
 
@@ -92,12 +91,12 @@ public class AddTaskFragment extends BasicFragment {
         UserTask newTask = new UserTask(name, description, group);
 
         firestoreRequests.addTask(newTask,
-                (documentReference) ->  {
+                (documentReference) -> {
                     showProgress(false);
                     InformUser.inform(getActivity(), R.string.task_created);
                     DataManager.getInstance().refreshAllGroupsTasks();
-                    ((MainActivity)activity).enableBack(false);
-                    ((MainActivity)activity).startFragment(DisplayTasksFragment.class);
+                    ((MainActivity) activity).enableBack(false);
+                    ((MainActivity) activity).startFragment(PagerTasksFragment.class);
                 },
                 (e) -> {
                     showProgress(false);

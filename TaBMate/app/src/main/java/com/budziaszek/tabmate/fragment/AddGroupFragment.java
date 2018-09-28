@@ -2,6 +2,7 @@ package com.budziaszek.tabmate.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +33,8 @@ public class AddGroupFragment extends BasicFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View fView = inflater.inflate(R.layout.fragment_add_group, container, false);
-
-
+        Log.d(TAG, "Created");
+        View fView = inflater.inflate(R.layout.group_add, container, false);
 
         activity = getActivity();
 
@@ -44,41 +44,33 @@ public class AddGroupFragment extends BasicFragment {
         groupNameEdit = fView.findViewById(R.id.edit_group_name);
         groupDescriptionEdit = fView.findViewById(R.id.edit_group_description);
 
-        if(edit){
+        if (edit) {
             TextView textView = fView.findViewById(R.id.create_title);
-            textView.setText(R.string.edit_group);
-            Group group = ((MainActivity)activity).getCurrentGroup();
+            textView.setText(R.string.edit);
+            Group group = ((MainActivity) activity).getCurrentGroup();
             oldGroup = group;
 
             groupNameEdit.setText(group.getName());
             groupDescriptionEdit.setText(group.getDescription());
 
             Button submitGroupButton = fView.findViewById(R.id.submit_create_group);
-            submitGroupButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String name = groupNameEdit.getText().toString();
-                    String description = groupDescriptionEdit.getText().toString();
-                    KeyboardManager.hideKeyboard(getActivity());
-                    editGroup(name, description);
-                }
+            submitGroupButton.setOnClickListener(view -> {
+                String name = groupNameEdit.getText().toString();
+                String description = groupDescriptionEdit.getText().toString();
+                KeyboardManager.hideKeyboard(getActivity());
+                editGroup(name, description);
             });
-        }
-        else {
+        } else {
             Button submitGroupButton = fView.findViewById(R.id.submit_create_group);
-            submitGroupButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String name = groupNameEdit.getText().toString();
-                    if(!name.equals("")) {
-                        String description = groupDescriptionEdit.getText().toString();
-                        String id = ((MainActivity) getActivity()).getCurrentUserId();
-                        KeyboardManager.hideKeyboard(getActivity());
-                        addNewGroup(id, name, description);
-                    }
-                    else{
-                        InformUser.inform(activity, R.string.name_required);
-                    }
+            submitGroupButton.setOnClickListener(view -> {
+                String name = groupNameEdit.getText().toString();
+                if (!name.equals("")) {
+                    String description = groupDescriptionEdit.getText().toString();
+                    String id = ((MainActivity) getActivity()).getCurrentUserId();
+                    KeyboardManager.hideKeyboard(getActivity());
+                    addNewGroup(id, name, description);
+                } else {
+                    InformUser.inform(activity, R.string.name_required);
                 }
             });
         }
@@ -100,11 +92,11 @@ public class AddGroupFragment extends BasicFragment {
         newGroup.addMember(id);
 
         firestoreRequests.addGroup(newGroup,
-                (documentReference) ->  {
+                (documentReference) -> {
                     showProgress(false);
                     InformUser.inform(activity, R.string.group_created);
-                    ((MainActivity)activity).enableBack(false);
-                    ((MainActivity)activity).startFragment(MainPageFragment.class);
+                    ((MainActivity) activity).enableBack(false);
+                    ((MainActivity) activity).startFragment(MainPageFragment.class);
                 },
                 (e) -> {
                     showProgress(false);
@@ -121,19 +113,19 @@ public class AddGroupFragment extends BasicFragment {
         newGroup.setMembers(oldGroup.getMembers());
 
         firestoreRequests.updateGroup(newGroup, oldGroup.getId(),
-                (Void) ->  {
+                (Void) -> {
                     showProgress(false);
                     InformUser.inform(activity, R.string.saved);
-                    ((MainActivity)activity).enableBack(false);
-                    ((MainActivity)activity).startFragment(MainPageFragment.class);
+                    ((MainActivity) activity).enableBack(false);
+                    ((MainActivity) activity).startFragment(MainPageFragment.class);
                 },
-                (e) ->{
+                (e) -> {
                     showProgress(false);
                     InformUser.informFailure(getActivity(), e);
                 });
     }
 
-    public void setEdit(){
+    public void setEdit() {
         edit = true;
     }
 }

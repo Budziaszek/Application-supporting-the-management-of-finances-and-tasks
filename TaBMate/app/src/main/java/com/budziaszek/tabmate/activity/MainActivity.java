@@ -1,12 +1,11 @@
 package com.budziaszek.tabmate.activity;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -20,88 +19,41 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.firestoreData.User;
 import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.fragment.AddGroupFragment;
-import com.budziaszek.tabmate.fragment.AddTaskFragment;
-import com.budziaszek.tabmate.fragment.BasicFragment;
-import com.budziaszek.tabmate.fragment.DisplayGroupFragment;
-import com.budziaszek.tabmate.fragment.DisplayTasksFragment;
+import com.budziaszek.tabmate.fragment.PagerTasksFragment;
 import com.budziaszek.tabmate.fragment.MainPageFragment;
-import com.budziaszek.tabmate.view.DataChangeListener;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
-
+/**
+ * Activity with drawer. Starts new fragments, allow switching between drawer and back mode.
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String TAG = "MainProcedure";
+    private final static String TAG = " MainActivityProcedure";
 
+    // Drawer
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
-    private Boolean listenerIsRegistered;
+    private Boolean isListenerRegistered;
 
+    // Fragments
     private Class newFragment = null;
-    private Integer currentGroupIndex = 0;
 
+    // User data
+    private Group currentGroup;
+    private UserTask currentTask;
     private FirebaseUser user = null;
-
-    public void enableBack(boolean enable) {
-        if (enable) {
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-            // Remove hamburger
-            toggle.setDrawerIndicatorEnabled(false);
-            // Show back button
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            if (!listenerIsRegistered) {
-                toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.d(TAG, "Back arrow clicked");
-                        onBackPressed();
-                    }
-                });
-                listenerIsRegistered = true;
-            }
-
-        } else {
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            // Remove back button
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            // Show hamburger
-            toggle.setDrawerIndicatorEnabled(true);
-            // Remove the/any drawer toggle listener
-            toggle.setToolbarNavigationClickListener(null);
-            listenerIsRegistered = false;
-        }
-    }
-
-    public String getCurrentUserEmail() {
-        if (user != null)
-            return user.getEmail();
-        else
-            finish();
-        return null;
-    }
-
-    public String getCurrentUserId() {
-        if (user != null)
-            return user.getUid();
-        else
-            finish();
-        return null;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(null);
+        Log.d(TAG, "Created");
 
         setContentView(R.layout.activity_main);
         initializeDrawer();
@@ -137,9 +89,10 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_home) {
             newFragment = MainPageFragment.class;
         } else if (id == R.id.nav_dashboard) {
+            Log.d(TAG, "dashboard fragment");
             //TODO add dashboard fragment
         } else if (id == R.id.nav_tasks) {
-            newFragment = DisplayTasksFragment.class;
+            newFragment = PagerTasksFragment.class;
         } else if (id == R.id.nav_logOut) {
             alertAndLogOut();
         }
@@ -159,19 +112,93 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //getMenuInflater().inflate(R.menu.menu_groups, menu);
+        //getMenuInflater().inflate(R.menu.menu_details, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_edit_group) {
+        if (id == R.id.action_edit) {
             return false;
         }
         return false;
     }
 
+    public String getCurrentUserEmail() {
+        if (user != null)
+            return user.getEmail();
+        else
+            finish();
+        return null;
+    }
+
+    public String getCurrentUserId() {
+        if (user != null)
+            return user.getUid();
+        else
+            finish();
+        return null;
+    }
+
+    public Group getCurrentGroup() {
+        return currentGroup;
+    }
+    public UserTask getCurrentTask() {
+        return currentTask;
+    }
+
+    public void setCurrentGroup(Group group) {
+        currentGroup = group;
+    }
+
+    public void setCurrentTask(UserTask task) {
+        currentTask = task;
+    }
+
+    /**
+     * Switches between drawer and back mode.
+     *
+     * @param enable if true displays back icon instead of drawer (hamburger)
+     */
+    public void enableBack(boolean enable) {
+        if (enable) {
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            // Remove hamburger
+            toggle.setDrawerIndicatorEnabled(false);
+            // Show back button
+            ActionBar bar = getSupportActionBar();
+            if (bar != null) {
+                bar.setDisplayHomeAsUpEnabled(true);
+            }
+            if (!isListenerRegistered) {
+                toggle.setToolbarNavigationClickListener(v -> {
+                    Log.d(TAG, "Back arrow clicked");
+                    onBackPressed();
+                });
+                isListenerRegistered = true;
+            }
+
+        } else {
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            // Remove back button
+            ActionBar bar = getSupportActionBar();
+            if (bar != null) {
+                bar.setDisplayHomeAsUpEnabled(false);
+            }
+            // Show hamburger
+            toggle.setDrawerIndicatorEnabled(true);
+            // Remove the/any drawer toggle listener
+            toggle.setToolbarNavigationClickListener(null);
+            isListenerRegistered = false;
+        }
+    }
+
+    /**
+     * Starts new fragment.
+     *
+     * @param fragmentClass class of fragment that will be created and replaced.
+     */
     public void startFragment(Class fragmentClass) {
         try {
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent, (Fragment) fragmentClass.newInstance())
@@ -182,6 +209,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Starts new edit fragment.
+     */
     public void startEditFragment() {
         try {
             AddGroupFragment newFragment = AddGroupFragment.class.newInstance();
@@ -192,18 +222,6 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception e) {
             Log.e(TAG, "Error in fragment transaction " + e.getMessage());
         }
-    }
-
-    public Group getCurrentGroup() {
-        return DataManager.getInstance().getGroups().get(currentGroupIndex);
-    }
-
-    public int getCurrentGroupIndex() {
-        return currentGroupIndex;
-    }
-
-    public void setCurrentGroupIndex(int index) {
-        currentGroupIndex = index;
     }
 
     private void initializeDrawer() {
@@ -255,18 +273,14 @@ public class MainActivity extends AppCompatActivity
 
         builder.setTitle(R.string.log_out)
                 .setMessage(R.string.confirm_log_out)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        FirebaseAuth.getInstance().signOut();
-                        Intent myIntent = new Intent(MainActivity.this, LoginActivity.class);
-                        MainActivity.this.startActivity(myIntent);
-                        Log.d(TAG, "User logged out.");
-                        finish();
-                    }
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                    FirebaseAuth.getInstance().signOut();
+                    Intent myIntent = new Intent(MainActivity.this, LoginActivity.class);
+                    MainActivity.this.startActivity(myIntent);
+                    Log.d(TAG, "User logged out.");
+                    finish();
                 })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
+                .setNegativeButton(android.R.string.no, (dialog, which) -> {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();

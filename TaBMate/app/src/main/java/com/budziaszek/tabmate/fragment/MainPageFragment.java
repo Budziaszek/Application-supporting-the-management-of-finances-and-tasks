@@ -2,7 +2,6 @@ package com.budziaszek.tabmate.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,7 +52,9 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "Created");
         fView = inflater.inflate(R.layout.main_page, container, false);
+
         activity = getActivity();
 
         invitationsList.clear();
@@ -65,18 +66,15 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
         //Refresh
         swipeLayout = fView.findViewById(R.id.swipe_container);
-        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                groups = new ArrayList<>();
-                Log.d(TAG, "Ask for refresh groups and users");
-                DataManager.getInstance().refreshGroupsAndUsers(((MainActivity) activity).getCurrentUserId());
+        swipeLayout.setOnRefreshListener(() -> {
+            groups = new ArrayList<>();
+            Log.d(TAG, "Ask for refresh groups and users");
+            DataManager.getInstance().refresh(((MainActivity) activity).getCurrentUserId());
 
-                Log.d(TAG, "Ask for refresh invitations");
-                DataManager.getInstance().refreshInvitations(((MainActivity) activity).getCurrentUserId());
+            Log.d(TAG, "Ask for refresh invitations");
+            DataManager.getInstance().refreshInvitations(((MainActivity) activity).getCurrentUserId());
 
-                swipeLayout.setRefreshing(false);
-            }
+            swipeLayout.setRefreshing(false);
         });
         swipeLayout.setColorSchemeColors(
                 getResources().getColor(R.color.colorPrimary, getResources().newTheme()),
@@ -95,7 +93,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         instance.addObserver(this);
         if (instance.getGroups() == null) {
             Log.d(TAG, "Ask for refresh groups and users");
-            instance.refreshGroupsAndUsers(((MainActivity) activity).getCurrentUserId());
+            instance.refresh(((MainActivity) activity).getCurrentUserId());
         } else {
             groupsChanged();
             tasksChanged();
@@ -124,16 +122,16 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         groupsAdapter = new GroupsItemsAdapter(groups, new GroupsClickListener() {
             @Override
             public void onItemLongClicked(int position) {
-                ((MainActivity) activity).setCurrentGroupIndex(position);
+                ((MainActivity) activity).setCurrentGroup(groups.get(position));
                 ((MainActivity) activity).startFragment(DisplayGroupFragment.class);
             }
 
             @Override
             public void onItemClicked(int position) {
-                ((MainActivity) activity).setCurrentGroupIndex(position);
+                ((MainActivity) activity).setCurrentGroup(groups.get(position));
                 ((MainActivity) activity).startFragment(DisplayGroupFragment.class);
             }
-        }, ((MainActivity) activity).getCurrentGroupIndex());
+        });
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
         groupsRecycler.setLayoutManager(mLayoutManager);
@@ -141,12 +139,9 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         groupsRecycler.setAdapter(groupsAdapter);
 
         Button newGroupButton = fView.findViewById(R.id.new_group_button);
-        newGroupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainActivity) activity).enableBack(true);
-                ((MainActivity) activity).startFragment(AddGroupFragment.class);
-            }
+        newGroupButton.setOnClickListener(view -> {
+            ((MainActivity) activity).enableBack(true);
+            ((MainActivity) activity).startFragment(AddGroupFragment.class);
         });
     }
 
@@ -176,7 +171,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
                             showProgress(false);
                         });
                 DataManager.getInstance().refreshInvitations(((MainActivity) getActivity()).getCurrentUserId());
-                DataManager.getInstance().refreshGroupsAndUsers(((MainActivity) activity).getCurrentUserId());
+                DataManager.getInstance().refresh(((MainActivity) activity).getCurrentUserId());
 
             }
 
@@ -208,11 +203,13 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
                 new TasksClickListener() {
                     @Override
                     public void onClick(int position) {
-                        //TODO display task
+                        ((MainActivity) activity).setCurrentTask(tasks.get(position));
+                        ((MainActivity) activity).startFragment(DisplayTaskFragment.class);
                     }
                     @Override
                     public void onLongClick(int position){
-
+                        ((MainActivity) activity).setCurrentTask(tasks.get(position));
+                        ((MainActivity) activity).startFragment(DisplayTaskFragment.class);
                     }
                 });
 
@@ -238,7 +235,6 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
     public void tasksChanged(){
         tasks = new ArrayList<>();
         List<UserTask> allTasks = DataManager.getInstance().getTasks();
-        tasks = new ArrayList<>();
         for (UserTask task : allTasks) {
             if(task.getStatus() == UserTask.Status.DOING)
             if (task.getDoers().contains(((MainActivity)activity).getCurrentUserId())) {

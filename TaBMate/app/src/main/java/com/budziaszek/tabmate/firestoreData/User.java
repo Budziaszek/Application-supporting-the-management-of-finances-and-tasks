@@ -11,6 +11,7 @@ public class User {
     private List<String> invitations;
 
     public User() {
+        invitations = new ArrayList<>();
     }
 
     public User(String id, String name, String email) {

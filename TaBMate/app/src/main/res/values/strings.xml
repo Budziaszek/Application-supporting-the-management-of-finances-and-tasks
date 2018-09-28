@@ -58,11 +58,12 @@
     <string name="leave_group">Leave group</string>
     <string name="left_group">You left group</string>
     <string name="confirm_leave_group">Are you sure you want to leave this group?</string>
-    <string name="edit_group">Edit group</string>
+    <string name="edit">Edit</string>
     <string name="save">Save</string>
     <string name="edit_profile">Edit profile</string>
     <string name="saved">Changes saved</string>
     <string name="name_required">Name is required</string>
+    <string name="details_group">Group details</string>
 
 
     <!-- Related to tasks fragment-->
@@ -71,6 +72,17 @@
     <string name="task_moved">Task moved to next stage</string>
     <string name="find_tasks">Find tasks</string>
     <string name="find">Find</string>
+    <string name="details">Details</string>
+    <string name="basic">Basic</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="details_task">Task details</string>
+    <string name="doers">Doers</string>
+    <string name="join_task">Join task</string>
+    <string name="status">Status</string>
+    <string name="group">Group</string>
+    <string name="performance">Performance</string>
+    <string name="deadline">Deadline</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Settings</string>

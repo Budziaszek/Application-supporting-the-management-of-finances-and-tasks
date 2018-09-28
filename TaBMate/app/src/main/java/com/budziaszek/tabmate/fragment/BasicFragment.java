@@ -8,8 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 
-import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.view.DataChangeListener;
 
 public class BasicFragment extends Fragment implements DataChangeListener {

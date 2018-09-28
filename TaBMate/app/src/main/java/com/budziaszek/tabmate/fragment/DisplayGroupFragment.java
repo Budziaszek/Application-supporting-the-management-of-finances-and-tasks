@@ -2,12 +2,12 @@ package com.budziaszek.tabmate.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +25,7 @@ import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.activity.MainActivity;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.User;
-import com.budziaszek.tabmate.view.listener.MemberClickListener;
+import com.budziaszek.tabmate.view.KeyboardManager;
 import com.budziaszek.tabmate.view.adapter.MembersItemsAdapter;
 import com.budziaszek.tabmate.R;
 import com.google.android.gms.tasks.Task;
@@ -42,7 +42,7 @@ public class DisplayGroupFragment extends BasicFragment {
     private static final String TAG = "DisplayGroupProcedure";
     private Activity activity;
 
-    private View fView;
+    private Group group;
 
     private MembersItemsAdapter membersAdapter;
     private List<User> users = new ArrayList<>();
@@ -50,27 +50,35 @@ public class DisplayGroupFragment extends BasicFragment {
     private String newMemberEmail = null;
     private String newMemberId = null;
 
+    private Boolean isEdited;
+    private TextView groupName;
+    private TextView groupDescription;
+    private TextView groupNameInput;
+    private TextView groupDescriptionInput;
+
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        fView = inflater.inflate(R.layout.fragment_display_group, container, false);
+        Log.d(TAG, "Created");
+        View fView = inflater.inflate(R.layout.group_display, container, false);
 
         activity = getActivity();
+        group = ((MainActivity) getActivity()).getCurrentGroup();
 
-        mDisplayView = fView.findViewById(R.id.show_groups_layout);
-        mProgressView = fView.findViewById(R.id.progress_display);
+        groupName = fView.findViewById(R.id.group_name);
+        groupDescription = fView.findViewById(R.id.group_description);
+        groupNameInput = fView.findViewById(R.id.group_name_input);
+        groupDescriptionInput = fView.findViewById(R.id.group_description_input);
+
+        setEditing(false);
 
         // Members
-        RecyclerView membersRecycler = fView.findViewById(R.id.tasks_list);
-        membersAdapter = new MembersItemsAdapter(users, new MemberClickListener() {
-            @Override
-            public void onLeaveClicked(int position) {
-                //((MainActivity)activity).alertLeaveGroup();
-                alertLeaveGroup();
-                DataManager.getInstance().refreshGroupsAndUsers(((MainActivity)activity).getCurrentUserId());
-            }
+        RecyclerView membersRecycler = fView.findViewById(R.id.members_list);
+        membersAdapter = new MembersItemsAdapter(users, position -> {
+            alertLeaveGroup();
+            DataManager.getInstance().refresh(((MainActivity) activity).getCurrentUserId());
         }, ((MainActivity) activity).getCurrentUserId());
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
         membersRecycler.setLayoutManager(mLayoutManager);
@@ -78,12 +86,7 @@ public class DisplayGroupFragment extends BasicFragment {
         membersRecycler.setAdapter(membersAdapter);
 
         Button addMemberButton = fView.findViewById(R.id.add_member_button);
-        addMemberButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertNewMember();
-            }
-        });
+        addMemberButton.setOnClickListener(view -> alertNewMember());
 
         ((MainActivity) activity).enableBack(true);
         showGroup();
@@ -105,15 +108,34 @@ public class DisplayGroupFragment extends BasicFragment {
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.clear();    //remove all items
-        getActivity().getMenuInflater().inflate(R.menu.menu_groups, menu);
+        getActivity().getMenuInflater().inflate(R.menu.menu_details, menu);
+
+        MenuItem edit = menu.findItem(R.id.action_edit);
+        MenuItem save = menu.findItem(R.id.action_save);
+
+        if (isEdited) {
+            edit.setVisible(false);
+            save.setVisible(true);
+        } else {
+            edit.setVisible(true);
+            save.setVisible(false);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_edit_group) {
-            ((MainActivity) activity).startEditFragment();
+        if (id == R.id.action_edit) {
+            setEditing(true);
+            activity.invalidateOptionsMenu();
+            return true;
+        } else if (id == R.id.action_save) {
+            if (update()) {
+                setEditing(false);
+                activity.invalidateOptionsMenu();
+                KeyboardManager.hideKeyboard(activity);
+            }
             return true;
         }
         return false;
@@ -123,11 +145,6 @@ public class DisplayGroupFragment extends BasicFragment {
      * Displays current group data.
      */
     private void showGroup() {
-        Group group = ((MainActivity) activity).getCurrentGroup();
-
-        TextView groupName = fView.findViewById(R.id.group_name);
-        TextView groupDescription = fView.findViewById(R.id.group_description);
-
         groupName.setText(group.getName());
         groupDescription.setText(group.getDescription());
 
@@ -202,19 +219,11 @@ public class DisplayGroupFragment extends BasicFragment {
         builder.setView(container);
 
         // Set up the buttons
-        builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                newMemberEmail = input.getText().toString();
-                firestoreRequests.getUserByField("email", newMemberEmail, x -> checkInvitationTask(x));
-            }
+        builder.setPositiveButton("Send", (dialog, which) -> {
+            newMemberEmail = input.getText().toString();
+            firestoreRequests.getUserByField("email", newMemberEmail, this::checkInvitationTask);
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
     }
@@ -227,26 +236,67 @@ public class DisplayGroupFragment extends BasicFragment {
 
         builder.setTitle(R.string.leave_group)
                 .setMessage(R.string.confirm_leave_group)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Group currentGroup = ((MainActivity) activity).getCurrentGroup();
-                        if (currentGroup.getMembers().size() > 1) {
-                            //Remove only user
-                            DataManager.getInstance().removeGroupMember(((MainActivity) activity).getCurrentUserId(),
-                                    currentGroup.getId(), activity);
-                        } else {
-                            //Remove whole group
-                            DataManager.getInstance().removeGroup(currentGroup.getId(), activity);
-                        }
-                        ((MainActivity) activity).onBackPressed();
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                    Group currentGroup = ((MainActivity) activity).getCurrentGroup();
+                    if (currentGroup.getMembers().size() > 1) {
+                        //Remove only user
+                        DataManager.getInstance().removeGroupMember(((MainActivity) activity).getCurrentUserId(),
+                                currentGroup.getId(), activity);
+                    } else {
+                        //Remove whole group
+                        DataManager.getInstance().removeGroup(currentGroup.getId(), activity);
                     }
+                    activity.onBackPressed();
                 })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
+                .setNegativeButton(android.R.string.no, (dialog, which) -> {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
     }
+
+    private void setEditing(Boolean edit) {
+        isEdited = edit;
+
+        if (edit) {
+            groupNameInput.setVisibility(View.VISIBLE);
+            groupDescriptionInput.setVisibility(View.VISIBLE);
+
+            groupName.setVisibility(View.INVISIBLE);
+            groupDescription.setVisibility(View.INVISIBLE);
+
+            groupNameInput.setText(groupName.getText());
+            groupDescriptionInput.setText(groupDescription.getText());
+        } else {
+            groupNameInput.setVisibility(View.INVISIBLE);
+            groupDescriptionInput.setVisibility(View.INVISIBLE);
+
+            groupName.setVisibility(View.VISIBLE);
+            groupDescription.setVisibility(View.VISIBLE);
+
+            groupName.setText(groupNameInput.getText().toString());
+            groupDescription.setText(groupDescriptionInput.getText().toString());
+        }
+    }
+
+    private boolean update() {
+        String name = groupNameInput.getText().toString();
+
+        if (!name.equals("")) {
+            group.setName(name);
+            group.setDescription(groupDescriptionInput.getText().toString());
+
+            firestoreRequests.updateGroup(group, group.getId(),
+                    (x) -> {
+                    },
+                    (e) -> InformUser.informFailure(activity, e)
+            );
+            DataManager.getInstance().refresh(((MainActivity) getActivity()).getCurrentUserId());
+            return true;
+        } else {
+            InformUser.inform(activity, R.string.name_required);
+            return false;
+        }
+    }
+
 
 }

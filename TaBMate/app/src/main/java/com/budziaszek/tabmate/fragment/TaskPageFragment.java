@@ -2,7 +2,6 @@ package com.budziaszek.tabmate.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,7 +39,8 @@ public class TaskPageFragment extends BasicFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View fView = inflater.inflate(R.layout.fagment_display_tasks, container, false);
+        Log.d(TAG, "Created");
+        View fView = inflater.inflate(R.layout.tasks_page, container, false);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
@@ -64,14 +64,11 @@ public class TaskPageFragment extends BasicFragment {
 
         //Refresh
         swipeLayout = fView.findViewById(R.id.swipe_container);
-        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Log.d(TAG, "Ask for refresh tasks");
-                tasks = new ArrayList<>();
-                DataManager.getInstance().refreshAllGroupsTasks();
-                swipeLayout.setRefreshing(false);
-            }
+        swipeLayout.setOnRefreshListener(() -> {
+            Log.d(TAG, "Ask for refresh tasks");
+            tasks = new ArrayList<>();
+            DataManager.getInstance().refreshAllGroupsTasks();
+            swipeLayout.setRefreshing(false);
         });
         swipeLayout.setColorSchemeColors(
                 getResources().getColor(R.color.colorPrimary, getResources().newTheme()),
@@ -85,7 +82,8 @@ public class TaskPageFragment extends BasicFragment {
                 new TasksClickListener() {
                     @Override
                     public void onClick(int position) {
-                        //TODO display task
+                        ((MainActivity) activity).setCurrentTask(tasks.get(position));
+                        ((MainActivity) activity).startFragment(DisplayTaskFragment.class);
                     }
                     @Override
                     public void onLongClick(int position){
@@ -110,11 +108,6 @@ public class TaskPageFragment extends BasicFragment {
         tasksRecycler.setLayoutManager(mLayoutManager);
         tasksRecycler.setItemAnimator(new DefaultItemAnimator());
         tasksRecycler.setAdapter(tasksAdapter);
-
-        //TODO maybe use swipe controller somehow
-        /*SwipeController swipeController = new SwipeController();
-        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
-        itemTouchhelper.attachToRecyclerView(groupsRecycler);*/
 
         DataManager instance = DataManager.getInstance();
         instance.addObserver(this);

@@ -1,8 +1,14 @@
 package com.budziaszek.tabmate.firestoreData;
 
+import android.annotation.SuppressLint;
+
 import com.budziaszek.tabmate.R;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class UserTask {
@@ -14,6 +20,7 @@ public class UserTask {
     private ArrayList<String> tag;
     private ArrayList<String> doers;
     private Status status;
+    private Date date;
     //private String[] requirements;
     //time needed
 
@@ -81,12 +88,17 @@ public class UserTask {
         this.status = status;
     }
 
-    public void addTag(String tag){
+    /*public void addTag(String tag){
         this.tag.add(tag);
-    }
+    }*/
 
     public void addDoer(String id){
-        this.doers.add(id);
+        if(!this.doers.contains(id))
+            this.doers.add(id);
+    }
+
+    public void removeDoer(String id){
+        this.doers.remove(id);
     }
 
     public List<String> getDoers(){
@@ -116,6 +128,10 @@ public class UserTask {
         return status;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -134,5 +150,22 @@ public class UserTask {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public void setDate(Date date){
+        this.date = date;
+    }
+
+    public String getDateString(){
+        if(date == null){
+            return "Unknown";
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        return dateFormat.format(calendar.getTime());
     }
 }

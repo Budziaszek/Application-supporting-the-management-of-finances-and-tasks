@@ -24,18 +24,12 @@ public class MembersItemsAdapter extends RecyclerView.Adapter<MembersItemsAdapte
         public TextView email;
         private FloatingActionButton leaveButton;
 
-
         private MyViewHolder(View view) {
             super(view);
             title = view.findViewById(R.id.group_name);
             email = view.findViewById(R.id.email_item);
             leaveButton = view.findViewById(R.id.leave_button);
-            leaveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    clickListener.onLeaveClicked(getAdapterPosition());
-                }
-            });
+            leaveButton.setOnClickListener(view1 -> clickListener.onLeaveClicked(getAdapterPosition()));
         }
     }
 

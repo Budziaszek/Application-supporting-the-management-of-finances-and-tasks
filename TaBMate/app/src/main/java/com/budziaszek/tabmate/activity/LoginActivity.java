@@ -5,33 +5,24 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.User;
 import com.budziaszek.tabmate.view.KeyboardManager;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -64,15 +55,6 @@ public class LoginActivity extends Activity {
     private Boolean doRegister = false;
 
     /**
-     * Starts MainActivity. Called after successful login/register of if user is already logged in.
-     */
-    public void startMain() {
-        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-        LoginActivity.this.startActivity(myIntent);
-        finish();
-    }
-
-    /**
      * If register page is displayed, go to login page
      */
     @Override
@@ -92,6 +74,8 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "Created");
+
         setContentView(R.layout.activity_login);
         initializeForm();
 
@@ -103,72 +87,62 @@ public class LoginActivity extends Activity {
         doLoginTask("ananke.moro@gmail.com", "zabcia3");
     }
 
+
+    /**
+     * Starts MainActivity. Called after successful login/register of if user is already logged in.
+     */
+    public void startMain() {
+        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+        LoginActivity.this.startActivity(myIntent);
+        finish();
+    }
+
     private void initializeForm() {
         nameView = findViewById(R.id.user_name);
 
         emailView = findViewById(R.id.email);
         passwordView = findViewById(R.id.password);
-        passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attempt(false);
-                    return true;
-                }
-                return false;
+        passwordView.setOnEditorActionListener((textView, id, keyEvent) -> {
+            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
+                attempt(false);
+                return true;
             }
+            return false;
         });
         passwordConfirmView = findViewById(R.id.password_confirm);
-        passwordConfirmView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attempt(true);
-                    return true;
-                }
-                return false;
+        passwordConfirmView.setOnEditorActionListener((textView, id, keyEvent) -> {
+            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
+                attempt(true);
+                return true;
             }
+            return false;
         });
 
         emailRegisterButton = findViewById(R.id.email_register_button);
-        emailRegisterButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                KeyboardManager.hideKeyboard(LoginActivity.this);
-                attempt(true);
-            }
+        emailRegisterButton.setOnClickListener(view -> {
+            KeyboardManager.hideKeyboard(LoginActivity.this);
+            attempt(true);
         });
 
         emailSignUpButton = findViewById(R.id.email_sign_up_button);
-        emailSignUpButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                doRegister = true;
-                emailSignInButton.setVisibility(View.GONE);
-                emailSignUpButton.setVisibility(View.GONE);
-                nameView.setVisibility(View.VISIBLE);
-                nameView.requestFocus();
-                passwordConfirmView.setVisibility(View.VISIBLE);
-                emailRegisterButton.setVisibility(View.VISIBLE);
-            }
+        emailSignUpButton.setOnClickListener(view -> {
+            doRegister = true;
+            emailSignInButton.setVisibility(View.GONE);
+            emailSignUpButton.setVisibility(View.GONE);
+            nameView.setVisibility(View.VISIBLE);
+            nameView.requestFocus();
+            passwordConfirmView.setVisibility(View.VISIBLE);
+            emailRegisterButton.setVisibility(View.VISIBLE);
         });
 
         emailSignInButton = findViewById(R.id.email_sign_in_button);
-        emailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                KeyboardManager.hideKeyboard(LoginActivity.this);
-                attempt(false);
-            }
+        emailSignInButton.setOnClickListener(view -> {
+            KeyboardManager.hideKeyboard(LoginActivity.this);
+            attempt(false);
         });
 
         forgotPasswordButton = findViewById(R.id.forgot_password_button);
-        forgotPasswordButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertForgotPassword();
-            }
-        });
+        forgotPasswordButton.setOnClickListener(view -> alertForgotPassword());
 
         loginFormView = findViewById(R.id.login_form);
         progressView = findViewById(R.id.login_progress);
@@ -292,22 +266,19 @@ public class LoginActivity extends Activity {
     protected void doLoginTask(final String email, final String password) {
         showProgress(true);
         auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (!task.isSuccessful()) {
-                            Exception exception = task.getException();
-                            if (exception != null) {
-                                InformUser.informFailure(LoginActivity.this, exception);
-                                Log.e(TAG, "Login user failure.");
-                            }
-                            forgotPasswordButton.setVisibility(View.VISIBLE);
-                            showProgress(false);
-                        } else {
-                            Log.d(TAG, "Login user success.");
-                            showProgress(false);
-                            startMain();
+                .addOnCompleteListener(LoginActivity.this, task -> {
+                    if (!task.isSuccessful()) {
+                        Exception exception = task.getException();
+                        if (exception != null) {
+                            InformUser.informFailure(LoginActivity.this, exception);
+                            Log.e(TAG, "Login user failure.");
                         }
+                        forgotPasswordButton.setVisibility(View.VISIBLE);
+                        showProgress(false);
+                    } else {
+                        Log.d(TAG, "Login user success.");
+                        showProgress(false);
+                        startMain();
                     }
                 });
     }
@@ -319,38 +290,32 @@ public class LoginActivity extends Activity {
     protected void doRegisterTask(final String name, final String email, final String password) {
         showProgress(true);
         auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "Register user in Firestore success.");
-                            addUser(task.getResult().getUser().getUid(), name, email);
-                            currentUser = auth.getCurrentUser();
-                            sendVerificationEmail();
-                            doLoginTask(email, password);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Exception exception = task.getException();
-                            if (exception != null) {
-                                InformUser.informFailure(LoginActivity.this, task.getException());
-                                Log.e(TAG, "Sign in failure.");
-                            }
-                            showProgress(false);
+                .addOnCompleteListener(LoginActivity.this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "Register user in Firestore success.");
+                        addUser(task.getResult().getUser().getUid(), name, email);
+                        currentUser = auth.getCurrentUser();
+                        sendVerificationEmail();
+                        doLoginTask(email, password);
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Exception exception = task.getException();
+                        if (exception != null) {
+                            InformUser.informFailure(LoginActivity.this, task.getException());
+                            Log.e(TAG, "Sign in failure.");
                         }
+                        showProgress(false);
                     }
                 });
     }
 
     private void sendVerificationEmail() {
         currentUser.sendEmailVerification()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            InformUser.inform(LoginActivity.this, R.string.verification_email_sent);
-                            Log.d(TAG, "Verification email sent.");
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        InformUser.inform(LoginActivity.this, R.string.verification_email_sent);
+                        Log.d(TAG, "Verification email sent.");
                     }
                 });
     }
@@ -390,27 +355,16 @@ public class LoginActivity extends Activity {
         builder.setView(container);
 
         // Set up the buttons
-        builder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String emailAddress = input.getText().toString();
-                auth.sendPasswordResetEmail(emailAddress)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    InformUser.inform(LoginActivity.this, R.string.email_reset_sent);
-                                }
-                            }
-                        });
-            }
+        builder.setPositiveButton(R.string.send, (dialog, which) -> {
+            String emailAddress = input.getText().toString();
+            auth.sendPasswordResetEmail(emailAddress)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            InformUser.inform(LoginActivity.this, R.string.email_reset_sent);
+                        }
+                    });
         });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
 
         builder.show();
     }

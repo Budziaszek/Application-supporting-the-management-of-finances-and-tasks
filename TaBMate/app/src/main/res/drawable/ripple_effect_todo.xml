@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/item_todo_selected"
+    android:color="@color/colorItemTodoSelected"
     >
     <item android:id="@android:id/mask"
-        android:drawable="@color/item_todo_selected"
+        android:drawable="@color/colorItemTodoSelected"
         >
     </item>
     <item
-        android:drawable="@color/item_todo">
+        android:drawable="@color/colorItemTodo">
     </item>
 
 </ripple>
