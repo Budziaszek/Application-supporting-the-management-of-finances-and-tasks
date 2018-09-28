@@ -8,7 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 
-import com.budziaszek.tabmate.view.listener.DataChangeListener;
+import com.budziaszek.tabmate.view.DataChangeListener;
 
 public class BasicFragment extends Fragment implements DataChangeListener {
 
@@ -61,13 +61,4 @@ public class BasicFragment extends Fragment implements DataChangeListener {
 
     }
 
-    @Override
-    public void groupItemInserted(int position) {
-
-    }
-
-    @Override
-    public void groupItemRemoved(int position) {
-
-    }
 }

@@ -2,8 +2,6 @@ package com.budziaszek.tabmate.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
@@ -21,7 +17,7 @@ import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.UserTask;
-import com.budziaszek.tabmate.view.listener.DataChangeListener;
+import com.budziaszek.tabmate.view.DataChangeListener;
 import com.budziaszek.tabmate.view.adapter.GroupsItemsAdapter;
 import com.budziaszek.tabmate.view.adapter.TasksItemsAdapter;
 import com.budziaszek.tabmate.view.listener.GroupsClickListener;
@@ -61,13 +57,17 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
         activity = getActivity();
 
+        invitationsList.clear();
+        groups.clear();
+        tasks.clear();
+
         mDisplayView = fView.findViewById(R.id.user_groups_layout);
         mProgressView = fView.findViewById(R.id.progress_groups);
 
         //Refresh
         swipeLayout = fView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(() -> {
-            //groups = new ArrayList<>();
+            groups = new ArrayList<>();
             Log.d(TAG, "Ask for refresh groups and users");
             DataManager.getInstance().refresh(((MainActivity) activity).getCurrentUserId());
 
@@ -87,22 +87,22 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         setRecyclerInvitations();
         setRecyclerTasks();
 
+        groups = new ArrayList<>();
+
         DataManager instance = DataManager.getInstance();
         instance.addObserver(this);
         if (instance.getGroups() == null) {
             Log.d(TAG, "Ask for refresh groups and users");
             instance.refresh(((MainActivity) activity).getCurrentUserId());
         } else {
-            Log.d(TAG, "Get groups and users");
-            groups = DataManager.getInstance().getGroups();
-            groupsAdapter.update(groups);
+            groupsChanged();
+            tasksChanged();
         }
 
         if (instance.getInvitations() == null) {
             Log.d(TAG, "Ask for refresh invitations");
             instance.refreshInvitations(((MainActivity) activity).getCurrentUserId());
         } else {
-            Log.d(TAG, "Get invitations");
             invitationsChanged();
         }
 
@@ -119,7 +119,6 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
     private void setRecyclerGroups() {
         RecyclerView groupsRecycler = fView.findViewById(R.id.groups_list);
-
         groupsAdapter = new GroupsItemsAdapter(groups, new GroupsClickListener() {
             @Override
             public void onItemLongClicked(int position) {
@@ -235,7 +234,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
     @Override
     public void tasksChanged(){
-        /**/tasks = new ArrayList<>();
+        tasks = new ArrayList<>();
         List<UserTask> allTasks = DataManager.getInstance().getTasks();
         for (UserTask task : allTasks) {
             if(task.getStatus() == UserTask.Status.DOING)
@@ -244,25 +243,5 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
             }
         }
         tasksAdapter.update(tasks);
-    }
-
-    @Override
-    public void groupItemInserted(int position) {
-        groups = DataManager.getInstance().getGroups();
-        if(groups.size() == 1)
-            groupsAdapter.update(groups);
-        else {
-            groupsAdapter.addItem(position, groups.get(position));
-        }
-    }
-
-    @Override
-    public void groupItemRemoved(int position) {
-        groups = DataManager.getInstance().getGroups();
-        if(groups.size() == 1)
-            groupsAdapter.update(groups);
-        else {
-            groupsAdapter.removeItem(position);
-        }
     }
 }
