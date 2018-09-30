@@ -17,9 +17,10 @@ public class UserTask {
     private String title;
     private String description;
     private String group;
-    private ArrayList<String> tag;
+    //private ArrayList<String> tag;
     private ArrayList<String> doers;
     private Status status;
+    private Status statusBeforeArchive;
     private Date date;
     //private String[] requirements;
     //time needed
@@ -29,7 +30,7 @@ public class UserTask {
         TODO(0, "ToDo", R.drawable.ripple_effect_todo),
         DOING(1, "Doing",  R.drawable.ripple_effect_doing),
         DONE(2, "Done",  R.drawable.ripple_effect_done),
-        UNKNOWN(3, "Unknown",  R.drawable.ripple_effect_todo);
+        ARCHIVED(3, "Archived",  R.drawable.ripple_effect_archived);
 
         public int status;
         public String name;
@@ -47,10 +48,30 @@ public class UserTask {
             return Status.DOING;
         if(status == Status.DOING)
             return Status.DONE;
-        if(status== Status.DONE)
+        if(status == Status.DONE)
+            return Status.ARCHIVED;
+        if(status == Status.ARCHIVED)
             return Status.TODO;
         else
-            return Status.UNKNOWN;
+            return Status.TODO;
+    }
+
+    public void setNextStatus(){
+        if(status == Status.TODO)
+            status = Status.DOING;
+        else if(status == Status.DOING)
+            status = Status.DONE;
+        else if(status == Status.DONE)
+            setArchived();
+        else if(status == Status.ARCHIVED)
+            status = Status.TODO;
+        else
+            status = Status.TODO;
+    }
+
+    public void setArchived(){
+        statusBeforeArchive = status;
+        status = Status.ARCHIVED;
     }
 
     public void setId(String id){
@@ -65,9 +86,9 @@ public class UserTask {
         this.title = null;
         this.description = null;
         this.group = null;
-        this.tag = null;
+        //this.tag = null;
         this.doers = new ArrayList<>();
-        this.status = Status.UNKNOWN;
+        this.status = Status.TODO;
         //this.requirements = null;
     }
 
@@ -78,12 +99,12 @@ public class UserTask {
         this.status = Status.TODO;
     }
 
-    public UserTask(String id, String title, String description, String group, ArrayList<String> tag, ArrayList<String> doers, Status status) {
+    public UserTask(String id, String title, String description, String group, /*ArrayList<String> tag,*/ ArrayList<String> doers, Status status) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.group = group;
-        this.tag = tag;
+        //this.tag = tag;
         this.doers = doers;
         this.status = status;
     }
@@ -120,12 +141,16 @@ public class UserTask {
         return group;
     }
 
-    public ArrayList<String> getTag() {
+   /* public ArrayList<String> getTag() {
         return tag;
-    }
+    }*/
 
     public Status getStatus() {
         return status;
+    }
+
+    public Status getStatusBeforeArchive() {
+        return statusBeforeArchive;
     }
 
     public Date getDate() {
@@ -144,9 +169,9 @@ public class UserTask {
         this.group = group;
     }
 
-    public void setTag(ArrayList<String> tag) {
+    /*public void setTag(ArrayList<String> tag) {
         this.tag = tag;
-    }
+    }*/
 
     public void setStatus(Status status) {
         this.status = status;
@@ -167,5 +192,18 @@ public class UserTask {
         @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
         return dateFormat.format(calendar.getTime());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj.getClass() != UserTask.class)
+            return false;
+
+        if(id.equals(((UserTask)obj).id))
+            if(title.equals(((UserTask)obj).title))
+                if (description.equals(((UserTask)obj).description))
+                    return (group.equals(((UserTask)obj).group));
+
+        return false;
     }
 }

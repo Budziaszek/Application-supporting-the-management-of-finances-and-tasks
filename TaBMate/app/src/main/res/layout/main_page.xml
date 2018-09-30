@@ -67,6 +67,21 @@
                         android:layout_below="@+id/basic_title"
                         android:elevation="0dp" />
 
+                    <Button
+                        android:id="@+id/all_tasks_button"
+                        style="?android:textAppearanceSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/user_tasks_list"
+                        android:layout_margin="5dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@color/colorAccentLightTransparent"
+                        android:padding="0dp"
+                        android:text="@string/all_tasks"
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorPrimaryDarkSemi"
+                        ndroid:textAllCaps="false" />
+
                 </RelativeLayout>
 
                 <RelativeLayout

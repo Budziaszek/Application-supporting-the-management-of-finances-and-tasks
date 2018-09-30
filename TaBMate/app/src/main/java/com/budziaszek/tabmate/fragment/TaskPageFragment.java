@@ -20,6 +20,7 @@ import com.budziaszek.tabmate.view.adapter.TasksItemsAdapter;
 import com.budziaszek.tabmate.view.listener.TasksClickListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class TaskPageFragment extends BasicFragment {
@@ -47,17 +48,24 @@ public class TaskPageFragment extends BasicFragment {
             String key = bundle.getString("status");
             Log.d(TAG, key);
             if (key == null) {
-                status = UserTask.Status.TODO;
+                status = UserTask.Status.ARCHIVED;
             } else if (key.equals(UserTask.Status.TODO.toString())) {
                 status = UserTask.Status.TODO;
             } else if (key.equals(UserTask.Status.DOING.toString())) {
                 status = UserTask.Status.DOING;
             } else if (key.equals(UserTask.Status.DONE.toString())) {
                 status = UserTask.Status.DONE;
+            } else if (key.equals(UserTask.Status.ARCHIVED.toString())) {
+                status = UserTask.Status.ARCHIVED;
             }
         }
-
-        activity = getParentFragment().getActivity();
+        else{
+            status = UserTask.Status.ARCHIVED;
+        }
+        if(getParentFragment()!= null)
+            activity = getParentFragment().getActivity();
+        else
+            activity = getActivity();
 
         mDisplayView = fView.findViewById(R.id.show_tasks_layout);
         mProgressView = fView.findViewById(R.id.progress_tasks);
@@ -66,7 +74,6 @@ public class TaskPageFragment extends BasicFragment {
         swipeLayout = fView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(() -> {
             Log.d(TAG, "Ask for refresh tasks");
-            tasks = new ArrayList<>();
             DataManager.getInstance().refreshAllGroupsTasks();
             swipeLayout.setRefreshing(false);
         });
@@ -89,7 +96,12 @@ public class TaskPageFragment extends BasicFragment {
                     public void onLongClick(int position){
                         //Move to next page
                         UserTask task = tasks.get(position);
-                        task.setStatus(UserTask.getNextStatus(status));
+                        if(task.getStatus() == UserTask.Status.ARCHIVED) {
+                            return;
+                        }
+                        task.setNextStatus();
+
+
                         if(status == UserTask.Status.TODO) {
                             task.addDoer(((MainActivity) activity).getCurrentUserId());
                         }
@@ -97,7 +109,7 @@ public class TaskPageFragment extends BasicFragment {
                                 (aVoid) -> {},
                                 (e) -> Log.d(TAG, e.getMessage())
                         );
-                        tasks.clear();
+
                         DataManager.getInstance().refreshAllGroupsTasks();
                         //TODO snackbar with undo
                         InformUser.inform(activity, R.string.task_moved);
@@ -125,14 +137,34 @@ public class TaskPageFragment extends BasicFragment {
 
     @Override
     public void tasksChanged() {
-        List<UserTask> allTasks = DataManager.getInstance().getFiltratedTasks();
-        tasks = new ArrayList<>();
+        //Select only one current page status
+        List<UserTask> allTasks = DataManager.getInstance().getTasks();
+        List<UserTask> newTasks = new ArrayList<>();
         for (UserTask task : allTasks) {
             if (task.getStatus().name.equals(status.name)) {
-                tasks.add(task);
+                    newTasks.add(task);
             }
         }
+        List<UserTask> oldTasks = tasks;
+        tasks = newTasks;
         tasksAdapter.update(tasks);
+
+        newTasks.sort(Comparator.comparing(UserTask::getTitle));
+        //TODO check what exactly changed
+        for(int i = 0; i < newTasks.size(); i++){
+            if(oldTasks.size() <= i) {
+                tasksAdapter.notifyItemInserted(i);
+            } else {
+                UserTask newTask = newTasks.get(i);
+                UserTask oldTask = oldTasks.get(i);
+                if (!oldTask.equals(newTask)) {
+                    tasksAdapter.notifyItemChanged(i);
+                }
+            }
+        }
+        for( int i = newTasks.size(); i< oldTasks.size(); i++){
+            tasksAdapter.notifyItemRemoved(i);
+        }
     }
 
 }

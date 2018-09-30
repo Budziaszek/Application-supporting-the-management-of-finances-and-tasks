@@ -83,6 +83,8 @@
     <string name="group">Group</string>
     <string name="performance">Performance</string>
     <string name="deadline">Deadline</string>
+    <string name="archived_tasks">Archived</string>
+    <string name="all_tasks">All tasks</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Settings</string>

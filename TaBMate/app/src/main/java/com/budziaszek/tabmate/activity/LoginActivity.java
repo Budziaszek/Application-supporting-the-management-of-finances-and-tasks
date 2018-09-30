@@ -84,7 +84,7 @@ public class LoginActivity extends Activity {
             startMain();
         }
 
-        doLoginTask("ananke.moro@gmail.com", "zabcia3");
+        //doLoginTask("ananke.moro@gmail.com", "zabcia3");
     }
 
 

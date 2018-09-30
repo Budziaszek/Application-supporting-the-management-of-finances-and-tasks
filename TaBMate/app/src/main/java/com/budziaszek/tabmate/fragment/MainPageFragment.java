@@ -27,6 +27,7 @@ import com.budziaszek.tabmate.view.adapter.InvitationsItemsAdapter;
 import com.budziaszek.tabmate.view.listener.TasksClickListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -57,17 +58,13 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
         activity = getActivity();
 
-        invitationsList.clear();
-        groups.clear();
-        tasks.clear();
-
         mDisplayView = fView.findViewById(R.id.user_groups_layout);
         mProgressView = fView.findViewById(R.id.progress_groups);
 
         //Refresh
         swipeLayout = fView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(() -> {
-            groups = new ArrayList<>();
+
             Log.d(TAG, "Ask for refresh groups and users");
             DataManager.getInstance().refresh(((MainActivity) activity).getCurrentUserId());
 
@@ -87,8 +84,6 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         setRecyclerInvitations();
         setRecyclerTasks();
 
-        groups = new ArrayList<>();
-
         DataManager instance = DataManager.getInstance();
         instance.addObserver(this);
         if (instance.getGroups() == null) {
@@ -99,12 +94,8 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
             tasksChanged();
         }
 
-        if (instance.getInvitations() == null) {
-            Log.d(TAG, "Ask for refresh invitations");
-            instance.refreshInvitations(((MainActivity) activity).getCurrentUserId());
-        } else {
-            invitationsChanged();
-        }
+        Log.d(TAG, "Ask for refresh invitations");
+        DataManager.getInstance().refreshInvitations(((MainActivity) activity).getCurrentUserId());
 
         showProgress(false);
 
@@ -144,6 +135,9 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
             ((MainActivity) activity).setCurrentGroup(null);
             ((MainActivity) activity).startFragment(GroupFragment.class);
         });
+
+        Button allTasksButton = fView.findViewById(R.id.all_tasks_button);
+        allTasksButton.setOnClickListener(view -> ((MainActivity) activity).startFragment(TasksPagerFragment.class));
     }
 
     private void setRecyclerInvitations() {
@@ -228,20 +222,59 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
     @Override
     public void groupsChanged() {
-        groups = DataManager.getInstance().getGroups();
+        List<Group> newGroups = DataManager.getInstance().getGroups();
+        List<Group> oldGroups = groups;
+        groups = newGroups;
         groupsAdapter.update(groups);
+
+        newGroups.sort(Comparator.comparing(Group::getName));
+        //TODO check what exactly changed
+        for(int i = 0; i < newGroups.size(); i++){
+            if(oldGroups.size() <= i) {
+                groupsAdapter.notifyItemInserted(i);
+            } else {
+                Group newGroup = newGroups.get(i);
+                Group oldGroup = oldGroups.get(i);
+                if (!oldGroup.equals(newGroup)) {
+                    groupsAdapter.notifyItemChanged(i);
+                }
+            }
+        }
+        for( int i = newGroups.size(); i< oldGroups.size(); i++){
+            groupsAdapter.notifyItemRemoved(i);
+        }
     }
 
     @Override
     public void tasksChanged(){
-        tasks = new ArrayList<>();
+        //Select only user's and in progress
         List<UserTask> allTasks = DataManager.getInstance().getTasks();
+        List<UserTask> newTasks = new ArrayList<>();
         for (UserTask task : allTasks) {
-            if(task.getStatus() == UserTask.Status.DOING)
-            if (task.getDoers().contains(((MainActivity)activity).getCurrentUserId())) {
-                tasks.add(task);
+            if (task.getStatus() == UserTask.Status.DOING)
+                if (task.getDoers().contains(((MainActivity) activity).getCurrentUserId())) {
+                    newTasks.add(task);
+                }
+        }
+        List<UserTask> oldTasks = tasks;
+        tasks = newTasks;
+        tasksAdapter.update(tasks);
+
+        newTasks.sort(Comparator.comparing(UserTask::getTitle));
+        //TODO check what exactly changed
+        for(int i = 0; i < newTasks.size(); i++){
+            if(oldTasks.size() <= i) {
+                tasksAdapter.notifyItemInserted(i);
+            } else {
+                UserTask newTask = newTasks.get(i);
+                UserTask oldTask = oldTasks.get(i);
+                if (!oldTask.equals(newTask)) {
+                    tasksAdapter.notifyItemChanged(i);
+                }
             }
         }
-        tasksAdapter.update(tasks);
+        for( int i = newTasks.size(); i< oldTasks.size(); i++){
+            tasksAdapter.notifyItemRemoved(i);
+        }
     }
 }

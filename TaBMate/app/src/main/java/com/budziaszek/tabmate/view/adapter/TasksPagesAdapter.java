@@ -8,12 +8,18 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.fragment.TaskPageFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TasksPagesAdapter extends FragmentStatePagerAdapter {
 
-    private String[] tabs = {"ToDo", "Doing", "Done"};
+    private List<String> tabs = new ArrayList<>();
 
     public TasksPagesAdapter(FragmentManager fm) {
         super(fm);
+        tabs.add("ToDo");
+        tabs.add("Doing");
+        tabs.add("Done");
     }
 
     @Override
@@ -30,6 +36,9 @@ public class TasksPagesAdapter extends FragmentStatePagerAdapter {
             case 2:
                 bundle.putString("status", UserTask.Status.DONE.name());
                 break;
+            case 3:
+                bundle.putString("status", UserTask.Status.ARCHIVED.name());
+                break;
         }
         taskPageFragment.setArguments(bundle);
         return taskPageFragment;
@@ -37,12 +46,20 @@ public class TasksPagesAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return tabs.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return tabs[position];
+        return tabs.get(position);
+    }
+
+    public void changeArchivedVisibility() {
+        if(tabs.contains("Archived"))
+            tabs.remove("Archived");
+        else
+            tabs.add("Archived");
+        notifyDataSetChanged();
     }
 
 }

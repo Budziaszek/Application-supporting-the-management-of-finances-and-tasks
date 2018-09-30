@@ -55,6 +55,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
     private TextView taskTitleInput;
     private TextView taskDescriptionInput;
     private TextView taskStatus;
+    private UserTask.Status newStatus;
     private TextView taskDeadline;
     private TextView taskGroup;
     private Spinner taskGroupInput;
@@ -72,6 +73,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
 
         activity = getActivity();
         task = ((MainActivity) activity).getCurrentTask();
+        newStatus = task.getStatus();
 
         taskTitle = fView.findViewById(R.id.task_title);
         taskDescription = fView.findViewById(R.id.task_description);
@@ -97,7 +99,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             fView.findViewById(R.id.doers_layout).setVisibility(View.INVISIBLE);
             TextView title = fView.findViewById(R.id.details_title);
             title.setText(R.string.add_new_task);
-            task = new UserTask("", "", "", "", new ArrayList<>(), new ArrayList<>(), UserTask.Status.TODO);
+            task = new UserTask("", "", "", "", new ArrayList<>(), UserTask.Status.TODO);
             isCreated = true;
             setEditing(true);
         } else {
@@ -212,6 +214,8 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         //Status
         TextView status = fView.findViewById(R.id.task_status);
         status.setText(task.getStatus().name);
+        if(task.getStatus() == UserTask.Status.ARCHIVED && task.getStatusBeforeArchive() != null)
+            status.append(" (" + task.getStatusBeforeArchive()+ ")");
 
         Map<String, User> allUsers = DataManager.getInstance().getUsers();
         doers = new ArrayList<>();
@@ -252,10 +256,11 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             }
 
             taskStatus.setOnClickListener(view -> {
-                task.setStatus(UserTask.getNextStatus(task.getStatus()));
-                taskStatus.setText(task.getStatus().name);
+                newStatus = UserTask.getNextStatus(newStatus);
+                taskStatus.setText(newStatus.name);
+                taskStatus.setBackground(getResources().getDrawable(newStatus.color, activity.getTheme()));
             });
-            taskStatus.setBackgroundColor(getResources().getColor(R.color.colorAccentLight, activity.getTheme()));
+            taskStatus.setBackground(getResources().getDrawable(task.getStatus().color, activity.getTheme()));
 
             taskDeadline.setOnClickListener(view -> {
                 final Calendar calendar = Calendar.getInstance();
@@ -293,12 +298,18 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         if (!title.equals("")) {
             task.setTitle(title);
             task.setDescription(taskDescriptionInput.getText().toString());
+
+            if(task.getStatus() != UserTask.Status.ARCHIVED && newStatus == UserTask.Status.ARCHIVED)
+                task.setArchived();
+            else
+                task.setStatus(newStatus);
+
             if (isCreated) {
                 task.setGroup(((Group) taskGroupInput.getSelectedItem()).getId());
                 firestoreRequests.addTask(task,
                         (x) -> InformUser.inform(activity, R.string.task_created),
                         (e) -> InformUser.informFailure(activity, e));
-                ((MainActivity) activity).startFragment(PagerTasksFragment.class);
+                ((MainActivity) activity).startFragment(TasksPagerFragment.class);
             } else {
                 firestoreRequests.updateTask(task,
                         (x) -> {

@@ -21,7 +21,7 @@ import android.widget.TextView;
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.UserTask;
-import com.budziaszek.tabmate.fragment.PagerTasksFragment;
+import com.budziaszek.tabmate.fragment.TasksPagerFragment;
 import com.budziaszek.tabmate.fragment.MainPageFragment;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     private Group currentGroup;
     private UserTask currentTask;
     private FirebaseUser user = null;
+    private Boolean isArchiveVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "dashboard fragment");
             //TODO add dashboard fragment
         } else if (id == R.id.nav_tasks) {
-            newFragment = PagerTasksFragment.class;
+            newFragment = TasksPagerFragment.class;
         } else if (id == R.id.nav_logOut) {
             alertAndLogOut();
         }
@@ -146,6 +147,14 @@ public class MainActivity extends AppCompatActivity
 
     public UserTask getCurrentTask() {
         return currentTask;
+    }
+
+    public Boolean getIsArchivedVisible(){
+        return isArchiveVisible;
+    }
+
+    public void changeIsArchivedVisible(){
+        isArchiveVisible = !isArchiveVisible;
     }
 
     public void setCurrentGroup(Group group) {

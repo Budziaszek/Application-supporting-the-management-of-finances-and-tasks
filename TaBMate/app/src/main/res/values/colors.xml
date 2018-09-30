@@ -28,9 +28,11 @@
     <color name="colorItemTodo">#fffccc</color>
     <color name="colorItemDoing">#ccf4ff</color>
     <color name="colorItemDone">#d2ffcc</color>
+    <color name="colorItemArchived">#d7d8e1</color>
 
     <color name="colorItemTodoSelected">#fff000</color>
     <color name="colorItemDoingSelected">#00c8ff</color>
     <color name="colorItemDoneSelected">#1eff00</color>
+    <color name="colorItemArchivedSelected">#6e6e76</color>
 
 </resources>

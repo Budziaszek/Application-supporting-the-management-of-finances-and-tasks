@@ -16,23 +16,31 @@ import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
 import com.budziaszek.tabmate.view.adapter.TasksPagesAdapter;
 
-public class PagerTasksFragment extends BasicFragment {
+public class TasksPagerFragment extends BasicFragment {
 
     private static final String TAG = "DisplayTasksProcedure";
     private Activity activity;
+    private TasksPagesAdapter adapter;
+    private ViewPager viewPager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         Log.d(TAG, "Created");
         View fView = inflater.inflate(R.layout.tasks_pager, container, false);
 
         activity = getActivity();
 
         // Pager initilization
-        ViewPager viewPager = fView.findViewById(R.id.viewpager);
-        TasksPagesAdapter adapter = new TasksPagesAdapter(getChildFragmentManager());
+        viewPager = fView.findViewById(R.id.viewpager);
+        adapter = new TasksPagesAdapter(getChildFragmentManager());
         viewPager.setAdapter(adapter);
+        if(((MainActivity)activity).getIsArchivedVisible()){
+            adapter.changeArchivedVisibility();
+            viewPager.setCurrentItem(adapter.getCount() - 1);
+        }
+
 
         TabLayout tabLayout = fView.findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -69,6 +77,12 @@ public class PagerTasksFragment extends BasicFragment {
         } else if (id == R.id.action_find_tasks) {
             ((MainActivity) activity).enableBack(true);
             ((MainActivity) activity).startFragment(FindTasksFragment.class);
+            return true;
+        } else if (id == R.id.action_archived_tasks) {
+            adapter.changeArchivedVisibility();
+            viewPager.setCurrentItem(adapter.getCount() - 1);
+            ((MainActivity)activity).changeIsArchivedVisible();
+            return true;
         }
         return false;
     }

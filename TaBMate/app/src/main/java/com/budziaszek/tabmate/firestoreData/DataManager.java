@@ -101,6 +101,10 @@ public class DataManager {
         return groups.get(gid);
     }
 
+    public UserTask getTask(String tid){
+        return tasks.get(tid);
+    }
+
     public List<String> getSelectedGroupsIds() {
         return selectedGroupsIds;
     }
@@ -165,6 +169,8 @@ public class DataManager {
             filtratedTasks = new ArrayList<>();
         }
         filtratedTasks.clear();
+        groups.clear();
+        tasks.clear();
 
         firestoreRequests.getGroupByField("members", uid, this::checkGroupsTask);
     }
@@ -261,21 +267,22 @@ public class DataManager {
      * Proceeds documents, checks and adds groups. Calls functions to refresh tasks and users.
      */
     private void addGroups(List<DocumentSnapshot> documents) {
+
         for (DocumentSnapshot document : documents) {
             Group group = document.toObject(Group.class);
+
             if (group != null) {
                 group.setId(document.getId());
                 groups.put(document.getId(), group);
                 selectedGroupsIds.add(group.getId());
-                informObserversGroupsChanged();
                 Log.d(TAG, "User group: " + group.getId());
                 refreshGroupTasks(group.getId());
-
                 for (String uid : group.getMembers()) {
                     firestoreRequests.getUser(uid, this::addUser);
                 }
             }
         }
+        informObserversGroupsChanged();
     }
 
     /**
@@ -288,11 +295,11 @@ public class DataManager {
                 task.setId(document.getId());
                 tasks.put(document.getId(), task);
                 checkIfMatchFiltration(task);
-                informObserversTasksChanged();
                 Log.d(TAG, "Task: " + task.getTitle() + " (" + task.getGroup() + ")");
 
             }
         }
+        informObserversTasksChanged();
     }
 
     /**

@@ -78,8 +78,6 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
     }
 
     public void update(List<UserTask> data) {
-        tasksList.clear();
-        tasksList.addAll(data);
-        notifyDataSetChanged();
+        tasksList = data;
     }
 }

@@ -64,8 +64,6 @@ public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.
     }
 
     public void update(List<Group> data) {
-        groupsList.clear();
-        groupsList.addAll(data);
-        notifyDataSetChanged();
+        groupsList = data;
     }
 }

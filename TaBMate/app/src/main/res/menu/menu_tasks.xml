@@ -12,4 +12,9 @@
             android:icon="@android:drawable/ic_menu_search"
             android:title="@string/find_tasks"
             app:showAsAction="ifRoom" />
+        <item
+            android:id="@+id/action_archived_tasks"
+            android:icon="@android:drawable/sym_contact_card"
+            android:title="@string/archived_tasks"
+            app:showAsAction="ifRoom" />
 </menu>

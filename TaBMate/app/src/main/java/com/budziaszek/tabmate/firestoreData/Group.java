@@ -9,7 +9,7 @@ public class Group {
     private String name;
     private String description;
     private List<String> members;
-    private List<UserTask> tasks = new ArrayList<>();
+    //private List<UserTask> tasks = new ArrayList<>();
     //private List<String> invitationsSent;
 
     public Group() {
@@ -49,9 +49,9 @@ public class Group {
         members.add(memberId);
     }
 
-    public List<UserTask> getTasks() {
-        return tasks;
-    }
+    //public List<UserTask> getTasks() {
+    //    return tasks;
+    //}
 
     /*public void setInvitationsSent(List<String> invitationsSent) {
         this.invitationsSent = invitationsSent;
@@ -73,11 +73,23 @@ public class Group {
         return members;
     }
 
-    public void setTasks(List<UserTask> tasks) {
-        this.tasks = tasks;
-    }
+    //public void setTasks(List<UserTask> tasks) {
+    //    this.tasks = tasks;
+    //}
 
     /*public List<String> getInvitationsSent() {
         return invitationsSent;
     }*/
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj.getClass() != Group.class)
+            return false;
+
+        if(id.equals(((Group)obj).id))
+            if(name.equals(((Group)obj).name))
+                return (description.equals(((Group)obj).description));
+
+        return false;
+    }
 }
