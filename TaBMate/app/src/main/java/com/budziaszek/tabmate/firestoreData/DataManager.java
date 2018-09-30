@@ -323,6 +323,16 @@ public class DataManager {
     }
 
     /**
+     * Removes group and informs about result.
+     */
+    public void removeTask(UserTask task, Activity activity) {
+        firestoreRequests.removeTask(task,
+                (aVoid) -> InformUser.inform(activity, R.string.task_removed),
+                (e) -> InformUser.informFailure(activity, e)
+        );
+    }
+
+    /**
      * Removes user from group and informs about result.
      */
     public void removeGroupMember(String user, String group, Activity activity) {

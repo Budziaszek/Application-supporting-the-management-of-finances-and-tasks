@@ -1,6 +1,7 @@
 package com.budziaszek.tabmate.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -163,13 +164,16 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
 
         MenuItem edit = menu.findItem(R.id.action_edit);
         MenuItem save = menu.findItem(R.id.action_save);
+        MenuItem remove = menu.findItem(R.id.action_remove);
 
         if (isEdited) {
             edit.setVisible(false);
             save.setVisible(true);
+            remove.setVisible(false);
         } else {
             edit.setVisible(true);
             save.setVisible(false);
+            remove.setVisible(true);
         }
     }
 
@@ -189,6 +193,9 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
                 activity.invalidateOptionsMenu();
                 KeyboardManager.hideKeyboard(activity);
             }
+            return true;
+        } else if (id == R.id.action_remove) {
+            alertRemoveTask();
             return true;
         }
         return false;
@@ -333,5 +340,25 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         task.setDate(calendar.getTime());
         taskDeadline.setText(task.getDateString());
         DataManager.getInstance().refreshAllGroupsTasks();
+    }
+
+    /**
+     * Displays alert and removes user group group if submitted.
+     */
+    public void alertRemoveTask() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity, android.R.style.Theme_Material_Dialog_Alert);
+
+        builder.setTitle(R.string.remove_task)
+                .setMessage(R.string.confirm_remove_task)
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+
+                    DataManager.getInstance().removeTask(task, activity);
+                    DataManager.getInstance().refresh(((MainActivity)activity).getCurrentUserId());
+                    activity.onBackPressed();
+                })
+                .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 }

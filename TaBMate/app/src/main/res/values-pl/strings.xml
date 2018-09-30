@@ -58,7 +58,7 @@
     <string name="invitation_removed">Zaproszenie usunięcie</string>
     <string name="leave_group">Opuść grupę</string>
     <string name="left_group">Opuściłeś grupę</string>
-    <string name="confirm_leave_group">Jesteś pewien, że chcesz opuścić tą grupę?</string>
+    <string name="confirm_leave_group">Jesteś pewien?</string>
     <string name="edit">Edytuj</string>
     <string name="save">Zapisz</string>
     <string name="edit_profile">Edytuj profil</string>
@@ -80,6 +80,9 @@
     <string name="performance">Wykonanie</string>
     <string name="deadline">Termin ostateczny</string>
     <string name="all_tasks">Wszystkie zadania</string>
+    <string name="remove_task">Usuń zadanie</string>
+    <string name="confirm_remove_task">Jesteś pewien? Nie będzie ono uwzględniane w statystykach!</string>
+    <string name="task_removed">Zadanie usunięte</string>
 
     <string name="basic">Podstawowe</string>
     <string name="title">Tytuł</string>

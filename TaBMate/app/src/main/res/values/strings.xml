@@ -57,7 +57,7 @@
     <string name="invitation_removed">Invitation removed</string>
     <string name="leave_group">Leave group</string>
     <string name="left_group">You left group</string>
-    <string name="confirm_leave_group">Are you sure you want to leave this group?</string>
+    <string name="confirm_leave_group">Are you sure?</string>
     <string name="edit">Edit</string>
     <string name="save">Save</string>
     <string name="edit_profile">Edit profile</string>
@@ -85,6 +85,9 @@
     <string name="deadline">Deadline</string>
     <string name="archived_tasks">Archived</string>
     <string name="all_tasks">All tasks</string>
+    <string name="remove_task">Remove task</string>
+    <string name="confirm_remove_task">Are you sure? It will not be included in statistics!</string>
+    <string name="task_removed">Task removed</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Settings</string>

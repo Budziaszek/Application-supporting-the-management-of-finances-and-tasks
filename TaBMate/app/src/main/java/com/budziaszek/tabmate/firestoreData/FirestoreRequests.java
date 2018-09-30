@@ -75,6 +75,16 @@ public class FirestoreRequests {
                 .addOnCompleteListener(action::accept);
     }
 
+    public void removeTask(UserTask task, Consumer<Void> success, Consumer<Exception> failure) {
+        db.collection(GROUP_COLLECTION)
+                .document(task.getGroup())
+                .collection(TASK_COLLECTION)
+                .document(task.getId())
+                .delete()
+                .addOnSuccessListener(success::accept)
+                .addOnFailureListener(failure::accept);
+    }
+
     public void updateGroup(Group group, String targetDocument, Consumer<Void> success, Consumer<Exception> failure) {
         db.collection(GROUP_COLLECTION)
                 .document(targetDocument)

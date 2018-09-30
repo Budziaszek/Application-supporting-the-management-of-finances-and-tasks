@@ -2,16 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
+        <item
+            android:id="@+id/action_remove"
+            android:title="@string/edit"
+            android:icon="@drawable/no"
+            app:showAsAction="always" />
+
         <item
             android:id="@+id/action_edit"
             android:title="@string/edit"
             android:icon="@android:drawable/ic_menu_edit"
-            app:showAsAction="always" />
+            app:showAsAction="ifRoom" />
 
         <item
             android:id="@+id/action_save"
             android:title="@string/save"
             android:icon="@android:drawable/ic_menu_save"
             app:showAsAction="ifRoom" />
-
 </menu>

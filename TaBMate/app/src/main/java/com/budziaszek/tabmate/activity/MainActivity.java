@@ -24,6 +24,7 @@ import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.fragment.TasksPagerFragment;
 import com.budziaszek.tabmate.fragment.MainPageFragment;
 
+import com.budziaszek.tabmate.view.KeyboardManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
