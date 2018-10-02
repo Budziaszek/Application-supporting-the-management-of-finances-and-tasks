@@ -195,6 +195,7 @@ public class DataManager {
             tasks = new TreeMap<>();
             filtratedTasks = new ArrayList<>();
         }
+        tasks.clear();
         filtratedTasks.clear();
         List<String> gid = new ArrayList<>();
 
@@ -294,10 +295,11 @@ public class DataManager {
             UserTask task = document.toObject(UserTask.class);
             if (task != null) {
                 task.setId(document.getId());
-                tasks.put(document.getId(), task);
-                checkIfMatchFiltration(task);
+                if(!tasks.containsKey(document.getId())) {
+                    tasks.put(document.getId(), task);
+                    checkIfMatchFiltration(task);
+                }
                 Log.d(TAG, "Task: " + task.getTitle() + " (" + task.getGroup() + ")");
-
             }
         }
         informObserversTasksChanged();

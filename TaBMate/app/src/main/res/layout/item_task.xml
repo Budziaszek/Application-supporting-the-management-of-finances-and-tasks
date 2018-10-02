@@ -12,24 +12,39 @@
     android:padding="5dp">
 
     <TextView
-        android:id="@+id/task_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/label_task_title"
-        android:layout_margin="5dp"
-        android:textColor="@color/colorAccentDark"
-        android:textSize="14sp"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/label_task_title"
+        android:id="@+id/task_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_margin="5dp"
+        android:text="@string/title"
         android:textColor="@color/colorAccentDark"
         android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/task_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/task_title"
+        android:layout_margin="5dp"
+        android:text="@string/description"
+        android:textColor="@color/colorAccentDark"
+        android:textSize="14sp"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/task_deadline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/task_description"
+        android:layout_margin="5dp"
+        android:text="@string/deadline"
+        android:textColor="@color/colorAccentDark"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="visible" />
 
     <!--android.support.design.widget.FloatingActionButton
         android:id="@+id/show_button"
