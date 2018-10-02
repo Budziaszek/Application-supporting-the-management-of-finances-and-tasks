@@ -101,9 +101,9 @@ public class DataManager {
         return groups.get(gid);
     }
 
-    public UserTask getTask(String tid){
+    /*public UserTask getTask(String tid){
         return tasks.get(tid);
-    }
+    }*/
 
     public List<String> getSelectedGroupsIds() {
         return selectedGroupsIds;

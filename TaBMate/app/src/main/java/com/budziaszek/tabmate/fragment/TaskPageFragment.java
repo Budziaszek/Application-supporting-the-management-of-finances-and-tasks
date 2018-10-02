@@ -140,7 +140,7 @@ public class TaskPageFragment extends BasicFragment {
     @Override
     public void tasksChanged() {
         //Select only one current page status
-        List<UserTask> allTasks = DataManager.getInstance().getTasks();
+        List<UserTask> allTasks = DataManager.getInstance().getFiltratedTasks();
         List<UserTask> newTasks = new ArrayList<>();
         for (UserTask task : allTasks) {
             if (task.getStatus().name.equals(status.name)) {
