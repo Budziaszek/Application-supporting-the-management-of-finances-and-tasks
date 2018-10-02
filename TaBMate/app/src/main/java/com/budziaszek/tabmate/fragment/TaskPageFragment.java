@@ -76,6 +76,8 @@ public class TaskPageFragment extends BasicFragment {
             Log.d(TAG, "Ask for refresh tasks");
             DataManager.getInstance().refreshAllGroupsTasks();
             swipeLayout.setRefreshing(false);
+
+            ((BasicFragment)getParentFragment()).informAboutNetworkConnection();
         });
         swipeLayout.setColorSchemeColors(
                 getResources().getColor(R.color.colorPrimary, getResources().newTheme()),

@@ -74,7 +74,6 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
 
         activity = getActivity();
         task = ((MainActivity) activity).getCurrentTask();
-        newStatus = task.getStatus();
 
         taskTitle = fView.findViewById(R.id.task_title);
         taskDescription = fView.findViewById(R.id.task_description);
@@ -87,6 +86,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
 
         // Add task
         if (task == null) {
+            newStatus = UserTask.Status.TODO;
             List<Group> groupsList = DataManager.getInstance().getGroups();
             Group groups[] = new Group[groupsList.size()];
             groups = groupsList.toArray(groups);
@@ -104,6 +104,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             isCreated = true;
             setEditing(true);
         } else {
+            newStatus = task.getStatus();
             isCreated = false;
             setEditing(false);
         }
@@ -187,8 +188,8 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             activity.invalidateOptionsMenu();
             return true;
         } else if (id == R.id.action_save) {
-            fView.findViewById(R.id.doers_layout).setVisibility(View.VISIBLE);
             if (update()) {
+                fView.findViewById(R.id.doers_layout).setVisibility(View.VISIBLE);
                 setEditing(false);
                 activity.invalidateOptionsMenu();
                 KeyboardManager.hideKeyboard(activity);
@@ -351,9 +352,8 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         builder.setTitle(R.string.remove_task)
                 .setMessage(R.string.confirm_remove_task)
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-
                     DataManager.getInstance().removeTask(task, activity);
-                    DataManager.getInstance().refresh(((MainActivity)activity).getCurrentUserId());
+                    DataManager.getInstance().refreshAllGroupsTasks();
                     activity.onBackPressed();
                 })
                 .setNegativeButton(android.R.string.no, (dialog, which) -> {

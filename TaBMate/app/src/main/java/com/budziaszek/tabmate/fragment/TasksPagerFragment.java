@@ -28,8 +28,9 @@ public class TasksPagerFragment extends BasicFragment {
                              Bundle savedInstanceState) {
 
         Log.d(TAG, "Created");
-        View fView = inflater.inflate(R.layout.tasks_pager, container, false);
+        fView = inflater.inflate(R.layout.tasks_pager, container, false);
 
+        informAboutNetworkConnection();
         activity = getActivity();
 
         // Pager initilization
@@ -40,7 +41,6 @@ public class TasksPagerFragment extends BasicFragment {
             adapter.changeArchivedVisibility();
             viewPager.setCurrentItem(adapter.getCount() - 1);
         }
-
 
         TabLayout tabLayout = fView.findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);

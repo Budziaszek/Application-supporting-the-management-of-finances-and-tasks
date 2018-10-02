@@ -283,6 +283,7 @@ public class DataManager {
             }
         }
         informObserversGroupsChanged();
+
     }
 
     /**

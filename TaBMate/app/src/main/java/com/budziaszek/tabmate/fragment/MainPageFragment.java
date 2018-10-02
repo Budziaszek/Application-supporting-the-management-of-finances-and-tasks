@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
@@ -37,8 +38,6 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
     private Activity activity;
 
-    private View fView;
-
     private GroupsItemsAdapter groupsAdapter;
     private List<Group> groups = new ArrayList<>();
 
@@ -61,6 +60,8 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         mDisplayView = fView.findViewById(R.id.user_groups_layout);
         mProgressView = fView.findViewById(R.id.progress_groups);
 
+        informAboutNetworkConnection();
+
         //Refresh
         swipeLayout = fView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(() -> {
@@ -71,6 +72,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
             Log.d(TAG, "Ask for refresh invitations");
             DataManager.getInstance().refreshInvitations(((MainActivity) activity).getCurrentUserId());
 
+            informAboutNetworkConnection();
             swipeLayout.setRefreshing(false);
         });
         swipeLayout.setColorSchemeColors(

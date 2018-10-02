@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">TaB Mate</string>
 
+    <string name="no_network_connection">Brak połączenia z internetem</string>
+
     <!-- Strings related to login -->
     <string name="name_or_nickname">Imie lub nick</string>
     <string name="email">Email</string>

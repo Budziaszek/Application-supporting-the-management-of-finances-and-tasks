@@ -3,15 +3,20 @@ package com.budziaszek.tabmate.fragment;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 
+import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.view.DataChangeListener;
 
 public class BasicFragment extends Fragment implements DataChangeListener {
 
+    protected View fView;
     protected View mDisplayView;
     protected View mProgressView;
     protected SwipeRefreshLayout swipeLayout;
@@ -43,6 +48,26 @@ public class BasicFragment extends Fragment implements DataChangeListener {
                 mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
+    }
+
+    protected Boolean checkNetworkConnection(){
+        ConnectivityManager cm =
+                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = null;
+        if (cm != null) {
+            activeNetwork = cm.getActiveNetworkInfo();
+        }
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    public void informAboutNetworkConnection(){
+        //Check network
+        if(checkNetworkConnection()){
+            fView.findViewById(R.id.no_network_connection).setVisibility(View.GONE);
+        } else {
+            fView.findViewById(R.id.no_network_connection).setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

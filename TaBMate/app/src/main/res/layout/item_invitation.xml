@@ -8,7 +8,7 @@
     android:background="@drawable/background_item"
     android:gravity="right|center"
     android:orientation="horizontal"
-    android:paddingLeft="5dp">
+    android:paddingStart="5dp">
 
     <TextView
         android:id="@+id/group_name"
@@ -31,18 +31,18 @@
         android:focusable="true"
         app:backgroundTint="#0000"
         app:elevation="0dp"
-        app:srcCompat="@drawable/no" />
+        app:srcCompat="@drawable/no_semi" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/accept_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:background="#0000"
         android:clickable="true"
         android:elevation="0dp"
         android:focusable="true"
         app:backgroundTint="#0000"
         app:elevation="0dp"
-        app:srcCompat="@drawable/yes" />
+        app:srcCompat="@drawable/yes_semi" />
 </LinearLayout>

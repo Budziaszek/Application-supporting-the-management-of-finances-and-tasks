@@ -42,10 +42,8 @@ import java.util.Map;
 public class GroupFragment extends BasicFragment {
 
     private static final String TAG = "DisplayGroupProcedure";
+
     private Activity activity;
-
-    private View fView;
-
     private Group group;
 
     private MembersItemsAdapter membersAdapter;
@@ -129,13 +127,18 @@ public class GroupFragment extends BasicFragment {
 
         MenuItem edit = menu.findItem(R.id.action_edit);
         MenuItem save = menu.findItem(R.id.action_save);
+        MenuItem remove = menu.findItem(R.id.action_remove);
 
         if (isEdited) {
             edit.setVisible(false);
             save.setVisible(true);
+            remove.setVisible(false);
         } else {
             edit.setVisible(true);
             save.setVisible(false);
+            remove.setVisible(false);
+            //TODO remove group (?)
+            //remove.setVisible(true);
         }
     }
 
@@ -149,8 +152,8 @@ public class GroupFragment extends BasicFragment {
             activity.invalidateOptionsMenu();
             return true;
         } else if (id == R.id.action_save) {
-            fView.findViewById(R.id.members_layout).setVisibility(View.VISIBLE);
             if (update()) {
+                fView.findViewById(R.id.members_layout).setVisibility(View.VISIBLE);
                 setEditing(false);
                 activity.invalidateOptionsMenu();
                 KeyboardManager.hideKeyboard(activity);
