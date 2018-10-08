@@ -22,16 +22,18 @@
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/bar_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <!-- The ActionBar displayed at the top -->
         <include
-        android:id="@+id/include"
-        layout="@layout/bar_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+            android:id="@+id/include"
+            layout="@layout/bar_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible" />
     </LinearLayout>
 
     <android.support.design.widget.NavigationView

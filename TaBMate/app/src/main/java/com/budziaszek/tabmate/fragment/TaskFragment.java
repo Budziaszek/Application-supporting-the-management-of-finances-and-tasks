@@ -1,7 +1,9 @@
 package com.budziaszek.tabmate.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -12,10 +14,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.NumberPicker;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.app.DatePickerDialog;
@@ -37,7 +42,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Calendar;
 
-public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDateSetListener {
+public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDateSetListener,
+        NumberPicker.OnValueChangeListener {
 
     private static final String TAG = "DisplayTaskProcedure";
     private Activity activity;
@@ -60,12 +66,16 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
     private TextView taskDeadline;
     private TextView taskGroup;
     private Spinner taskGroupInput;
+    private TextView taskEstimatedTime;
+    private TextView taskTimeVote;
+    private SeekBar seekBar;
 
     private MembersItemsAdapter doersAdapter;
     private List<User> doers = new ArrayList<>();
 
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -76,13 +86,18 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         task = ((MainActivity) activity).getCurrentTask();
 
         taskTitle = fView.findViewById(R.id.task_title);
-        taskDescription = fView.findViewById(R.id.task_description);
+        taskDescription = fView.findViewById(R.id.nick);
         taskTitleInput = fView.findViewById(R.id.task_title_input);
         taskDescriptionInput = fView.findViewById(R.id.task_description_input);
         taskStatus = fView.findViewById(R.id.task_status);
         taskDeadline = fView.findViewById(R.id.task_deadline);
         taskGroup = fView.findViewById(R.id.task_group);
         taskGroupInput = fView.findViewById(R.id.spinner_group);
+        taskEstimatedTime = fView.findViewById(R.id.task_estimated_time);
+        taskTimeVote = fView.findViewById(R.id.task_time_vote);
+        seekBar = fView.findViewById(R.id.readiness_seek_bar);
+
+        seekBar.setOnTouchListener((v, event) -> !isEdited);
 
         // Add task
         if (task == null) {
@@ -206,13 +221,22 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
      * Displays current task data.
      */
     private void showTask() {
-        // Details
-
         taskTitle.setText(task.getTitle());
         taskDescription.setText(task.getDescription());
         taskTitleInput.setText(task.getTitle());
         taskDescriptionInput.setText(task.getDescription());
         taskDeadline.setText(task.getDateString());
+        taskEstimatedTime.setText(String.valueOf(task.getEstimatedTime()));
+        Integer timeVote = task.getTimeEstimationVote().get(((MainActivity)activity).getCurrentUserId());
+        Integer readinessVote = task.getReadinessVote().get(((MainActivity)activity).getCurrentUserId());
+        if(timeVote != null)
+            taskTimeVote.setText(String.valueOf(timeVote));
+        else
+            taskTimeVote.setText(R.string.vote);
+        if(readinessVote != null)
+            seekBar.setProgress(readinessVote);
+        else
+            seekBar.setProgress(2);
 
         TextView taskGroup = fView.findViewById(R.id.task_group);
         Group group = DataManager.getInstance().getGroup(task.getGroup());
@@ -225,7 +249,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         if(task.getStatus() == UserTask.Status.ARCHIVED && task.getStatusBeforeArchive() != null)
             status.append(" (" + task.getStatusBeforeArchive()+ ")");
 
-        Map<String, User> allUsers = DataManager.getInstance().getUsers();
+        Map<String, User> allUsers = DataManager.getInstance().getUsersInMap();
         doers = new ArrayList<>();
         List<String> doersIds = task.getDoers();
 
@@ -257,6 +281,12 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
                 taskGroup.setVisibility(View.INVISIBLE);
                 taskTitleInput.setText("");
                 taskDescriptionInput.setText("");
+                seekBar.setVisibility(View.GONE);
+                fView.findViewById(R.id.label_readiness_vote).setVisibility(View.INVISIBLE);
+                taskEstimatedTime.setVisibility(View.GONE);
+                taskTimeVote.setVisibility(View.GONE);
+                fView.findViewById(R.id.label_task_time_vote).setVisibility(View.GONE);
+                fView.findViewById(R.id.label_task_estimated_time).setVisibility(View.GONE);
             } else {
                 taskGroupInput.setVisibility(View.INVISIBLE);
                 taskTitleInput.setText(taskTitle.getText());
@@ -279,6 +309,32 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
                 picker.show();
             });
             taskDeadline.setBackgroundColor(getResources().getColor(R.color.colorAccentLight, activity.getTheme()));
+
+            taskTimeVote.setOnClickListener(view -> {
+                Dialog dialog = new Dialog(activity);
+                dialog.setContentView(R.layout.dialog);
+                Button buttonSet = dialog.findViewById(R.id.set);
+                Button buttonCancel = dialog.findViewById(R.id.cancel);
+                NumberPicker numberPicker = dialog.findViewById(R.id.numberPicker);
+
+                numberPicker.setMaxValue(100);
+                numberPicker.setMinValue(0);
+                Integer value = task.getTimeEstimationVote().get(((MainActivity)getActivity()).getCurrentUserId());
+                if(value != null)
+                    numberPicker.setValue(value);
+
+                numberPicker.setWrapSelectorWheel(false);
+                numberPicker.setOnValueChangedListener(this);
+
+                buttonSet.setOnClickListener(v -> {
+                    taskTimeVote.setText(String.valueOf(numberPicker.getValue()));
+                    dialog.dismiss();
+                });
+                buttonCancel.setOnClickListener(v -> dialog.dismiss());
+                dialog.show();
+            });
+            taskTimeVote.setBackgroundColor(getResources().getColor(R.color.colorAccentLight, activity.getTheme()));
+
         } else {
             taskTitleInput.setVisibility(View.INVISIBLE);
             taskDescriptionInput.setVisibility(View.INVISIBLE);
@@ -297,6 +353,10 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             taskStatus.setOnClickListener(view -> {
             });
             taskStatus.setBackgroundColor(Color.TRANSPARENT);
+
+            taskTimeVote.setOnClickListener(view -> {
+            });
+            taskTimeVote.setBackgroundColor(Color.TRANSPARENT);
         }
     }
 
@@ -304,6 +364,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         String title = taskTitleInput.getText().toString();
 
         if (!title.equals("")) {
+            //Set data
             task.setTitle(title);
             task.setDescription(taskDescriptionInput.getText().toString());
 
@@ -312,6 +373,13 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             else
                 task.setStatus(newStatus);
 
+            if(!taskTimeVote.getText().toString().equals(getResources().getString(R.string.vote)))
+                task.addTimeEstimationVote(((MainActivity)getActivity()).getCurrentUserId(),
+                        Integer.parseInt(taskTimeVote.getText().toString()));
+            taskEstimatedTime.setText(String.valueOf(task.getEstimatedTime()));
+            task.addReadinessVote(((MainActivity)getActivity()).getCurrentUserId(), seekBar.getProgress());
+
+            //Save data
             if (isCreated) {
                 task.setGroup(((Group) taskGroupInput.getSelectedItem()).getId());
                 firestoreRequests.addTask(task,
@@ -344,7 +412,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
     }
 
     /**
-     * Displays alert and removes user group group if submitted.
+     * Displays alert and removes task if submitted.
      */
     public void alertRemoveTask() {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, android.R.style.Theme_Material_Dialog_Alert);
@@ -360,5 +428,10 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    @Override
+    public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+
     }
 }

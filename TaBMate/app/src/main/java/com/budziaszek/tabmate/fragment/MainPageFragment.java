@@ -56,14 +56,14 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
         activity = getActivity();
 
-        mDisplayView = fView.findViewById(R.id.user_groups_layout);
+        mDisplayView = fView.findViewById(R.id.show_groups_layout);
         mProgressView = fView.findViewById(R.id.progress_groups);
-
-        informAboutNetworkConnection();
 
         //Refresh
         swipeLayout = fView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(() -> {
+            if(!DataManager.getInstance().isRefreshFinished())
+                return;
 
             Log.d(TAG, "Ask for refresh groups and users");
             DataManager.getInstance().refresh(((MainActivity) activity).getCurrentUserId());
@@ -72,7 +72,6 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
             DataManager.getInstance().refreshInvitations(((MainActivity) activity).getCurrentUserId());
 
             informAboutNetworkConnection();
-            swipeLayout.setRefreshing(false);
         });
         swipeLayout.setColorSchemeColors(
                 getResources().getColor(R.color.colorPrimary, getResources().newTheme()),
@@ -88,6 +87,8 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         DataManager instance = DataManager.getInstance();
         instance.addObserver(this);
         if (instance.getGroups() == null) {
+            showProgress(true);
+            ((MainActivity)activity).setDrawerVisible(false);
             Log.d(TAG, "Ask for refresh groups and users");
             instance.refresh(((MainActivity) activity).getCurrentUserId());
         } else {
@@ -98,8 +99,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         Log.d(TAG, "Ask for refresh invitations");
         DataManager.getInstance().refreshInvitations(((MainActivity) activity).getCurrentUserId());
 
-        showProgress(false);
-
+        informAboutNetworkConnection();
         return fView;
     }
 
@@ -225,10 +225,10 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
     public void groupsChanged() {
         List<Group> newGroups = DataManager.getInstance().getGroups();
         List<Group> oldGroups = groups;
+        newGroups.sort(Comparator.comparing(Group::getName));
         groups = newGroups;
         groupsAdapter.update(groups);
 
-        newGroups.sort(Comparator.comparing(Group::getName));
         //TODO check what exactly changed
         for(int i = 0; i < newGroups.size(); i++){
             if(oldGroups.size() <= i) {
@@ -248,20 +248,22 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
     @Override
     public void tasksChanged(){
-        //Select only user's and in progress
-        List<UserTask> allTasks = DataManager.getInstance().getTasks();
+        List<UserTask> allTasks = DataManager.getInstance().getFiltratedTasks();
         List<UserTask> newTasks = new ArrayList<>();
+        List<UserTask> oldTasks = tasks;
+        String uid = ((MainActivity)activity).getCurrentUserId();
+
         for (UserTask task : allTasks) {
-            if (task.getStatus() == UserTask.Status.DOING)
-                if (task.getDoers().contains(((MainActivity) activity).getCurrentUserId())) {
+            if (task.getStatus().name.equals(UserTask.Status.DOING.name)) {
+                if (task.getDoers().contains(uid)) {
                     newTasks.add(task);
                 }
+            }
         }
-        List<UserTask> oldTasks = tasks;
+        newTasks.sort(Comparator.comparing(UserTask::getTitle));
         tasks = newTasks;
         tasksAdapter.update(tasks);
 
-        newTasks.sort(Comparator.comparing(UserTask::getTitle));
         //TODO check what exactly changed
         for(int i = 0; i < newTasks.size(); i++){
             if(oldTasks.size() <= i) {
@@ -274,8 +276,13 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
                 }
             }
         }
-        for( int i = newTasks.size(); i< oldTasks.size(); i++){
+        for( int i = newTasks.size(); i < oldTasks.size(); i++){
             tasksAdapter.notifyItemRemoved(i);
         }
+    }
+    @Override
+    public void finished(){
+        super.finished();
+        ((MainActivity)activity).setDrawerVisible(true);
     }
 }

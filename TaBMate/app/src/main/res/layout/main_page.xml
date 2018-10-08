@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:ndroid="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginTop="?attr/actionBarSize"
+    android:background="@drawable/gradient_background_trio"
     android:gravity="center">
 
     <ProgressBar
@@ -22,7 +22,6 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_gravity="center"
-        android:background="@drawable/gradient_background_trio"
         android:visibility="visible">
 
         <ScrollView
@@ -59,7 +58,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/colorSectionBackgroundLight">
+                    android:background="@color/colorSectionBackgroundTransparent">
 
                     <TextView
                         android:id="@+id/basic_title"
@@ -67,7 +66,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
-                        android:layout_marginRight="5dp"
+                        android:layout_marginEnd="5dp"
                         android:elevation="4dp"
                         android:padding="10dp"
                         android:text="@string/user_tasks"
@@ -94,8 +93,7 @@
                         android:padding="0dp"
                         android:text="@string/all_tasks"
                         android:textAllCaps="false"
-                        android:textColor="@color/colorPrimaryDarkSemi"
-                        ndroid:textAllCaps="false" />
+                        android:textColor="@color/colorPrimaryDarkSemi" />
 
                 </RelativeLayout>
 
@@ -107,7 +105,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="5dp"
-                    android:background="@color/colorSectionBackgroundLight">
+                    android:background="@color/colorSectionBackgroundTransparent">
 
                     <TextView
                         android:id="@+id/groups_title"

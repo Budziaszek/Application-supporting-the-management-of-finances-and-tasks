@@ -73,9 +73,11 @@ public class TaskPageFragment extends BasicFragment {
         //Refresh
         swipeLayout = fView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(() -> {
+            if(!DataManager.getInstance().isRefreshFinished())
+                return;
+
             Log.d(TAG, "Ask for refresh tasks");
             DataManager.getInstance().refreshAllGroupsTasks();
-            swipeLayout.setRefreshing(false);
 
             ((BasicFragment)getParentFragment()).informAboutNetworkConnection();
         });
@@ -102,11 +104,10 @@ public class TaskPageFragment extends BasicFragment {
                             return;
                         }
                         task.setNextStatus();
+                        //if(status == UserTask.Status.TO DO) {
+                        //    task.addDoer(((MainActivity) activity).getCurrentUserId());
+                        //}(
 
-
-                        if(status == UserTask.Status.TODO) {
-                            task.addDoer(((MainActivity) activity).getCurrentUserId());
-                        }
                         firestoreRequests.updateTask(task,
                                 (aVoid) -> {},
                                 (e) -> Log.d(TAG, e.getMessage())
@@ -139,19 +140,19 @@ public class TaskPageFragment extends BasicFragment {
 
     @Override
     public void tasksChanged() {
-        //Select only one current page status
         List<UserTask> allTasks = DataManager.getInstance().getFiltratedTasks();
         List<UserTask> newTasks = new ArrayList<>();
+        List<UserTask> oldTasks = tasks;
+
         for (UserTask task : allTasks) {
             if (task.getStatus().name.equals(status.name)) {
-                    newTasks.add(task);
+                newTasks.add(task);
             }
         }
-        List<UserTask> oldTasks = tasks;
+        newTasks.sort(Comparator.comparing(UserTask::getTitle));
         tasks = newTasks;
         tasksAdapter.update(tasks);
 
-        newTasks.sort(Comparator.comparing(UserTask::getTitle));
         //TODO check what exactly changed
         for(int i = 0; i < newTasks.size(); i++){
             if(oldTasks.size() <= i) {

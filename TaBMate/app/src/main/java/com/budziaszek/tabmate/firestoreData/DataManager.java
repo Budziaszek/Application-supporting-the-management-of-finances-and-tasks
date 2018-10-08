@@ -11,6 +11,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,8 +25,12 @@ public class DataManager {
 
     private static DataManager instance;
 
+    private int refreshCounter = 0;
     // Observers, that will be informed about data changes
     private List<DataChangeListener> observers = new ArrayList<>();
+    private Boolean groupsChanged = false;
+    private Boolean tasksChanged = false;
+    private Boolean invitationsChanged = false;
 
     // All data from database
     private Map<String, Group> groups;
@@ -34,8 +39,9 @@ public class DataManager {
     private List<String> invitations;
 
     // Filtrated data and filters
-    private List<UserTask> filtratedTasks;
+    private Map<String, UserTask> filtratedTasks;
     private List<String> selectedGroupsIds;
+    private List<String> selectedUsersIds;
 
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
@@ -82,6 +88,20 @@ public class DataManager {
     }
 
     /**
+     * Informs observers about refresh finished.
+     */
+    private void informObserversRefreshFinished() {
+        Log.d(TAG, "Refresh finished");
+        for (DataChangeListener listener : observers) {
+            listener.finished();
+        }
+    }
+
+    public Boolean isRefreshFinished(){
+        return refreshCounter == 0;
+    }
+
+    /**
      * Add new observer, that will be informed about data changes.
      *
      * @param listener observer, that implements DataChangeListener
@@ -89,6 +109,25 @@ public class DataManager {
     public void addObserver(DataChangeListener listener) {
         if (!observers.contains(listener))
             observers.add(listener);
+    }
+
+    private void decreaseRefreshCounter(){
+        refreshCounter--;
+        if(refreshCounter == 0) {
+            informObserversRefreshFinished();
+            if (tasksChanged) {
+                informObserversTasksChanged();
+                tasksChanged = false;
+            }
+            if (groupsChanged) {
+                informObserversGroupsChanged();
+                groupsChanged = false;
+            }
+            if (invitationsChanged) {
+                informObserversInvitationsChanged();
+                invitationsChanged = false;
+            }
+        }
     }
 
     public List<Group> getGroups() {
@@ -109,7 +148,17 @@ public class DataManager {
         return selectedGroupsIds;
     }
 
-    public Map<String, User> getUsers() {
+    public List<String> getSelectedUsersIds() {
+        return selectedUsersIds;
+    }
+
+    public List<User> getUsers() {
+        if (users == null)
+            return null;
+        return new ArrayList<>(users.values());
+    }
+
+    public Map<String, User> getUsersInMap(){
         return users;
     }
 
@@ -122,7 +171,7 @@ public class DataManager {
     public List<UserTask> getFiltratedTasks() {
         if (filtratedTasks == null)
             return getTasks();
-        return filtratedTasks;
+        return new ArrayList<>(filtratedTasks.values());
     }
 
     public List<String> getInvitations() {
@@ -136,10 +185,23 @@ public class DataManager {
     public void addFiltrationOptionGroup(String gid) {
         for (UserTask task : tasks.values()) {
             if (gid.equals(task.getGroup())) {
-                filtratedTasks.add(task);
+                filtratedTasks.put(task.getId(), task);
             }
         }
         selectedGroupsIds.add(gid);
+    }
+
+    /**
+     * Adds user to selected in filtration, so tasks where this user is mentioned will be
+     * included in filtrated tasks set.
+     */
+    public void addFiltrationOptionUser(String uid) {
+        for (UserTask task : filtratedTasks.values()) {
+            if (task.getDoers().contains(uid)) {
+                filtratedTasks.put(task.getId(), task);
+            }
+        }
+        selectedUsersIds.add(uid);
     }
 
     /**
@@ -147,10 +209,10 @@ public class DataManager {
      * included in filtrated tasks set.
      */
     public void removeFiltrationOptionGroup(String gid) {
-        ArrayList<UserTask> newFiltratedTasks = new ArrayList<>();
-        for (UserTask task : filtratedTasks) {
+        Map<String, UserTask> newFiltratedTasks = new HashMap<>();
+        for (UserTask task : filtratedTasks.values()) {
             if (!gid.equals(task.getGroup())) {
-                newFiltratedTasks.add(task);
+                newFiltratedTasks.put(task.getId(), task);
             }
         }
         filtratedTasks = newFiltratedTasks;
@@ -158,20 +220,39 @@ public class DataManager {
     }
 
     /**
+     * Removes user from selected in filtration, so tasks where user is mentioned will no longer be
+     * included in filtrated tasks set.
+     */
+    public void removeFiltrationOptionUser(String uid) {
+        Map<String, UserTask> newFiltratedTasks = new HashMap<>();
+        for (UserTask task : filtratedTasks.values()) {
+            if (!task.getDoers().contains(uid)) {
+                newFiltratedTasks.put(task.getId(), task);
+            }
+        }
+        filtratedTasks = newFiltratedTasks;
+        selectedUsersIds.remove(uid);
+    }
+
+    /**
      * Prepares maps and lists for new data, refreshes groups, users and tasks.
      */
     public void refresh(String uid) {
+        refreshCounter++;
+        firestoreRequests.getUser(uid, this::checkUser);
         if (groups == null) {
             groups = new TreeMap<>();
             selectedGroupsIds = new ArrayList<>();
+            selectedUsersIds = new ArrayList<>();
             users = new TreeMap<>();
             tasks = new TreeMap<>();
-            filtratedTasks = new ArrayList<>();
+            filtratedTasks = new HashMap<>();
         }
         filtratedTasks.clear();
         groups.clear();
         tasks.clear();
 
+        refreshCounter++;
         firestoreRequests.getGroupByField("members", uid, this::checkGroupsTask);
     }
 
@@ -184,6 +265,7 @@ public class DataManager {
         }
         invitations.clear();
 
+        refreshCounter++;
         firestoreRequests.getUser(uid, this::checkAndManageInvitations);
     }
 
@@ -193,7 +275,7 @@ public class DataManager {
     public void refreshAllGroupsTasks() {
         if (tasks == null) {
             tasks = new TreeMap<>();
-            filtratedTasks = new ArrayList<>();
+            filtratedTasks = new HashMap<>();
         }
         tasks.clear();
         filtratedTasks.clear();
@@ -206,6 +288,7 @@ public class DataManager {
         }
         for (String id : gid) {
             Log.d(TAG, "Refresh tasks for group: " + id);
+            refreshCounter++;
             firestoreRequests.getGroupTasks(id, this::checkTasksTask);
         }
     }
@@ -215,6 +298,7 @@ public class DataManager {
      */
     private void refreshGroupTasks(String gid) {
         Log.d(TAG, "Refresh tasks for group: " + gid);
+        refreshCounter++;
         firestoreRequests.getGroupTasks(gid, this::checkTasksTask);
     }
 
@@ -225,6 +309,7 @@ public class DataManager {
         if (task.isSuccessful()) {
             if (task.getResult().getDocuments().isEmpty()) {
                 Log.d(TAG, "No group found");
+
             } else {
                 addGroups(task.getResult().getDocuments());
             }
@@ -233,6 +318,7 @@ public class DataManager {
             if (exception != null)
                 Log.d(TAG, exception.getMessage());
         }
+        decreaseRefreshCounter();
     }
 
     /**
@@ -248,6 +334,7 @@ public class DataManager {
             if (exception != null)
                 Log.d(TAG, exception.getMessage());
         }
+        decreaseRefreshCounter();
     }
 
     /**
@@ -259,16 +346,17 @@ public class DataManager {
             if (user.getInvitations() != null) {
                 invitations = user.getInvitations();
                 Log.d(TAG, "Invitations " + invitations.toString());
-                informObserversInvitationsChanged();
+                invitationsChanged = true;
+                //informObserversInvitationsChanged();
             }
         }
+        decreaseRefreshCounter();
     }
 
     /**
      * Proceeds documents, checks and adds groups. Calls functions to refresh tasks and users.
      */
     private void addGroups(List<DocumentSnapshot> documents) {
-
         for (DocumentSnapshot document : documents) {
             Group group = document.toObject(Group.class);
 
@@ -279,12 +367,13 @@ public class DataManager {
                 Log.d(TAG, "User group: " + group.getId());
                 refreshGroupTasks(group.getId());
                 for (String uid : group.getMembers()) {
-                    firestoreRequests.getUser(uid, this::addUser);
+                    refreshCounter++;
+                    firestoreRequests.getUser(uid, this::checkUser);
                 }
             }
         }
-        informObserversGroupsChanged();
-
+        //informObserversGroupsChanged();
+        groupsChanged = true;
     }
 
     /**
@@ -302,17 +391,21 @@ public class DataManager {
                 Log.d(TAG, "Task: " + task.getTitle() + " (" + task.getGroup() + ")");
             }
         }
-        informObserversTasksChanged();
+        //informObserversTasksChanged();
+        tasksChanged = true;
     }
 
     /**
      * Proceeds document, checks and adds user.
      */
-    private void addUser(DocumentSnapshot documentSnapshot) {
+    private void checkUser(DocumentSnapshot documentSnapshot) {
         User user = documentSnapshot.toObject(User.class);
         if (user != null) {
             users.put(user.getId(), user);
+            if(!selectedUsersIds.contains(user.getId()))
+                selectedUsersIds.add(user.getId());
         }
+        decreaseRefreshCounter();
     }
 
     /**
@@ -351,7 +444,10 @@ public class DataManager {
      */
     private void checkIfMatchFiltration(UserTask task) {
         if (selectedGroupsIds.contains(task.getGroup())) {
-            filtratedTasks.add(task);
+            for(String uid : task.getDoers())
+                if(selectedUsersIds.contains(uid)) {
+                    filtratedTasks.put(task.getId(), task);
+                }
         }
     }
 }

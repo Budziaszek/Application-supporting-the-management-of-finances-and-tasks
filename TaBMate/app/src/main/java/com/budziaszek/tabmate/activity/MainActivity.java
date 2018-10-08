@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
@@ -24,9 +26,15 @@ import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.fragment.TasksPagerFragment;
 import com.budziaszek.tabmate.fragment.MainPageFragment;
 
+import com.budziaszek.tabmate.fragment.UserFragment;
+import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.view.KeyboardManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.function.Consumer;
 
 
 /**
@@ -50,6 +58,8 @@ public class MainActivity extends AppCompatActivity
     private UserTask currentTask;
     private FirebaseUser user = null;
     private Boolean isArchiveVisible = false;
+    private TextView user_email;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +73,15 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerLayout = navigationView.getHeaderView(0);
-        TextView user_email = headerLayout.findViewById(R.id.user_email);
+        user_email = headerLayout.findViewById(R.id.user_email);
         user = FirebaseAuth.getInstance().getCurrentUser();
-
         user_email.setText(getCurrentUserEmail());
 
-        //groupsManager = new DataManager(this);
+        headerLayout.setOnClickListener(view -> {
+            startFragment(UserFragment.class);
+            drawer.closeDrawers();
+        });
+
         startFragment(MainPageFragment.class);
     }
 
@@ -150,6 +163,12 @@ public class MainActivity extends AppCompatActivity
         return currentTask;
     }
 
+    public void updateUser(){
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        user_email.setText(getCurrentUserEmail());
+
+    }
+
     public Boolean getIsArchivedVisible(){
         return isArchiveVisible;
     }
@@ -204,12 +223,19 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public void setDrawerVisible(Boolean visible){
+        toggle.setDrawerIndicatorEnabled(visible);
+        drawer.setDrawerLockMode(visible ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+
     /**
      * Starts new fragment.
      *
      * @param fragmentClass class of fragment that will be created and replaced.
      */
     public void startFragment(Class fragmentClass) {
+        KeyboardManager.hideKeyboard(this);
         try {
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent, (Fragment) fragmentClass.newInstance())
                     .addToBackStack("Fragment")

@@ -170,7 +170,7 @@ public class GroupFragment extends BasicFragment {
         groupName.setText(group.getName());
         groupDescription.setText(group.getDescription());
 
-        Map<String, User> allUsers = DataManager.getInstance().getUsers();
+        Map<String, User> allUsers = DataManager.getInstance().getUsersInMap();
         users = new ArrayList<>();
         List<String> members = group.getMembers();
         for (int i = 0; i < members.size(); i++) {
@@ -224,7 +224,7 @@ public class GroupFragment extends BasicFragment {
      */
     private void alertNewMember() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
-        builder.setTitle("Enter user email");
+        builder.setTitle(getResources().getString(R.string.enter_new_email));
 
         // Set up the input
         final EditText input = new EditText(getActivity());
@@ -241,11 +241,11 @@ public class GroupFragment extends BasicFragment {
         builder.setView(container);
 
         // Set up the buttons
-        builder.setPositiveButton("Send", (dialog, which) -> {
+        builder.setPositiveButton(getResources().getString(R.string.send), (dialog, which) -> {
             newMemberEmail = input.getText().toString();
             firestoreRequests.getUserByField("email", newMemberEmail, this::checkInvitationTask);
         });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.setNegativeButton(getResources().getString(R.string.cancel), (dialog, which) -> dialog.cancel());
 
         builder.show();
     }

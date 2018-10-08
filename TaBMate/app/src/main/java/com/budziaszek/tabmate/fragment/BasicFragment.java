@@ -86,4 +86,10 @@ public class BasicFragment extends Fragment implements DataChangeListener {
 
     }
 
+    @Override
+    public void finished(){
+        swipeLayout.setRefreshing(false);
+        showProgress(false);
+    }
+
 }

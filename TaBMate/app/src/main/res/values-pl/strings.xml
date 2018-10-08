@@ -34,6 +34,17 @@
     <string name="user_image">Obrazek użytkownika</string>
     <string name="log_out">Wyloguj</string>
     <string name="confirm_log_out">Czy na pewno chcesz się wylogować?</string>
+    <string name="user_account">Twoje konto</string>
+    <string name="change_email">Zmień adres email</string>
+    <string name="email_changed">Adres email zmieniony</string>
+    <string name="enter_new_email">Podaj nowy adres email</string>
+    <string name="change_nick">Zmień nazwę użytkownika</string>
+    <string name="change_password">Zmień hasło</string>
+    <string name="submit_change_password">Email resetujący hasło zostane wysłany</string>
+    <string name="nick_changed">Nazwa użytkownika zmieniona</string>
+    <string name="enter_new_nick">Podaj nową nazwę</string>
+    <string name="remove_account">Usuń konto</string>
+    <string name="are_you_sure">Jesteś pewien?</string>
 
     <!-- Strings related to main page-->
     <string name="user_tasks">Twoje zadania</string>
@@ -85,6 +96,10 @@
     <string name="remove_task">Usuń zadanie</string>
     <string name="confirm_remove_task">Jesteś pewien? Nie będzie ono uwzględniane w statystykach!</string>
     <string name="task_removed">Zadanie usunięte</string>
+    <string name="estimated_time">Szacowany czas</string>
+    <string name="your_vote">Twój głos</string>
+    <string name="vote">Głosuj</string>
+    <string name="reaadiness">Twoja gotowość do wykonania zadania</string>
 
     <string name="basic">Podstawowe</string>
     <string name="title">Tytuł</string>

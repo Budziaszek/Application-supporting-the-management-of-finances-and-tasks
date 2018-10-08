@@ -4,4 +4,5 @@ public interface DataChangeListener {
     void tasksChanged();
     void groupsChanged();
     void invitationsChanged();
+    void finished();
 }

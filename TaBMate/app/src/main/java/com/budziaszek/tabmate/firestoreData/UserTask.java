@@ -1,6 +1,7 @@
 package com.budziaszek.tabmate.firestoreData;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import com.budziaszek.tabmate.R;
 
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class UserTask {
 
@@ -22,6 +25,11 @@ public class UserTask {
     private Status status;
     private Status statusBeforeArchive;
     private Date date;
+    private Map<String, Integer> timeEstimationVote;
+    private Map<String, Integer> readinessVote;
+    private Integer estimatedTime;
+
+
     //private String[] requirements;
     //time needed
 
@@ -78,6 +86,34 @@ public class UserTask {
         this.id = id;
     }
 
+    public void setEstimatedTime(Integer estimatedTime) {
+        this.estimatedTime = estimatedTime;
+    }
+
+    public void setDoers(ArrayList<String> doers) {
+        this.doers = doers;
+    }
+
+    public void setStatusBeforeArchive(Status statusBeforeArchive) {
+        this.statusBeforeArchive = statusBeforeArchive;
+    }
+
+    public void setTimeEstimationVote(Map<String, Integer> timeEstimationVote) {
+        this.timeEstimationVote = timeEstimationVote;
+    }
+
+    public void setReadinessVote(Map<String, Integer> readinessVote) {
+        this.readinessVote = readinessVote;
+    }
+
+    public Map<String, Integer> getTimeEstimationVote() {
+        return timeEstimationVote;
+    }
+
+    public Integer getEstimatedTime() {
+        return estimatedTime;
+    }
+
     public String getId(){
         return id;
     }
@@ -87,8 +123,11 @@ public class UserTask {
         this.description = null;
         this.group = null;
         //this.tag = null;
-        this.doers = new ArrayList<>();
         this.status = Status.TODO;
+        this.doers = new ArrayList<>();
+        this.timeEstimationVote = new TreeMap<>();
+        this.readinessVote = new TreeMap<>();
+        this.estimatedTime = 0;
         //this.requirements = null;
     }
 
@@ -97,6 +136,10 @@ public class UserTask {
         this.description = description;
         this.group = group;
         this.status = Status.TODO;
+        this.doers = new ArrayList<>();
+        this.timeEstimationVote = new TreeMap<>();
+        this.readinessVote = new TreeMap<>();
+        this.estimatedTime = 0;
     }
 
     public UserTask(String id, String title, String description, String group, /*ArrayList<String> tag,*/ ArrayList<String> doers, Status status) {
@@ -104,7 +147,9 @@ public class UserTask {
         this.title = title;
         this.description = description;
         this.group = group;
-        //this.tag = tag;
+        this.doers = new ArrayList<>();
+        this.timeEstimationVote = new TreeMap<>();
+        this.readinessVote = new TreeMap<>();
         this.doers = doers;
         this.status = status;
     }
@@ -118,8 +163,21 @@ public class UserTask {
             this.doers.add(id);
     }
 
+    public void addTimeEstimationVote(String uid, Integer time){
+        timeEstimationVote.put(uid, time);
+        estimatedTime = 0;
+        for(Integer timeVote : timeEstimationVote.values()){
+            estimatedTime += timeVote;
+        }
+        estimatedTime = estimatedTime /timeEstimationVote.size();
+    }
+
     public void removeDoer(String id){
         this.doers.remove(id);
+    }
+
+    public void addReadinessVote(String uid, Integer readiness){
+        readinessVote.put(uid, readiness);
     }
 
     public List<String> getDoers(){
@@ -155,6 +213,10 @@ public class UserTask {
 
     public Date getDate() {
         return date;
+    }
+
+    public Map<String, Integer> getReadinessVote() {
+        return readinessVote;
     }
 
     public void setTitle(String title) {

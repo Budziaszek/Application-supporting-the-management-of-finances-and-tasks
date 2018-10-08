@@ -51,7 +51,7 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
             taskItemLayout.setBackground(context.getResources().getDrawable(color, context.getTheme()));
 
             taskName = view.findViewById(R.id.task_title);
-            taskDescription = view.findViewById(R.id.task_description);
+            taskDescription = view.findViewById(R.id.nick);
             taskDeadline = view.findViewById(R.id.task_deadline);
         }
     }
@@ -91,7 +91,7 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
                 holder.taskDeadline.setVisibility(View.VISIBLE);
                 holder.taskDeadline.setTextColor(Color.RED);
                 holder.taskDeadline.startAnimation(animation);
-            } else if (calendar.getTime().after(new Date(task.getDate().getTime() - (3 * 86400 * 1000)))) {
+            } else if (calendar.getTime().after(new Date(task.getDate().getTime() - (preDeadlineTime * 86400 * 1000)))) {
                 holder.taskDeadline.setVisibility(View.VISIBLE);
                 holder.taskDeadline.setTextColor(Color.rgb(255, 165, 0));
                 holder.taskDeadline.startAnimation(animation);

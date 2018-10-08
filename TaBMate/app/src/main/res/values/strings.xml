@@ -33,6 +33,17 @@
     <string name="user_image">User Image</string>
     <string name="log_out">Log out </string>
     <string name="confirm_log_out">Are you sure you want to log out?</string>
+    <string name="user_account">Your account</string>
+    <string name="change_email">Change email address</string>
+    <string name="email_changed">Email address changed</string>
+    <string name="enter_new_email">Enter new email</string>
+    <string name="change_nick">Change name</string>
+    <string name="change_password">Change password</string>
+    <string name="submit_change_password">Password reset email will be sent</string>
+    <string name="nick_changed">Name changed</string>
+    <string name="enter_new_nick">Enter new name</string>
+    <string name="remove_account">Remove account</string>
+    <string name="are_you_sure">Are you sure?</string>
 
     <!-- Strings related to main page-->
     <string name="user_tasks">Your tasks</string>
@@ -90,6 +101,10 @@
     <string name="remove_task">Remove task</string>
     <string name="confirm_remove_task">Are you sure? It will not be included in statistics!</string>
     <string name="task_removed">Task removed</string>
+    <string name="estimated_time">Estimated time</string>
+    <string name="your_vote">Your vote</string>
+    <string name="vote">Vote</string>
+    <string name="reaadiness">Your readiness to do this task</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Settings</string>

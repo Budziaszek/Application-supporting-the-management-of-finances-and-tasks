@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#2d728f</color>
     <color name="colorPrimaryDark">#10495c</color>
-    <color name="colorPrimaryLight">#70a9a1</color>
+    <color name="colorPrimaryLight">#70a9a8</color>
     <color name="colorAccentDark">#0a2463</color>
     <color name="colorAccent">#054478</color>
     <color name="colorAccentLight">#d7f9f1</color>
@@ -14,8 +14,9 @@
     <color name="colorAccentSemi">#aa054478</color>
     <color name="colorAccentLightSemi">#aad7f9f1</color>
 
-    <color name="colorSectionBackgroundLight">#3510495c</color>
-    <color name="colorSectionBackground">#c4e2ec</color>
+    <color name="colorSectionBackgroundTransparent">#3510495c</color>
+    <color name="colorSectionBackgroundLight">#93bbc9</color>
+    <color name="colorSectionBackground">#d7f5ff</color>
 
     <color name="colorPrimaryTransparent">#502d728f</color>
     <color name="colorPrimaryDarkTransparent">#5010495c</color>

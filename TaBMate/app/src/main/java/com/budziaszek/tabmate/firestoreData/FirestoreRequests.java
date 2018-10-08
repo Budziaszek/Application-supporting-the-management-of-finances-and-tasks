@@ -1,5 +1,7 @@
 package com.budziaszek.tabmate.firestoreData;
 
+import android.util.Log;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -27,6 +29,10 @@ public class FirestoreRequests {
                 .addOnFailureListener(failure::accept);
     }
 
+    public void updateUser(User user, Consumer<Void> success, Consumer<Exception> failure) {
+        addUser(user,user.getId(), success, failure);
+    }
+
     public void getUser(String uid, Consumer<DocumentSnapshot> action) {
         db.collection(USER_COLLECTION)
                 .document(uid)
@@ -39,6 +45,14 @@ public class FirestoreRequests {
                 .whereEqualTo(field, value)
                 .get()
                 .addOnCompleteListener(action::accept);
+    }
+
+    public void removeUser(String uid, Consumer<Void> success, Consumer<Exception> failure) {
+        db.collection(USER_COLLECTION)
+                .document(uid)
+                .delete()
+                .addOnSuccessListener(success::accept)
+                .addOnFailureListener(failure::accept);
     }
 
     public void addGroup(Group group, Consumer<DocumentReference> success, Consumer<Exception> failure) {
