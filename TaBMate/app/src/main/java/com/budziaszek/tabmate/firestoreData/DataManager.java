@@ -12,8 +12,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 
 /**
@@ -40,8 +43,9 @@ public class DataManager {
 
     // Filtrated data and filters
     private Map<String, UserTask> filtratedTasks;
-    private List<String> selectedGroupsIds;
-    private List<String> selectedUsersIds;
+    private Set<String> selectedGroupsIds;
+    private Set<String> selectedUsersIds;
+    private Boolean isUserUnspecifiedSelected = true;
 
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
@@ -114,6 +118,10 @@ public class DataManager {
     private void decreaseRefreshCounter(){
         refreshCounter--;
         if(refreshCounter == 0) {
+            for(UserTask task: tasks.values()) {
+                checkIfMatchFiltration(task);
+                Log.d(TAG, "Check filtration " + task.getTitle());
+            }
             informObserversRefreshFinished();
             if (tasksChanged) {
                 informObserversTasksChanged();
@@ -145,11 +153,11 @@ public class DataManager {
     }*/
 
     public List<String> getSelectedGroupsIds() {
-        return selectedGroupsIds;
+        return new ArrayList<>(selectedGroupsIds);
     }
 
     public List<String> getSelectedUsersIds() {
-        return selectedUsersIds;
+        return  new ArrayList<>(selectedUsersIds);
     }
 
     public List<User> getUsers() {
@@ -178,45 +186,40 @@ public class DataManager {
         return invitations;
     }
 
+    public Boolean getUserUnspecifiedSelected() {
+        return isUserUnspecifiedSelected;
+    }
+
     /**
-     * Adds group to selected in filtration, so tasks from this group will be
-     * included in filtrated tasks set.
+     * Changes display unspecified selected users in filtration.
+     */
+    public void setUserUnspecifiedSelected(Boolean userUnspecifiedSelected) {
+        isUserUnspecifiedSelected = userUnspecifiedSelected;
+        refreshFiltratedTasks();
+    }
+
+    /**
+     * Adds group to selected in filtration.
      */
     public void addFiltrationOptionGroup(String gid) {
-        for (UserTask task : tasks.values()) {
-            if (gid.equals(task.getGroup())) {
-                filtratedTasks.put(task.getId(), task);
-            }
-        }
         selectedGroupsIds.add(gid);
+        refreshFiltratedTasks();
     }
 
     /**
-     * Adds user to selected in filtration, so tasks where this user is mentioned will be
-     * included in filtrated tasks set.
+     * Adds user to selected in filtration.
      */
     public void addFiltrationOptionUser(String uid) {
-        for (UserTask task : filtratedTasks.values()) {
-            if (task.getDoers().contains(uid)) {
-                filtratedTasks.put(task.getId(), task);
-            }
-        }
         selectedUsersIds.add(uid);
+        refreshFiltratedTasks();
     }
 
     /**
-     * Removes group from selected in filtration, so tasks from this group will no longer be
-     * included in filtrated tasks set.
+     * Removes group from selected in filtration.
      */
     public void removeFiltrationOptionGroup(String gid) {
-        Map<String, UserTask> newFiltratedTasks = new HashMap<>();
-        for (UserTask task : filtratedTasks.values()) {
-            if (!gid.equals(task.getGroup())) {
-                newFiltratedTasks.put(task.getId(), task);
-            }
-        }
-        filtratedTasks = newFiltratedTasks;
         selectedGroupsIds.remove(gid);
+        refreshFiltratedTasks();
     }
 
     /**
@@ -224,15 +227,19 @@ public class DataManager {
      * included in filtrated tasks set.
      */
     public void removeFiltrationOptionUser(String uid) {
-        Map<String, UserTask> newFiltratedTasks = new HashMap<>();
-        for (UserTask task : filtratedTasks.values()) {
-            if (!task.getDoers().contains(uid)) {
-                newFiltratedTasks.put(task.getId(), task);
-            }
-        }
-        filtratedTasks = newFiltratedTasks;
         selectedUsersIds.remove(uid);
+        refreshFiltratedTasks();
     }
+
+    //TODO refresh on close filtration
+    public void refreshFiltratedTasks(){
+        filtratedTasks.clear();
+        for(UserTask task : tasks.values()){
+            checkIfMatchFiltration(task);
+        }
+        informObserversTasksChanged();
+    }
+
 
     /**
      * Prepares maps and lists for new data, refreshes groups, users and tasks.
@@ -242,8 +249,8 @@ public class DataManager {
         firestoreRequests.getUser(uid, this::checkUser);
         if (groups == null) {
             groups = new TreeMap<>();
-            selectedGroupsIds = new ArrayList<>();
-            selectedUsersIds = new ArrayList<>();
+            selectedGroupsIds = new HashSet<>();
+            selectedUsersIds = new HashSet<>();
             users = new TreeMap<>();
             tasks = new TreeMap<>();
             filtratedTasks = new HashMap<>();
@@ -364,6 +371,7 @@ public class DataManager {
                 group.setId(document.getId());
                 groups.put(document.getId(), group);
                 selectedGroupsIds.add(group.getId());
+                //addFiltrationOptionGroup(group.getId());
                 Log.d(TAG, "User group: " + group.getId());
                 refreshGroupTasks(group.getId());
                 for (String uid : group.getMembers()) {
@@ -386,7 +394,7 @@ public class DataManager {
                 task.setId(document.getId());
                 if(!tasks.containsKey(document.getId())) {
                     tasks.put(document.getId(), task);
-                    checkIfMatchFiltration(task);
+                    //checkIfMatchFiltration(task);
                 }
                 Log.d(TAG, "Task: " + task.getTitle() + " (" + task.getGroup() + ")");
             }
@@ -402,8 +410,10 @@ public class DataManager {
         User user = documentSnapshot.toObject(User.class);
         if (user != null) {
             users.put(user.getId(), user);
+            selectedUsersIds.add(user.getId());
             if(!selectedUsersIds.contains(user.getId()))
                 selectedUsersIds.add(user.getId());
+            Log.d(TAG, "User: " + user.getId() + " (" + user.getName() + ")");
         }
         decreaseRefreshCounter();
     }
@@ -444,9 +454,14 @@ public class DataManager {
      */
     private void checkIfMatchFiltration(UserTask task) {
         if (selectedGroupsIds.contains(task.getGroup())) {
+            if(task.getDoers().size() == 0 && isUserUnspecifiedSelected) {
+                filtratedTasks.put(task.getId(), task);
+                return;
+            }
             for(String uid : task.getDoers())
                 if(selectedUsersIds.contains(uid)) {
                     filtratedTasks.put(task.getId(), task);
+                    return;
                 }
         }
     }

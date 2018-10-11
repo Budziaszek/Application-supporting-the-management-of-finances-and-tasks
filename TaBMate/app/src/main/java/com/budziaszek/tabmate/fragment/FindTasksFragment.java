@@ -3,6 +3,7 @@ package com.budziaszek.tabmate.fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,12 +43,13 @@ public class FindTasksFragment extends BasicFragment {
             layout.addView(cb);
             cb.setOnClickListener(v -> {
                 CheckBox checkBox = (CheckBox) v;
-                Log.d(TAG, group.getName() + " " + checkBox.getText());
                 if(checkBox.getText().equals(group.getName())) {
                     boolean checked = checkBox.isChecked();
                     if (checked) {
+                        Log.d(TAG, ((CheckBox) v).getText().toString() + " clicked add");
                         DataManager.getInstance().addFiltrationOptionGroup(group.getId());
                     } else {
+                        Log.d(TAG, ((CheckBox) v).getText().toString() + " clicked remove");
                         DataManager.getInstance().removeFiltrationOptionGroup(group.getId());
                     }
                 }
@@ -57,6 +59,7 @@ public class FindTasksFragment extends BasicFragment {
         // Allow users selection
         LinearLayout layoutUsers = fView.findViewById(R.id.users_checkboxes);
         List<User> users = DataManager.getInstance().getUsers();
+
         for(User user: users){
             CheckBox cb = new CheckBox(activity);
             cb.setText(user.getName());
@@ -66,17 +69,38 @@ public class FindTasksFragment extends BasicFragment {
             layoutUsers.addView(cb);
             cb.setOnClickListener(v -> {
                 CheckBox checkBox = (CheckBox) v;
-                Log.d(TAG, user.getName() + " " + checkBox.getText());
                 if(checkBox.getText().equals(user.getName())) {
                     boolean checked = checkBox.isChecked();
                     if (checked) {
+                        Log.d(TAG, ((CheckBox) v).getText().toString() + " clicked add");
                         DataManager.getInstance().addFiltrationOptionUser(user.getId());
                     } else {
+                        Log.d(TAG, ((CheckBox) v).getText().toString() + " clicked remove");
                         DataManager.getInstance().removeFiltrationOptionUser(user.getId());
                     }
                 }
             });
         }
+        CheckBox cb = new CheckBox(activity);
+        cb.setText(R.string.task_no_doers);
+        cb.setChecked(DataManager.getInstance().getUserUnspecifiedSelected());
+        cb.setPadding(5, 5, 5, 5);
+        cb.setTextSize(18);
+        layoutUsers.addView(cb);
+        cb.setOnClickListener(v -> {
+            CheckBox checkBox = (CheckBox) v;
+            if(checkBox.getText().equals(getResources().getString(R.string.task_no_doers))) {
+                boolean checked = checkBox.isChecked();
+                if (checked) {
+                    Log.d(TAG, ((CheckBox) v).getText().toString() + " clicked true");
+                    DataManager.getInstance().setUserUnspecifiedSelected(true);
+                } else {
+                    Log.d(TAG, ((CheckBox) v).getText().toString() + " false");
+                    DataManager.getInstance().setUserUnspecifiedSelected(false);
+                }
+            }
+        });
+
         return fView;
     }
 

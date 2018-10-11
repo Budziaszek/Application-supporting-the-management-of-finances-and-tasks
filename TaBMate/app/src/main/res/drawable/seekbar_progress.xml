@@ -3,9 +3,9 @@
     <item android:id="@android:id/background"
         android:gravity="center_vertical|fill_horizontal">
         <shape android:shape="rectangle"
-            android:tint="@color/colorPrimaryLight">
+            android:tint="@color/colorAccentLightTransparent">
             <size android:height="20dp" />
-            <solid android:color="@color/colorPrimaryLight" />
+            <solid android:color="@color/colorAccentLightTransparent" />
         </shape>
     </item>
     <item android:id="@android:id/progress"

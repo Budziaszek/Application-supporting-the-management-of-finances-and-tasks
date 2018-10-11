@@ -88,7 +88,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         instance.addObserver(this);
         if (instance.getGroups() == null) {
             showProgress(true);
-            ((MainActivity)activity).setDrawerVisible(false);
+            //((MainActivity)activity).setDrawerVisible(false);
             Log.d(TAG, "Ask for refresh groups and users");
             instance.refresh(((MainActivity) activity).getCurrentUserId());
         } else {
@@ -248,7 +248,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
     @Override
     public void tasksChanged(){
-        List<UserTask> allTasks = DataManager.getInstance().getFiltratedTasks();
+        List<UserTask> allTasks = DataManager.getInstance().getTasks();
         List<UserTask> newTasks = new ArrayList<>();
         List<UserTask> oldTasks = tasks;
         String uid = ((MainActivity)activity).getCurrentUserId();
@@ -279,10 +279,5 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         for( int i = newTasks.size(); i < oldTasks.size(); i++){
             tasksAdapter.notifyItemRemoved(i);
         }
-    }
-    @Override
-    public void finished(){
-        super.finished();
-        ((MainActivity)activity).setDrawerVisible(true);
     }
 }

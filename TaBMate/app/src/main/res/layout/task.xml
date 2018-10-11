@@ -278,7 +278,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/task_time_vote"
                     android:padding="5dp"
-                    android:text="@string/reaadiness"
+                    android:text="@string/readiness"
                     android:textSize="12sp" />
 
                 <SeekBar

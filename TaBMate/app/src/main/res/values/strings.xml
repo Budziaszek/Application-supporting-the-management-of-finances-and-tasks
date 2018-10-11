@@ -104,7 +104,17 @@
     <string name="estimated_time">Estimated time</string>
     <string name="your_vote">Your vote</string>
     <string name="vote">Vote</string>
-    <string name="reaadiness">Your readiness to do this task</string>
+    <string name="readiness">Your readiness to do this task</string>
+    <string name="task_no_doers">Without doers</string>
+
+    <!-- Strings related to budget -->
+    <string name="budget">Budget</string>
+    <string name="balance">Balance</string>
+    <string name="new_transaction">New transaction</string>
+    <string name="history">Transaction history</string>
+    <string name="amount">Amount</string>
+    <string name="category">Category</string>
+    <string name="new_category">New category</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Settings</string>

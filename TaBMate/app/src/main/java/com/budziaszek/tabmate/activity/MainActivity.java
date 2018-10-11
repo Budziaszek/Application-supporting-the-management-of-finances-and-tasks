@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.UserTask;
+import com.budziaszek.tabmate.fragment.DashboardFragment;
 import com.budziaszek.tabmate.fragment.TasksPagerFragment;
 import com.budziaszek.tabmate.fragment.MainPageFragment;
 
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity
             newFragment = MainPageFragment.class;
         } else if (id == R.id.nav_dashboard) {
             Log.d(TAG, "dashboard fragment");
-            //TODO add dashboard fragment
+            newFragment = DashboardFragment.class;
         } else if (id == R.id.nav_tasks) {
             newFragment = TasksPagerFragment.class;
         } else if (id == R.id.nav_logOut) {
@@ -223,15 +224,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void setDrawerVisible(Boolean visible){
-        toggle.setDrawerIndicatorEnabled(visible);
-        drawer.setDrawerLockMode(visible ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-    }
-
-
     /**
      * Starts new fragment.
-     *
      * @param fragmentClass class of fragment that will be created and replaced.
      */
     public void startFragment(Class fragmentClass) {

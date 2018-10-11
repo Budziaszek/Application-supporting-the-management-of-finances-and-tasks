@@ -99,7 +99,17 @@
     <string name="estimated_time">Szacowany czas</string>
     <string name="your_vote">Twój głos</string>
     <string name="vote">Głosuj</string>
-    <string name="reaadiness">Twoja gotowość do wykonania zadania</string>
+    <string name="readiness">Twoja gotowość do wykonania zadania</string>
+    <string name="task_no_doers">Bez wykonawców</string>
+
+    <!-- Strings related to budget -->
+    <string name="budget">Budżet</string>
+    <string name="balance">Stan konta</string>
+    <string name="new_transaction">Nowa transakcja</string>
+    <string name="history">Historia transakcji</string>
+    <string name="amount">Kwota</string>
+    <string name="category">Kategoria</string>
+    <string name="new_category">Nowa kategoria</string>
 
     <string name="basic">Podstawowe</string>
     <string name="title">Tytuł</string>

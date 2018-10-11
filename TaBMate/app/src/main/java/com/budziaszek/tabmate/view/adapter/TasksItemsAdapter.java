@@ -86,7 +86,7 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
         holder.taskDeadline.setVisibility(deadlineVisible);
         holder.taskDeadline.setTextColor(Color.GREEN);
         holder.taskDeadline.clearAnimation();
-        if (task.getStatus() != UserTask.Status.ARCHIVED && task.getDate() != null) {
+        if (task.getStatus() != UserTask.Status.ARCHIVED && task.getStatus() != UserTask.Status.DONE && task.getDate() != null) {
             if ((calendar.getTime().after(task.getDate()))) {
                 holder.taskDeadline.setVisibility(View.VISIBLE);
                 holder.taskDeadline.setTextColor(Color.RED);
