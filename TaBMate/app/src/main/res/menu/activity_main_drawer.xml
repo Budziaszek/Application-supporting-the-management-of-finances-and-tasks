@@ -16,10 +16,10 @@
                 android:id="@+id/nav_tasks"
                 android:icon="?android:attr/actionModePasteDrawable"
                 android:title="@string/tasks"/>
-        <!--item
-                android:id="@+id/nav_group"
-                android:icon="@drawable/group"
-                android:title="@string/groups"/-->
+        <item
+                android:id="@+id/nav_budget"
+                android:icon="@drawable/budget"
+                android:title="@string/budget"/>
         <item
                 android:id="@+id/nav_logOut"
                 android:icon="@android:drawable/ic_lock_power_off"

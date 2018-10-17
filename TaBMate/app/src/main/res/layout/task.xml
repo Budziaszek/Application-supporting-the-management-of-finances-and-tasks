@@ -106,7 +106,7 @@
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/nick"
+                    android:id="@+id/task_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/label_task_description"
@@ -217,7 +217,7 @@
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/task_deadline"
+                    android:id="@+id/task_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/label_task_deadline"
@@ -232,7 +232,7 @@
                     android:id="@+id/label_task_estimated_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/task_deadline"
+                    android:layout_below="@+id/task_date"
                     android:padding="5dp"
                     android:text="@string/estimated_time"
                     android:textSize="12sp" />
@@ -254,7 +254,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_below="@+id/task_deadline"
+                    android:layout_below="@+id/task_date"
                     android:padding="5dp"
                     android:text="@string/your_vote"
                     android:textSize="12sp" />

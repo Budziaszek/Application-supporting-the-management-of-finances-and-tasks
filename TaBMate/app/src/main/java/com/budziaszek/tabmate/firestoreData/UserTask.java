@@ -1,7 +1,6 @@
 package com.budziaszek.tabmate.firestoreData;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.budziaszek.tabmate.R;
 
@@ -20,7 +19,6 @@ public class UserTask {
     private String title;
     private String description;
     private String group;
-    //private ArrayList<String> tag;
     private ArrayList<String> doers;
     private Status status;
     private Status statusBeforeArchive;
@@ -28,10 +26,6 @@ public class UserTask {
     private Map<String, Integer> timeEstimationVote;
     private Map<String, Integer> readinessVote;
     private Integer estimatedTime;
-
-
-    //private String[] requirements;
-    //time needed
 
     public enum Status {
 
@@ -122,13 +116,11 @@ public class UserTask {
         this.title = null;
         this.description = null;
         this.group = null;
-        //this.tag = null;
         this.status = Status.TODO;
         this.doers = new ArrayList<>();
         this.timeEstimationVote = new TreeMap<>();
         this.readinessVote = new TreeMap<>();
         this.estimatedTime = 0;
-        //this.requirements = null;
     }
 
     public UserTask(String title, String description, String group) {
@@ -153,10 +145,6 @@ public class UserTask {
         this.doers = doers;
         this.status = status;
     }
-
-    /*public void addTag(String tag){
-        this.tag.add(tag);
-    }*/
 
     public void addDoer(String id){
         if(!this.doers.contains(id))
@@ -199,10 +187,6 @@ public class UserTask {
         return group;
     }
 
-   /* public ArrayList<String> getTag() {
-        return tag;
-    }*/
-
     public Status getStatus() {
         return status;
     }
@@ -230,10 +214,6 @@ public class UserTask {
     public void setGroup(String group) {
         this.group = group;
     }
-
-    /*public void setTag(ArrayList<String> tag) {
-        this.tag = tag;
-    }*/
 
     public void setStatus(Status status) {
         this.status = status;

@@ -20,11 +20,11 @@ import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.view.DataChangeListener;
 import com.budziaszek.tabmate.view.adapter.GroupsItemsAdapter;
 import com.budziaszek.tabmate.view.adapter.TasksItemsAdapter;
-import com.budziaszek.tabmate.view.listener.GroupsClickListener;
+import com.budziaszek.tabmate.view.listener.GroupClickListener;
 import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.view.listener.InvitationClickListener;
 import com.budziaszek.tabmate.view.adapter.InvitationsItemsAdapter;
-import com.budziaszek.tabmate.view.listener.TasksClickListener;
+import com.budziaszek.tabmate.view.listener.TaskClickListener;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,7 +33,7 @@ import java.util.List;
 
 public class MainPageFragment extends BasicFragment implements DataChangeListener {
 
-    private static final String TAG = "MainPageProcedure";
+    private static final String TAG = "MainPageFragmentProcedure";
 
     private Activity activity;
 
@@ -62,7 +62,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         //Refresh
         swipeLayout = fView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(() -> {
-            if(!DataManager.getInstance().isRefreshFinished())
+            if (!DataManager.getInstance().isRefreshFinished())
                 return;
 
             Log.d(TAG, "Ask for refresh groups and users");
@@ -88,7 +88,6 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         instance.addObserver(this);
         if (instance.getGroups() == null) {
             showProgress(true);
-            //((MainActivity)activity).setDrawerVisible(false);
             Log.d(TAG, "Ask for refresh groups and users");
             instance.refresh(((MainActivity) activity).getCurrentUserId());
         } else {
@@ -111,7 +110,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
     private void setRecyclerGroups() {
         RecyclerView groupsRecycler = fView.findViewById(R.id.groups_list);
-        groupsAdapter = new GroupsItemsAdapter(groups, new GroupsClickListener() {
+        groupsAdapter = new GroupsItemsAdapter(groups, new GroupClickListener() {
             @Override
             public void onItemLongClicked(int position) {
                 ((MainActivity) activity).setCurrentGroup(groups.get(position));
@@ -196,14 +195,15 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
     private void setRecyclerTasks() {
         RecyclerView tasksRecycler = fView.findViewById(R.id.user_tasks_list);
         tasksAdapter = new TasksItemsAdapter(tasks, getContext(), R.drawable.ripple_effect_doing,
-                new TasksClickListener() {
+                new TaskClickListener() {
                     @Override
                     public void onClick(int position) {
                         ((MainActivity) activity).setCurrentTask(tasks.get(position));
                         ((MainActivity) activity).startFragment(TaskFragment.class);
                     }
+
                     @Override
-                    public void onLongClick(int position){
+                    public void onLongClick(int position) {
                         ((MainActivity) activity).setCurrentTask(tasks.get(position));
                         ((MainActivity) activity).startFragment(TaskFragment.class);
                     }
@@ -230,8 +230,8 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         groupsAdapter.update(groups);
 
         //TODO check what exactly changed
-        for(int i = 0; i < newGroups.size(); i++){
-            if(oldGroups.size() <= i) {
+        for (int i = 0; i < newGroups.size(); i++) {
+            if (oldGroups.size() <= i) {
                 groupsAdapter.notifyItemInserted(i);
             } else {
                 Group newGroup = newGroups.get(i);
@@ -241,17 +241,17 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
                 }
             }
         }
-        for( int i = newGroups.size(); i< oldGroups.size(); i++){
+        for (int i = newGroups.size(); i < oldGroups.size(); i++) {
             groupsAdapter.notifyItemRemoved(i);
         }
     }
 
     @Override
-    public void tasksChanged(){
+    public void tasksChanged() {
         List<UserTask> allTasks = DataManager.getInstance().getTasks();
         List<UserTask> newTasks = new ArrayList<>();
         List<UserTask> oldTasks = tasks;
-        String uid = ((MainActivity)activity).getCurrentUserId();
+        String uid = ((MainActivity) activity).getCurrentUserId();
 
         for (UserTask task : allTasks) {
             if (task.getStatus().name.equals(UserTask.Status.DOING.name)) {
@@ -265,8 +265,8 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         tasksAdapter.update(tasks);
 
         //TODO check what exactly changed
-        for(int i = 0; i < newTasks.size(); i++){
-            if(oldTasks.size() <= i) {
+        for (int i = 0; i < newTasks.size(); i++) {
+            if (oldTasks.size() <= i) {
                 tasksAdapter.notifyItemInserted(i);
             } else {
                 UserTask newTask = newTasks.get(i);
@@ -276,7 +276,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
                 }
             }
         }
-        for( int i = newTasks.size(); i < oldTasks.size(); i++){
+        for (int i = newTasks.size(); i < oldTasks.size(); i++) {
             tasksAdapter.notifyItemRemoved(i);
         }
     }

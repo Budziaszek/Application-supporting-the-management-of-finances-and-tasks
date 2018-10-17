@@ -17,7 +17,7 @@ import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.view.adapter.TasksItemsAdapter;
-import com.budziaszek.tabmate.view.listener.TasksClickListener;
+import com.budziaszek.tabmate.view.listener.TaskClickListener;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,7 +25,7 @@ import java.util.List;
 
 public class TaskPageFragment extends BasicFragment {
 
-    private static final String TAG = "TaskPageProcedure";
+    private static final String TAG = "TaskPageFragmentProcedure";
 
     private Activity activity;
     private TasksItemsAdapter tasksAdapter;
@@ -90,7 +90,7 @@ public class TaskPageFragment extends BasicFragment {
         // Tasks
         RecyclerView tasksRecycler = fView.findViewById(R.id.tasks_list);
         tasksAdapter = new TasksItemsAdapter(tasks, getContext(), status.color,
-                new TasksClickListener() {
+                new TaskClickListener() {
                     @Override
                     public void onClick(int position) {
                         ((MainActivity) activity).setCurrentTask(tasks.get(position));

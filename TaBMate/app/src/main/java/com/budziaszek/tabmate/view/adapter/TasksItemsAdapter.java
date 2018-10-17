@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.UserTask;
-import com.budziaszek.tabmate.view.listener.TasksClickListener;
+import com.budziaszek.tabmate.view.listener.TaskClickListener;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.MyViewHolder> {
 
-    private TasksClickListener tasksClickListener;
+    private TaskClickListener taskClickListener;
     private List<UserTask> tasksList;
     private Animation animation;
     private Context context;
@@ -43,24 +43,24 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
             animation = AnimationUtils.loadAnimation(context, R.anim.blinking_animation);
 
             taskItemLayout = view.findViewById(R.id.task_item_layout);
-            taskItemLayout.setOnClickListener(view12 -> tasksClickListener.onClick(getAdapterPosition()));
+            taskItemLayout.setOnClickListener(view12 -> taskClickListener.onClick(getAdapterPosition()));
             taskItemLayout.setOnLongClickListener(view1 -> {
-                tasksClickListener.onLongClick(getAdapterPosition());
+                taskClickListener.onLongClick(getAdapterPosition());
                 return true;
             });
             taskItemLayout.setBackground(context.getResources().getDrawable(color, context.getTheme()));
 
             taskName = view.findViewById(R.id.task_title);
-            taskDescription = view.findViewById(R.id.nick);
-            taskDeadline = view.findViewById(R.id.task_deadline);
+            taskDescription = view.findViewById(R.id.task_description);
+            taskDeadline = view.findViewById(R.id.task_date);
         }
     }
 
 
-    public TasksItemsAdapter(List<UserTask> groupsList, Context context, int color, TasksClickListener tasksClickListener) {
+    public TasksItemsAdapter(List<UserTask> groupsList, Context context, int color, TaskClickListener taskClickListener) {
         //this.taskItemLayouts = new ArrayList<>();
         this.tasksList = groupsList;
-        this.tasksClickListener = tasksClickListener;
+        this.taskClickListener = taskClickListener;
         this.context = context;
         this.color = color;
     }

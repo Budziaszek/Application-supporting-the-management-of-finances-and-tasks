@@ -106,15 +106,24 @@
     <string name="vote">Vote</string>
     <string name="readiness">Your readiness to do this task</string>
     <string name="task_no_doers">Without doers</string>
+    <string name="task_todo">ToDo</string>
+    <string name="task_doing">Doing</string>
+    <string name="task_done">Done</string>
+    <string name="task_archived">Archived</string>
 
     <!-- Strings related to budget -->
     <string name="budget">Budget</string>
     <string name="balance">Balance</string>
+    <string name="transaction_added">Transaction added</string>
     <string name="new_transaction">New transaction</string>
+    <string name="transaction_details">Transaction details</string>
+    <string name="add_new_transaction">Add new transaction</string>
     <string name="history">Transaction history</string>
     <string name="amount">Amount</string>
     <string name="category">Category</string>
     <string name="new_category">New category</string>
+    <string name="date">Date</string>
+    <string name="error_amount">Incorrect amount</string>
 
     <!-- Strings related to menu -->
     <string name="settings">Settings</string>

@@ -101,15 +101,24 @@
     <string name="vote">Głosuj</string>
     <string name="readiness">Twoja gotowość do wykonania zadania</string>
     <string name="task_no_doers">Bez wykonawców</string>
+    <string name="task_todo">ToDo</string>
+    <string name="task_doing">Doing</string>
+    <string name="task_done">Done</string>
+    <string name="task_archived">Archived</string>
 
     <!-- Strings related to budget -->
     <string name="budget">Budżet</string>
     <string name="balance">Stan konta</string>
     <string name="new_transaction">Nowa transakcja</string>
+    <string name="transaction_added">Transakcja dodana</string>
+    <string name="transaction_details">Szcegóły transakcji</string>
+    <string name="add_new_transaction">Dodaj nową transakcję</string>
     <string name="history">Historia transakcji</string>
     <string name="amount">Kwota</string>
     <string name="category">Kategoria</string>
     <string name="new_category">Nowa kategoria</string>
+    <string name="date">Data</string>
+    <string name="error_amount">Błędna kwota</string>
 
     <string name="basic">Podstawowe</string>
     <string name="title">Tytuł</string>

@@ -1,6 +1,5 @@
 package com.budziaszek.tabmate.view.listener;
 
-public interface TasksClickListener {
+public interface TransactionClickListener {
     void onClick(int position);
-    void onLongClick(int position);
 }

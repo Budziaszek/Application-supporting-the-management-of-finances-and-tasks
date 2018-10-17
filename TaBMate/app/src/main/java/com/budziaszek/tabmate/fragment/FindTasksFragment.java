@@ -3,7 +3,6 @@ package com.budziaszek.tabmate.fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,7 @@ import java.util.List;
 
 public class FindTasksFragment extends BasicFragment {
 
-    private static final String TAG = "FindTasksProcedure";
+    private static final String TAG = "FindTasksFragmentProcedure";
 
     // private Activity activity;
 

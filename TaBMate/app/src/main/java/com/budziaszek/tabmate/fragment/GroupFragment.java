@@ -41,7 +41,7 @@ import java.util.Map;
 //TODO administrator
 public class GroupFragment extends BasicFragment {
 
-    private static final String TAG = "DisplayGroupProcedure";
+    private static final String TAG = "GroupFragmentProcedure";
 
     private Activity activity;
     private Group group;

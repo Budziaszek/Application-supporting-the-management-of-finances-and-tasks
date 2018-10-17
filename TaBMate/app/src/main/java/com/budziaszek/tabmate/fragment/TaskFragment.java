@@ -3,6 +3,7 @@ package com.budziaszek.tabmate.fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,7 +23,6 @@ import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.app.DatePickerDialog;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
@@ -38,14 +37,14 @@ import com.budziaszek.tabmate.view.adapter.GroupSpinnerAdapter;
 import com.budziaszek.tabmate.view.adapter.MembersItemsAdapter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Calendar;
 
 public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDateSetListener,
         NumberPicker.OnValueChangeListener {
 
-    private static final String TAG = "DisplayTaskProcedure";
+    private static final String TAG = "TaskFragmentProcedure";
     private Activity activity;
 
     private View fView;
@@ -86,11 +85,11 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         task = ((MainActivity) activity).getCurrentTask();
 
         taskTitle = fView.findViewById(R.id.task_title);
-        taskDescription = fView.findViewById(R.id.nick);
+        taskDescription = fView.findViewById(R.id.task_description);
         taskTitleInput = fView.findViewById(R.id.task_title_input);
         taskDescriptionInput = fView.findViewById(R.id.task_description_input);
         taskStatus = fView.findViewById(R.id.task_status);
-        taskDeadline = fView.findViewById(R.id.task_deadline);
+        taskDeadline = fView.findViewById(R.id.task_date);
         taskGroup = fView.findViewById(R.id.task_group);
         taskGroupInput = fView.findViewById(R.id.spinner_group);
         taskEstimatedTime = fView.findViewById(R.id.task_estimated_time);
@@ -226,7 +225,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         taskTitleInput.setText(task.getTitle());
         taskDescriptionInput.setText(task.getDescription());
         taskDeadline.setText(task.getDateString());
-        taskEstimatedTime.setText(String.valueOf(task.getEstimatedTime()));
+        taskEstimatedTime.setText((task.getEstimatedTime() != null ? String.valueOf(task.getEstimatedTime()) : "0"));
         Integer timeVote = task.getTimeEstimationVote().get(((MainActivity)activity).getCurrentUserId());
         Integer readinessVote = task.getReadinessVote().get(((MainActivity)activity).getCurrentUserId());
         if(timeVote != null)

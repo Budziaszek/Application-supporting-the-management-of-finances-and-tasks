@@ -33,7 +33,7 @@ import com.google.firebase.auth.FirebaseUser;
 //TODO Sign out (maybe not here)
 public class LoginActivity extends Activity {
 
-    private static final String TAG = "LoginProcedure";
+    private static final String TAG = "LoginActivityProcedure";
 
     // UI references
     private EditText nameView;

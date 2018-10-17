@@ -18,7 +18,7 @@ import com.budziaszek.tabmate.view.adapter.TasksPagesAdapter;
 
 public class TasksPagerFragment extends BasicFragment {
 
-    private static final String TAG = "DisplayTasksProcedure";
+    private static final String TAG = "TasksPagerFragmentProcedure";
     private Activity activity;
     private TasksPagesAdapter adapter;
     private ViewPager viewPager;
@@ -33,11 +33,11 @@ public class TasksPagerFragment extends BasicFragment {
         informAboutNetworkConnection();
         activity = getActivity();
 
-        // Pager initilization
+        // Pager initialization
         viewPager = fView.findViewById(R.id.viewpager);
-        adapter = new TasksPagesAdapter(getChildFragmentManager());
+        adapter = new TasksPagesAdapter(getChildFragmentManager(), getContext());
         viewPager.setAdapter(adapter);
-        if(((MainActivity)activity).getIsArchivedVisible()){
+        if (((MainActivity) activity).getIsArchivedVisible()) {
             adapter.changeArchivedVisibility();
             viewPager.setCurrentItem(adapter.getCount() - 1);
         }
@@ -81,7 +81,7 @@ public class TasksPagerFragment extends BasicFragment {
         } else if (id == R.id.action_archived_tasks) {
             adapter.changeArchivedVisibility();
             viewPager.setCurrentItem(adapter.getCount() - 1);
-            ((MainActivity)activity).changeIsArchivedVisible();
+            ((MainActivity) activity).changeIsArchivedVisible();
             return true;
         }
         return false;

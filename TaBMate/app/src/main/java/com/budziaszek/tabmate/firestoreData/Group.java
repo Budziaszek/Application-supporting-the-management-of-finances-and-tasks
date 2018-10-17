@@ -9,8 +9,7 @@ public class Group {
     private String name;
     private String description;
     private List<String> members;
-    //private List<UserTask> tasks = new ArrayList<>();
-    //private List<String> invitationsSent;
+    private Double budgetBalance;
 
     public Group() {
     }
@@ -19,14 +18,12 @@ public class Group {
         this.name = name;
         this.description = description;
         this.members = new ArrayList<>();
-        //this.invitationsSent = new ArrayList<>();
     }
 
-    public Group(String name, String description, List<String> members) {//, List<String> invitationsSent) {
+    public Group(String name, String description, List<String> members) {
         this.name = name;
         this.description = description;
         this.members = members;
-        //this.invitationsSent = invitationsSent;
     }
 
     public void setId(String id) {
@@ -45,17 +42,13 @@ public class Group {
         this.members = members;
     }
 
+    public void setBudgetBalance(Double budgetBalance) {
+        this.budgetBalance = budgetBalance;
+    }
+
     public void addMember(String memberId) {
         members.add(memberId);
     }
-
-    //public List<UserTask> getTasks() {
-    //    return tasks;
-    //}
-
-    /*public void setInvitationsSent(List<String> invitationsSent) {
-        this.invitationsSent = invitationsSent;
-    }*/
 
     public String getId() {
         return id;
@@ -73,22 +66,18 @@ public class Group {
         return members;
     }
 
-    //public void setTasks(List<UserTask> tasks) {
-    //    this.tasks = tasks;
-    //}
-
-    /*public List<String> getInvitationsSent() {
-        return invitationsSent;
-    }*/
+    public Double getBudgetBalance() {
+        return budgetBalance;
+    }
 
     @Override
     public boolean equals(Object obj) {
-        if(obj.getClass() != Group.class)
+        if (obj.getClass() != Group.class)
             return false;
 
-        if(id.equals(((Group)obj).id))
-            if(name.equals(((Group)obj).name))
-                return (description.equals(((Group)obj).description));
+        if (id.equals(((Group) obj).id))
+            if (name.equals(((Group) obj).name))
+                return (description.equals(((Group) obj).description));
 
         return false;
     }

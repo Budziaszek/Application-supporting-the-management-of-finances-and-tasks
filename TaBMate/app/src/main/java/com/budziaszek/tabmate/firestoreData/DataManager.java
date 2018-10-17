@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeMap;
 
 /**
@@ -34,12 +33,14 @@ public class DataManager {
     private Boolean groupsChanged = false;
     private Boolean tasksChanged = false;
     private Boolean invitationsChanged = false;
+    private Boolean transactionsChanged = false;
 
     // All data from database
     private Map<String, Group> groups;
     private Map<String, User> users;
     private Map<String, UserTask> tasks;
     private List<String> invitations;
+    private Map<String, Transaction> transactions;
 
     // Filtrated data and filters
     private Map<String, UserTask> filtratedTasks;
@@ -55,6 +56,7 @@ public class DataManager {
 
     /**
      * Creates class instance if it wasn't created before and returns (singleton) instance.
+     *
      * @return instance, that allow to access data
      */
     public static DataManager getInstance() {
@@ -70,6 +72,15 @@ public class DataManager {
     private void informObserversTasksChanged() {
         for (DataChangeListener listener : observers) {
             listener.tasksChanged();
+        }
+    }
+
+    /**
+     * Informs observers about changed transactions data.
+     */
+    private void informObserversTransactionsChanged() {
+        for (DataChangeListener listener : observers) {
+            listener.transactionsChanged();
         }
     }
 
@@ -101,7 +112,7 @@ public class DataManager {
         }
     }
 
-    public Boolean isRefreshFinished(){
+    public Boolean isRefreshFinished() {
         return refreshCounter == 0;
     }
 
@@ -115,10 +126,10 @@ public class DataManager {
             observers.add(listener);
     }
 
-    private void decreaseRefreshCounter(){
+    private void decreaseRefreshCounter() {
         refreshCounter--;
-        if(refreshCounter == 0) {
-            for(UserTask task: tasks.values()) {
+        if (refreshCounter == 0) {
+            for (UserTask task : tasks.values()) {
                 checkIfMatchFiltration(task);
                 Log.d(TAG, "Check filtration " + task.getTitle());
             }
@@ -135,6 +146,10 @@ public class DataManager {
                 informObserversInvitationsChanged();
                 invitationsChanged = false;
             }
+            if (transactionsChanged) {
+                informObserversTransactionsChanged();
+                transactionsChanged = false;
+            }
         }
     }
 
@@ -144,8 +159,10 @@ public class DataManager {
         return new ArrayList<>(groups.values());
     }
 
-    public Group getGroup(String gid){
-        return groups.get(gid);
+    public Group getGroup(String gid) {
+        if(gid != null)
+            return groups.get(gid);
+        return null;
     }
 
     /*public UserTask getTask(String tid){
@@ -157,7 +174,7 @@ public class DataManager {
     }
 
     public List<String> getSelectedUsersIds() {
-        return  new ArrayList<>(selectedUsersIds);
+        return new ArrayList<>(selectedUsersIds);
     }
 
     public List<User> getUsers() {
@@ -166,7 +183,7 @@ public class DataManager {
         return new ArrayList<>(users.values());
     }
 
-    public Map<String, User> getUsersInMap(){
+    public Map<String, User> getUsersInMap() {
         return users;
     }
 
@@ -174,6 +191,12 @@ public class DataManager {
         if (tasks == null)
             return null;
         return new ArrayList<>(tasks.values());
+    }
+
+    public List<Transaction> getTransactions(){
+        if (transactions == null)
+            return null;
+        return new ArrayList<>(transactions.values());
     }
 
     public List<UserTask> getFiltratedTasks() {
@@ -232,9 +255,9 @@ public class DataManager {
     }
 
     //TODO refresh on close filtration
-    public void refreshFiltratedTasks(){
+    private void refreshFiltratedTasks() {
         filtratedTasks.clear();
-        for(UserTask task : tasks.values()){
+        for (UserTask task : tasks.values()) {
             checkIfMatchFiltration(task);
         }
         informObserversTasksChanged();
@@ -253,11 +276,13 @@ public class DataManager {
             selectedUsersIds = new HashSet<>();
             users = new TreeMap<>();
             tasks = new TreeMap<>();
+            transactions = new TreeMap<>();
             filtratedTasks = new HashMap<>();
         }
         filtratedTasks.clear();
         groups.clear();
         tasks.clear();
+        transactions.clear();
 
         refreshCounter++;
         firestoreRequests.getGroupByField("members", uid, this::checkGroupsTask);
@@ -345,6 +370,22 @@ public class DataManager {
     }
 
     /**
+     * Check if Firestore task was successful and call function to proceed documents or inform about exception.
+     */
+    private void checkTransactions(Task<QuerySnapshot> task) {
+        if (task.isSuccessful()) {
+            if (!task.getResult().getDocuments().isEmpty()) {
+                addTransactions(task.getResult().getDocuments());
+            }
+        } else {
+            Exception exception = task.getException();
+            if (exception != null)
+                Log.d(TAG, exception.getMessage());
+        }
+        decreaseRefreshCounter();
+    }
+
+    /**
      * Proceeds document, checks and adds invitations.
      */
     private void checkAndManageInvitations(DocumentSnapshot documentSnapshot) {
@@ -378,6 +419,8 @@ public class DataManager {
                     refreshCounter++;
                     firestoreRequests.getUser(uid, this::checkUser);
                 }
+                refreshCounter++;
+                firestoreRequests.getGroupTransactions(group.getId(), this::checkTransactions);
             }
         }
         //informObserversGroupsChanged();
@@ -392,7 +435,7 @@ public class DataManager {
             UserTask task = document.toObject(UserTask.class);
             if (task != null) {
                 task.setId(document.getId());
-                if(!tasks.containsKey(document.getId())) {
+                if (!tasks.containsKey(document.getId())) {
                     tasks.put(document.getId(), task);
                     //checkIfMatchFiltration(task);
                 }
@@ -403,6 +446,21 @@ public class DataManager {
         tasksChanged = true;
     }
 
+    private void addTransactions(List<DocumentSnapshot> documents) {
+        for (DocumentSnapshot document : documents) {
+            Transaction transaction = document.toObject(Transaction.class);
+            if (transaction != null) {
+                if (!transactions.containsKey(document.getId())) {
+                    transactions.put(document.getId(), transaction);
+                    //checkIfMatchFiltration(task);
+                }
+                Log.d(TAG, "Transaction: " + transaction.getTitle() + " (" + transaction.getGroup() + ")");
+            }
+        }
+        //informObserversTasksChanged();
+        transactionsChanged = true;
+    }
+
     /**
      * Proceeds document, checks and adds user.
      */
@@ -411,7 +469,7 @@ public class DataManager {
         if (user != null) {
             users.put(user.getId(), user);
             selectedUsersIds.add(user.getId());
-            if(!selectedUsersIds.contains(user.getId()))
+            if (!selectedUsersIds.contains(user.getId()))
                 selectedUsersIds.add(user.getId());
             Log.d(TAG, "User: " + user.getId() + " (" + user.getName() + ")");
         }
@@ -454,12 +512,12 @@ public class DataManager {
      */
     private void checkIfMatchFiltration(UserTask task) {
         if (selectedGroupsIds.contains(task.getGroup())) {
-            if(task.getDoers().size() == 0 && isUserUnspecifiedSelected) {
+            if (task.getDoers().size() == 0 && isUserUnspecifiedSelected) {
                 filtratedTasks.put(task.getId(), task);
                 return;
             }
-            for(String uid : task.getDoers())
-                if(selectedUsersIds.contains(uid)) {
+            for (String uid : task.getDoers())
+                if (selectedUsersIds.contains(uid)) {
                     filtratedTasks.put(task.getId(), task);
                     return;
                 }

@@ -9,13 +9,13 @@ import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.view.listener.GroupsClickListener;
+import com.budziaszek.tabmate.view.listener.GroupClickListener;
 
 import java.util.List;
 
 public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.MyViewHolder> {
 
-    private GroupsClickListener groupsClickListener;
+    private GroupClickListener groupClickListener;
     private List<Group> groupsList;
 
     class MyViewHolder extends RecyclerView.ViewHolder {
@@ -27,9 +27,9 @@ public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.
 
             groupItemLayout = view.findViewById(R.id.group_item_layout);
             groupItemLayout.setOnClickListener(view1 ->
-                    groupsClickListener.onItemClicked(getAdapterPosition()));
+                    groupClickListener.onItemClicked(getAdapterPosition()));
             groupItemLayout.setOnLongClickListener(view12 -> {
-                groupsClickListener.onItemLongClicked(getAdapterPosition());
+                groupClickListener.onItemLongClicked(getAdapterPosition());
                 return true;
             });
 
@@ -38,9 +38,9 @@ public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.
     }
 
 
-    public GroupsItemsAdapter(List<Group> groupsList, GroupsClickListener groupsClickListener) {
+    public GroupsItemsAdapter(List<Group> groupsList, GroupClickListener groupClickListener) {
         this.groupsList = groupsList;
-        this.groupsClickListener = groupsClickListener;
+        this.groupClickListener = groupClickListener;
     }
 
     @Override

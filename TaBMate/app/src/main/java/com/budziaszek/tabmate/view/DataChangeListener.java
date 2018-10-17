@@ -5,4 +5,5 @@ public interface DataChangeListener {
     void groupsChanged();
     void invitationsChanged();
     void finished();
+    void transactionsChanged();
 }

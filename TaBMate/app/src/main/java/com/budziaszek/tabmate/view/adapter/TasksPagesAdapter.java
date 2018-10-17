@@ -1,10 +1,12 @@
 package com.budziaszek.tabmate.view.adapter;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.fragment.TaskPageFragment;
 
@@ -14,12 +16,14 @@ import java.util.List;
 public class TasksPagesAdapter extends FragmentStatePagerAdapter {
 
     private List<String> tabs = new ArrayList<>();
+    private Context contxt;
 
-    public TasksPagesAdapter(FragmentManager fm) {
+    public TasksPagesAdapter(FragmentManager fm, Context contxt) {
         super(fm);
-        tabs.add("ToDo");
-        tabs.add("Doing");
-        tabs.add("Done");
+        this.contxt = contxt;
+        tabs.add(contxt.getResources().getString(R.string.task_todo));//("ToDo");
+        tabs.add(contxt.getResources().getString(R.string.task_doing));//("Doing");
+        tabs.add(contxt.getResources().getString(R.string.task_done));//("Done");
     }
 
     @Override
@@ -55,10 +59,10 @@ public class TasksPagesAdapter extends FragmentStatePagerAdapter {
     }
 
     public void changeArchivedVisibility() {
-        if(tabs.contains("Archived"))
-            tabs.remove("Archived");
+        if(tabs.contains(contxt.getResources().getString(R.string.task_archived)))//("Archived"))
+            tabs.remove(contxt.getResources().getString(R.string.task_archived));//("Archived");
         else
-            tabs.add("Archived");
+            tabs.add(contxt.getResources().getString(R.string.task_archived));//("Archived");
         notifyDataSetChanged();
     }
 

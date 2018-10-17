@@ -23,12 +23,12 @@ public class BasicFragment extends Fragment implements DataChangeListener {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     protected void showProgress(final boolean show) {
-        if(getActivity() == null)
+        if (getActivity() == null)
             return;
 
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-        if(mDisplayView == null || mProgressView == null)
+        if (mDisplayView == null || mProgressView == null)
             return;
 
         mDisplayView.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -50,9 +50,9 @@ public class BasicFragment extends Fragment implements DataChangeListener {
         });
     }
 
-    protected Boolean checkNetworkConnection(){
+    protected Boolean checkNetworkConnection() {
         ConnectivityManager cm =
-                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = null;
         if (cm != null) {
@@ -61,9 +61,9 @@ public class BasicFragment extends Fragment implements DataChangeListener {
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
-    public void informAboutNetworkConnection(){
+    public void informAboutNetworkConnection() {
         //Check network
-        if(checkNetworkConnection()){
+        if (checkNetworkConnection()) {
             fView.findViewById(R.id.no_network_connection).setVisibility(View.GONE);
         } else {
             fView.findViewById(R.id.no_network_connection).setVisibility(View.VISIBLE);
@@ -71,23 +71,28 @@ public class BasicFragment extends Fragment implements DataChangeListener {
     }
 
     @Override
-    public void groupsChanged(){
+    public void groupsChanged() {
 
     }
 
     @Override
-    public void tasksChanged(){
+    public void tasksChanged() {
 
     }
 
 
     @Override
-    public void invitationsChanged(){
+    public void invitationsChanged() {
 
     }
 
     @Override
-    public void finished(){
+    public void transactionsChanged() {
+
+    }
+
+    @Override
+    public void finished() {
         swipeLayout.setRefreshing(false);
         showProgress(false);
     }

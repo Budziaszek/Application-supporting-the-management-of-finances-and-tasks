@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,17 +21,14 @@ import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.User;
 import com.budziaszek.tabmate.view.InformUser;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.Objects;
 
 public class UserFragment extends BasicFragment {
 
-    private static final String TAG = "DisplayUserProcedure";
+    private static final String TAG = "UserFragmentProcedure";
     private Activity activity;
 
     private View fView;
@@ -52,7 +48,7 @@ public class UserFragment extends BasicFragment {
         email = fView.findViewById(R.id.email);
         email.setText(((MainActivity) getActivity()).getCurrentUserEmail());
 
-        nick = fView.findViewById(R.id.nick);
+        nick = fView.findViewById(R.id.task_description);
         nick.setText(DataManager.getInstance().getUsersInMap().get(((MainActivity) getActivity()).getCurrentUserId()).getName());
 
         Button changePasswordButton = fView.findViewById(R.id.change_password_button);

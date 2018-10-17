@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -17,26 +16,21 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
+import com.budziaszek.tabmate.firestoreData.Transaction;
 import com.budziaszek.tabmate.firestoreData.UserTask;
+import com.budziaszek.tabmate.fragment.BudgetFragment;
 import com.budziaszek.tabmate.fragment.DashboardFragment;
 import com.budziaszek.tabmate.fragment.TasksPagerFragment;
 import com.budziaszek.tabmate.fragment.MainPageFragment;
 
 import com.budziaszek.tabmate.fragment.UserFragment;
-import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.view.KeyboardManager;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.util.function.Consumer;
-
 
 /**
  * Activity with drawer. Starts new fragments, allow switching between drawer and back mode.
@@ -57,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     // User data
     private Group currentGroup;
     private UserTask currentTask;
+    private Transaction currentTransaction;
     private FirebaseUser user = null;
     private Boolean isArchiveVisible = false;
     private TextView user_email;
@@ -104,10 +99,11 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_home) {
             newFragment = MainPageFragment.class;
         } else if (id == R.id.nav_dashboard) {
-            Log.d(TAG, "dashboard fragment");
             newFragment = DashboardFragment.class;
         } else if (id == R.id.nav_tasks) {
             newFragment = TasksPagerFragment.class;
+        } else if (id == R.id.nav_budget) {
+            newFragment = BudgetFragment.class;
         } else if (id == R.id.nav_logOut) {
             alertAndLogOut();
         }
@@ -164,17 +160,21 @@ public class MainActivity extends AppCompatActivity
         return currentTask;
     }
 
-    public void updateUser(){
+    public Transaction getCurrentTransaction() {
+        return currentTransaction;
+    }
+
+    public void updateUser() {
         user = FirebaseAuth.getInstance().getCurrentUser();
         user_email.setText(getCurrentUserEmail());
 
     }
 
-    public Boolean getIsArchivedVisible(){
+    public Boolean getIsArchivedVisible() {
         return isArchiveVisible;
     }
 
-    public void changeIsArchivedVisible(){
+    public void changeIsArchivedVisible() {
         isArchiveVisible = !isArchiveVisible;
     }
 
@@ -184,6 +184,10 @@ public class MainActivity extends AppCompatActivity
 
     public void setCurrentTask(UserTask task) {
         currentTask = task;
+    }
+
+    public void setCurrentTransaction(Transaction transaction) {
+        currentTransaction = transaction;
     }
 
     /**
@@ -226,6 +230,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Starts new fragment.
+     *
      * @param fragmentClass class of fragment that will be created and replaced.
      */
     public void startFragment(Class fragmentClass) {

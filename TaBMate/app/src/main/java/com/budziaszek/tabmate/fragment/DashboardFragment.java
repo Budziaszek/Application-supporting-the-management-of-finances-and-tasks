@@ -32,7 +32,7 @@ import java.util.List;
 //TODO refresh
 public class DashboardFragment extends BasicFragment implements DataChangeListener {
 
-    private static final String TAG = "DashboardProcedure";
+    private static final String TAG = "DashboardFragmentProcedure";
 
     private Activity activity;
 
@@ -145,7 +145,6 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         chart.setDrawHoleEnabled(false);
         chart.setEntryLabelColor(getResources().getColor(R.color.colorPrimaryDark, activity.getTheme()));
         chart.setEntryLabelTextSize(8);
-        //chart.setDrawEntryLabels(false);
 
         Legend legend = chart.getLegend();
         legend.setTextColor(Color.WHITE);
@@ -161,7 +160,6 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         dataSet.setValueTextColor(getResources().getColor(R.color.colorPrimaryDark, activity.getTheme()));
         dataSet.setValueTextSize(12);
         dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> Integer.toString(((int) value)));
-
 
         PieData data = new PieData(dataSet);
         chart.setData(data);

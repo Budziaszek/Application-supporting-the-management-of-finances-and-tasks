@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item xmlns:android="http://schemas.android.com/apk/res/android"
+        android:icon="@drawable/group"
+        app:showAsAction="always"
+        android:title="@string/group"
+        android:id="@+id/group_item">
+        <menu>
+            <!--group android:checkableBehavior="single"
+                android:id="@+id/group">
+                <item
+                    android:id="@+id/option1"
+                    android:title="cos"
+                    android:checked="true"/>
+                <item
+                    android:id="@+id/option2"
+                    android:title="cos2"/>
+                <item
+                    android:id="@+id/option3"
+                    android:title="cos3"/>
+            </group-->
+        </menu>
+    </item>
+</menu>

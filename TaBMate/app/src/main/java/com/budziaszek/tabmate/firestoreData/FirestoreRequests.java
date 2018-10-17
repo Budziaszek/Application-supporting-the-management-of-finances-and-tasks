@@ -1,7 +1,5 @@
 package com.budziaszek.tabmate.firestoreData;
 
-import android.util.Log;
-
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -18,6 +16,7 @@ public class FirestoreRequests {
     private static final String GROUP_COLLECTION = "groups";
     private static final String GROUP_COLLECTION_MEMBERS_FIELD = "members";
     private static final String TASK_COLLECTION = "tasks";
+    private static final String TRANSACTION_COLLECTION = "transactions";
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -30,7 +29,7 @@ public class FirestoreRequests {
     }
 
     public void updateUser(User user, Consumer<Void> success, Consumer<Exception> failure) {
-        addUser(user,user.getId(), success, failure);
+        addUser(user, user.getId(), success, failure);
     }
 
     public void getUser(String uid, Consumer<DocumentSnapshot> action) {
@@ -71,6 +70,15 @@ public class FirestoreRequests {
                 .addOnFailureListener(failure::accept);
     }
 
+    public void addTransaction(Transaction transaction, Consumer<DocumentReference> success, Consumer<Exception> failure) {
+        db.collection(GROUP_COLLECTION)
+                .document(transaction.getGroup())
+                .collection(TRANSACTION_COLLECTION)
+                .add(transaction)
+                .addOnSuccessListener(success::accept)
+                .addOnFailureListener(failure::accept);
+    }
+
     public void updateTask(UserTask task, Consumer<Void> success, Consumer<Exception> failure) {
         db.collection(GROUP_COLLECTION)
                 .document(task.getGroup())
@@ -85,6 +93,14 @@ public class FirestoreRequests {
         db.collection(GROUP_COLLECTION)
                 .document(gid)
                 .collection(TASK_COLLECTION)
+                .get()
+                .addOnCompleteListener(action::accept);
+    }
+
+    public void getGroupTransactions(String gid, Consumer<Task<QuerySnapshot>> action) {
+        db.collection(GROUP_COLLECTION)
+                .document(gid)
+                .collection(TRANSACTION_COLLECTION)
                 .get()
                 .addOnCompleteListener(action::accept);
     }
