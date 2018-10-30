@@ -15,6 +15,8 @@ public class Transaction {
     private Date date;
     private String uid;
     private String group;
+    private Double amountBeforeTransaction;
+
 
     public Transaction() {
     }
@@ -51,6 +53,10 @@ public class Transaction {
         this.group = group;
     }
 
+    public void setAmountBeforeTransaction(Double amountBeforeTransaction) {
+        this.amountBeforeTransaction = amountBeforeTransaction;
+    }
+
     public Double getAmount() {
         return amount;
     }
@@ -73,6 +79,10 @@ public class Transaction {
 
     public String getGroup() {
         return group;
+    }
+
+    public Double getAmountBeforeTransaction() {
+        return amountBeforeTransaction;
     }
 
     public String getDateString(){

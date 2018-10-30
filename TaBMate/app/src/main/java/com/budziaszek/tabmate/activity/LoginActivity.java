@@ -127,6 +127,7 @@ public class LoginActivity extends Activity {
         emailSignUpButton = findViewById(R.id.email_sign_up_button);
         emailSignUpButton.setOnClickListener(view -> {
             doRegister = true;
+            forgotPasswordButton.setVisibility(View.GONE);
             emailSignInButton.setVisibility(View.GONE);
             emailSignUpButton.setVisibility(View.GONE);
             nameView.setVisibility(View.VISIBLE);

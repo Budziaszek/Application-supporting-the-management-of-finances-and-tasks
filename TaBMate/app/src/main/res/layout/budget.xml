@@ -104,12 +104,18 @@
                         android:textSize="16sp"
                         android:textStyle="bold|italic" />
 
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/budget_linear"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_below="@id/balance"/>
+
                     <Button
                         android:id="@+id/new_transation_button"
                         style="?android:textAppearanceSmall"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/balance"
+                        android:layout_below="@+id/budget_linear"
                         android:layout_margin="5dp"
                         android:layout_marginTop="16dp"
                         android:background="@color/colorAccentLightSemi"

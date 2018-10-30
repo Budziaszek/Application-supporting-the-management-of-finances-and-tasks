@@ -6,7 +6,7 @@
         <item
             android:id="@+id/action_remove"
             android:title="@string/edit"
-            android:icon="@drawable/no_semi"
+            android:icon="@mipmap/ic_remove"
             app:showAsAction="always" />
 
         <item

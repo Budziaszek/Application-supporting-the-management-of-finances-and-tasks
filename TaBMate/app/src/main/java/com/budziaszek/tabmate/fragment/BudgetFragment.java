@@ -22,6 +22,12 @@ import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.Transaction;
 import com.budziaszek.tabmate.view.adapter.TransactionsItemsAdapter;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -41,6 +47,8 @@ public class BudgetFragment extends BasicFragment {
 
     private TransactionsItemsAdapter transactionsAdapter;
     private List<Transaction> transactions = new ArrayList<>();
+
+    private LineChart lineChartBudget;
     
     //private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
@@ -90,6 +98,7 @@ public class BudgetFragment extends BasicFragment {
         } else {
             groupsChanged();
             transactionsChanged();
+            setLineChartBudget();
         }
 
         Button newTransactionButton = fView.findViewById(R.id.new_transation_button);
@@ -191,6 +200,48 @@ public class BudgetFragment extends BasicFragment {
             transactionsAdapter.notifyItemRemoved(i);
         }
     }
+
+    // TODO display only some transaction (from the given range)
+    private void setLineChartBudget(){
+        lineChartBudget = fView.findViewById(R.id.budget_linear);
+        Description description = new Description();
+        description.setText("");
+        lineChartBudget.setDescription(description);
+        lineChartBudget.setDragEnabled(false);
+        lineChartBudget.setScaleEnabled(false);
+
+        lineChartBudget.getXAxis().setEnabled(false);
+        lineChartBudget.getAxisRight().setEnabled(false);
+
+        Legend legend = lineChartBudget.getLegend();
+        legend.setEnabled(false);
+
+        List<Entry> entries = new ArrayList<>();
+        if(transactions.size() == 0)
+            return;
+        Transaction transaction = null;
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            transaction = transactions.get(i);
+            entries.add(new Entry((float) transactions.size() - i, transaction.getAmountBeforeTransaction().floatValue()));
+        }
+        if(transaction != null)
+            entries.add(new Entry((float) transactions.size() +  1,
+                    (float)(transaction.getAmountBeforeTransaction() + transaction.getAmount())));
+
+//        ArrayList<String> labels = new ArrayList<>();
+//        labels.add("January");
+//        labels.add("February");
+//        labels.add("March");
+//        labels.add("April");
+//        labels.add("May");
+//        labels.add("June");
+
+        LineDataSet dataSet = new LineDataSet(entries, "");
+        LineData data = new LineData(dataSet);
+        lineChartBudget.setData(data);
+        lineChartBudget.invalidate();
+    }
+
 
     private void showGroupBudget(Integer i){
         Double balance = groups.get(i).getBudgetBalance();

@@ -34,7 +34,6 @@
     <string name="user_image">Obrazek użytkownika</string>
     <string name="log_out">Wyloguj</string>
     <string name="confirm_log_out">Czy na pewno chcesz się wylogować?</string>
-    <string name="user_account">Twoje konto</string>
     <string name="change_email">Zmień adres email</string>
     <string name="email_changed">Adres email zmieniony</string>
     <string name="enter_new_email">Podaj nowy adres email</string>
@@ -138,4 +137,7 @@
     <string name="share">Udostępnij</string>
     <string name="send">Wyślij</string>
     <string name="communicate">Kontakt</string>
+    <string name="settings_and_profile">Ustawienia i profil</string>
+    <string name="food">Żywność</string>
+    <string name="user_account">Konto</string>
 </resources>

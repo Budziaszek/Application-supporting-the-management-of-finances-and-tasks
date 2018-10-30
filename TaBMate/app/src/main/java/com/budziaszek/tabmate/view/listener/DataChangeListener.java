@@ -1,9 +1,9 @@
-package com.budziaszek.tabmate.view;
+package com.budziaszek.tabmate.view.listener;
 
 public interface DataChangeListener {
     void tasksChanged();
     void groupsChanged();
     void invitationsChanged();
-    void finished();
     void transactionsChanged();
+    void finished();
 }

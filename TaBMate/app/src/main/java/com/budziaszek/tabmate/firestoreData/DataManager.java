@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.view.DataChangeListener;
+import com.budziaszek.tabmate.view.listener.DataChangeListener;
 import com.budziaszek.tabmate.view.InformUser;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;

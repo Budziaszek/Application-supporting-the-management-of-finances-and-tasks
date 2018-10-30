@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity
 
     // Drawer
     private DrawerLayout drawer;
+    private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private Boolean isListenerRegistered;
 
@@ -65,18 +66,13 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initializeDrawer();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerLayout = navigationView.getHeaderView(0);
         user_email = headerLayout.findViewById(R.id.user_email);
         user = FirebaseAuth.getInstance().getCurrentUser();
         user_email.setText(getCurrentUserEmail());
-
-        headerLayout.setOnClickListener(view -> {
-            startFragment(UserFragment.class);
-            drawer.closeDrawers();
-        });
 
         startFragment(MainPageFragment.class);
     }
@@ -104,14 +100,22 @@ public class MainActivity extends AppCompatActivity
             newFragment = TasksPagerFragment.class;
         } else if (id == R.id.nav_budget) {
             newFragment = BudgetFragment.class;
+        } else if (id == R.id.nav_profile) {
+            startFragment(UserFragment.class);
         } else if (id == R.id.nav_logOut) {
             alertAndLogOut();
         }
 
         // Highlight the selected item has been done by NavigationView
-        item.setChecked(true);
+        if(id == R.id.nav_logOut || id == R.id.nav_profile){
+            //TODO check
+            //item.setChecked(true);
+        }else {
+            item.setChecked(true);
+        }
         // Set action bar title
-        setTitle(item.getTitle());
+        if(id != R.id.nav_logOut)
+            setTitle(item.getTitle());
 
         // Close the navigation drawer
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

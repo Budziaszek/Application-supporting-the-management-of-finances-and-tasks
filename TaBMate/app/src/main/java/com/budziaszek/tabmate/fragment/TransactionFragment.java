@@ -134,6 +134,7 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
                 setEditing(false);
                 activity.invalidateOptionsMenu();
                 KeyboardManager.hideKeyboard(activity);
+                ((MainActivity)activity).enableBack(false);
             }
             return true;
         } else if (id == R.id.action_remove) {
@@ -248,15 +249,17 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
         transaction.setTitle(title);
         transaction.setDescription(transactionDescriptionInput.getText().toString());
 
+        Group group = ((MainActivity)activity).getCurrentGroup();
+        if(group.getBudgetBalance() == null)
+            group.setBudgetBalance(0.0);
+        group.setBudgetBalance(group.getBudgetBalance() + amount);
+        transaction.setAmountBeforeTransaction(group.getBudgetBalance() - transaction.getAmount());
+
         //Save data
         if (isCreated) {
             firestoreRequests.addTransaction(transaction,
                     (x) -> {
                         InformUser.inform(activity, R.string.transaction_added);
-                        Group group = ((MainActivity)activity).getCurrentGroup();
-                        if(group.getBudgetBalance() == null)
-                            group.setBudgetBalance(0.0);
-                        group.setBudgetBalance(group.getBudgetBalance() + amount);
                         firestoreRequests.updateGroup(group, group.getId(),
                                 (y) -> {
                                 DataManager.getInstance().refresh(((MainActivity)activity).getCurrentUserId());

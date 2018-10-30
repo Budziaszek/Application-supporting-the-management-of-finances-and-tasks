@@ -14,7 +14,7 @@
             app:showAsAction="ifRoom" />
         <item
             android:id="@+id/action_archived_tasks"
-            android:icon="@drawable/archive_semi"
+            android:icon="@mipmap/ic_archive"
             android:title="@string/archived_tasks"
             app:showAsAction="ifRoom" />
 </menu>

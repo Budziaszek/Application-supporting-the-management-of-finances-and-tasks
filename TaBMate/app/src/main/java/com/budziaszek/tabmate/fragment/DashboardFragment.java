@@ -15,14 +15,20 @@ import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
 import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.Group;
+import com.budziaszek.tabmate.firestoreData.Transaction;
 import com.budziaszek.tabmate.firestoreData.UserTask;
-import com.budziaszek.tabmate.view.DataChangeListener;
+import com.budziaszek.tabmate.view.listener.DataChangeListener;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -38,8 +44,9 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
 
     private List<Group> groups = new ArrayList<>();
     private List<UserTask> tasks = new ArrayList<>();
+    private List<Transaction> transactions = new ArrayList<>();
 
-    private PieChart chart;
+    private PieChart pieChartTasks;
     private PieDataSet dataSet;
 
     //private FirestoreRequests firestoreRequests = new FirestoreRequests();
@@ -85,7 +92,6 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
             setPieChartTasks();
         }
 
-
         informAboutNetworkConnection();
         return fView;
     }
@@ -120,6 +126,7 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         return false;
     }
 
+    //TODO refresh charts
     @Override
     public void groupsChanged() {
         List<Group> newGroups = DataManager.getInstance().getGroups();
@@ -137,16 +144,31 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         String uid = ((MainActivity)activity).getCurrentUserId();
     }
 
+    @Override
+    public void transactionsChanged() {
+        List<Transaction> allTransactions = DataManager.getInstance().getTransactions();
+        List<Transaction> newTransactions = new ArrayList<>();
+        List<Transaction> oldTransactions = transactions;
+
+        for (Transaction transaction : allTransactions) {
+            if (transaction.getGroup().equals(((MainActivity)activity).getCurrentUserId())){
+                newTransactions.add(transaction);
+            }
+        }
+        newTransactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+        transactions = newTransactions;
+    }
+
     private void setPieChartTasks(){
-        chart = fView.findViewById(R.id.chart);
+        pieChartTasks = fView.findViewById(R.id.chart);
         Description description = new Description();
         description.setText("");
-        chart.setDescription(description);
-        chart.setDrawHoleEnabled(false);
-        chart.setEntryLabelColor(getResources().getColor(R.color.colorPrimaryDark, activity.getTheme()));
-        chart.setEntryLabelTextSize(8);
+        pieChartTasks.setDescription(description);
+        pieChartTasks.setDrawHoleEnabled(false);
+        pieChartTasks.setEntryLabelColor(getResources().getColor(R.color.colorPrimaryDark, activity.getTheme()));
+        pieChartTasks.setEntryLabelTextSize(8);
 
-        Legend legend = chart.getLegend();
+        Legend legend = pieChartTasks.getLegend();
         legend.setTextColor(Color.WHITE);
         legend.setForm(Legend.LegendForm.CIRCLE);
 
@@ -162,8 +184,8 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> Integer.toString(((int) value)));
 
         PieData data = new PieData(dataSet);
-        chart.setData(data);
-        chart.invalidate(); // refresh
+        pieChartTasks.setData(data);
+        pieChartTasks.invalidate(); // refresh
 
         //mLineData.notifyDataChanged();
         //mChart.notifyDataSetChanged();

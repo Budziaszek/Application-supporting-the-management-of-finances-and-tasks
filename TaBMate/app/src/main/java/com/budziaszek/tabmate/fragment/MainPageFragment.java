@@ -17,7 +17,7 @@ import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.UserTask;
-import com.budziaszek.tabmate.view.DataChangeListener;
+import com.budziaszek.tabmate.view.listener.DataChangeListener;
 import com.budziaszek.tabmate.view.adapter.GroupsItemsAdapter;
 import com.budziaszek.tabmate.view.adapter.TasksItemsAdapter;
 import com.budziaszek.tabmate.view.listener.GroupClickListener;

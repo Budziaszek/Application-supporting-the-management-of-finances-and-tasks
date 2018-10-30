@@ -33,7 +33,6 @@
     <string name="user_image">User Image</string>
     <string name="log_out">Log out </string>
     <string name="confirm_log_out">Are you sure you want to log out?</string>
-    <string name="user_account">Your account</string>
     <string name="change_email">Change email address</string>
     <string name="email_changed">Email address changed</string>
     <string name="enter_new_email">Enter new email</string>
@@ -139,4 +138,7 @@
     <string name="share">Share</string>
     <string name="send">Send</string>
     <string name="communicate">Communicate</string>
+    <string name="settings_and_profile">Settings and profile</string>
+    <string name="food">Food</string>
+    <string name="user_account">Account</string>
 </resources>

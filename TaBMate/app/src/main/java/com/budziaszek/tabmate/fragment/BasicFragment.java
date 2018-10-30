@@ -12,7 +12,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.view.DataChangeListener;
+import com.budziaszek.tabmate.view.listener.DataChangeListener;
 
 public class BasicFragment extends Fragment implements DataChangeListener {
 
