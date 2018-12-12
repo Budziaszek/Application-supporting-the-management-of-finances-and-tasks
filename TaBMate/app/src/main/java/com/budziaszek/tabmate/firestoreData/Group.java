@@ -70,6 +70,13 @@ public class Group {
         return budgetBalance;
     }
 
+    public String getStringBudgetBalance() {
+        if(budgetBalance == null)
+            return 0.0 + " zł";
+        else
+            return budgetBalance + " zł";
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj.getClass() != Group.class)

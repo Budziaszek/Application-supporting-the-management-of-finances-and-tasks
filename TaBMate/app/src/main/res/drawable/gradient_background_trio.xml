@@ -10,6 +10,11 @@
                     android:angle="90"
                 android:type="linear"/>
                     <!--android:endColor="@color/colorPrimaryDarkSemi"-->
+            <!--<gradient-->
+                <!--android:type="radial"-->
+                <!--android:gradientRadius="100%p"-->
+                <!--android:endColor="@color/colorPrimarySemi"-->
+                <!--android:startColor="@color/colorAccentLightSemi" />-->
         </shape>
     </item>
    <!--<item android:drawable="@drawable/icon_semi_transparent"

@@ -6,4 +6,5 @@ public interface DataChangeListener {
     void invitationsChanged();
     void transactionsChanged();
     void finished();
+    void informAboutDataSynchronization();
 }

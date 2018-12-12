@@ -250,6 +250,29 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/label_task_spent_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/task_date"
+                    android:layout_centerHorizontal="true"
+                    android:padding="5dp"
+                    android:text="@string/spent_time"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/task_spent_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/label_task_spent_time"
+                    android:layout_centerHorizontal="true"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp"
+                    android:text="@string/spent_time"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp" />
+
+                <TextView
                     android:id="@+id/label_task_time_vote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -273,19 +296,19 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/label_readiness_vote"
+                    android:id="@+id/label_priority_vote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/task_time_vote"
                     android:padding="5dp"
-                    android:text="@string/readiness"
+                    android:text="@string/priority"
                     android:textSize="12sp" />
 
                 <SeekBar
-                    android:id="@+id/readiness_seek_bar"
+                    android:id="@+id/priority_seek_bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/label_readiness_vote"
+                    android:layout_below="@id/label_priority_vote"
                     android:max="4"
                     android:paddingBottom="15dp"
                     android:paddingEnd="20dp"

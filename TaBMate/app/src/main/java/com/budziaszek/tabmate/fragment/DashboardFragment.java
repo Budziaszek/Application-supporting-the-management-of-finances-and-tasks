@@ -71,7 +71,7 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
             Log.d(TAG, "Ask for refresh groups and users");
             DataManager.getInstance().refresh(((MainActivity) activity).getCurrentUserId());
 
-            informAboutNetworkConnection();
+            informAboutNetworkConnection(); informAboutDataSynchronization();
         });
         swipeLayout.setColorSchemeColors(
                 getResources().getColor(R.color.colorPrimary, getResources().newTheme()),
@@ -92,7 +92,7 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
             setPieChartTasks();
         }
 
-        informAboutNetworkConnection();
+        informAboutNetworkConnection(); informAboutDataSynchronization();
         return fView;
     }
 

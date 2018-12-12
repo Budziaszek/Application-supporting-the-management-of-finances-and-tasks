@@ -66,6 +66,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
     private TextView taskGroup;
     private Spinner taskGroupInput;
     private TextView taskEstimatedTime;
+    private TextView taskSpentTime;
     private TextView taskTimeVote;
     private SeekBar seekBar;
 
@@ -93,8 +94,9 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         taskGroup = fView.findViewById(R.id.task_group);
         taskGroupInput = fView.findViewById(R.id.spinner_group);
         taskEstimatedTime = fView.findViewById(R.id.task_estimated_time);
+        taskSpentTime = fView.findViewById(R.id.task_spent_time);
         taskTimeVote = fView.findViewById(R.id.task_time_vote);
-        seekBar = fView.findViewById(R.id.readiness_seek_bar);
+        seekBar = fView.findViewById(R.id.priority_seek_bar);
 
         seekBar.setOnTouchListener((v, event) -> !isEdited);
 
@@ -225,17 +227,15 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         taskTitleInput.setText(task.getTitle());
         taskDescriptionInput.setText(task.getDescription());
         taskDeadline.setText(task.getDateString());
-        taskEstimatedTime.setText((task.getEstimatedTime() != null ? String.valueOf(task.getEstimatedTime()) : "0"));
+        taskEstimatedTime.setText((task.getEstimatedTime() != null ? String.valueOf(task.getEstimatedTime()) + " h" : "0 h"));
+        taskSpentTime.setText((task.getTimeSpent() != null ? task.getStringTimeSpent() : "0 h"));
         Integer timeVote = task.getTimeEstimationVote().get(((MainActivity)activity).getCurrentUserId());
-        Integer readinessVote = task.getReadinessVote().get(((MainActivity)activity).getCurrentUserId());
+        Integer priority = task.getPriority();
         if(timeVote != null)
             taskTimeVote.setText(String.valueOf(timeVote));
         else
             taskTimeVote.setText(R.string.vote);
-        if(readinessVote != null)
-            seekBar.setProgress(readinessVote);
-        else
-            seekBar.setProgress(2);
+        seekBar.setProgress(priority);
 
         TextView taskGroup = fView.findViewById(R.id.task_group);
         Group group = DataManager.getInstance().getGroup(task.getGroup());
@@ -280,9 +280,10 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
                 taskGroup.setVisibility(View.INVISIBLE);
                 taskTitleInput.setText("");
                 taskDescriptionInput.setText("");
-                seekBar.setVisibility(View.GONE);
-                fView.findViewById(R.id.label_readiness_vote).setVisibility(View.INVISIBLE);
+                //seekBar.setVisibility(View.GONE);
+                //fView.findViewById(R.id.label_priority_vote).setVisibility(View.INVISIBLE);
                 taskEstimatedTime.setVisibility(View.GONE);
+                taskSpentTime.setVisibility(View.GONE);
                 taskTimeVote.setVisibility(View.GONE);
                 fView.findViewById(R.id.label_task_time_vote).setVisibility(View.GONE);
                 fView.findViewById(R.id.label_task_estimated_time).setVisibility(View.GONE);
@@ -376,7 +377,8 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
                 task.addTimeEstimationVote(((MainActivity)getActivity()).getCurrentUserId(),
                         Integer.parseInt(taskTimeVote.getText().toString()));
             taskEstimatedTime.setText(String.valueOf(task.getEstimatedTime()));
-            task.addReadinessVote(((MainActivity)getActivity()).getCurrentUserId(), seekBar.getProgress());
+            taskSpentTime.setText(String.valueOf(task.getTimeSpent()));
+            task.setPriority(seekBar.getProgress());
 
             //Save data
             if (isCreated) {

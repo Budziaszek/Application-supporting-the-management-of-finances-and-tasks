@@ -1,13 +1,20 @@
 package com.budziaszek.tabmate.firestoreData;
 
+import android.support.annotation.Nullable;
+import android.util.Log;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.Console;
 import java.util.function.Consumer;
+
 
 public class FirestoreRequests {
 
@@ -17,6 +24,8 @@ public class FirestoreRequests {
     private static final String GROUP_COLLECTION_MEMBERS_FIELD = "members";
     private static final String TASK_COLLECTION = "tasks";
     private static final String TRANSACTION_COLLECTION = "transactions";
+
+    private static final String TAG = "SyncProcedure";
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -95,6 +104,13 @@ public class FirestoreRequests {
                 .collection(TASK_COLLECTION)
                 .get()
                 .addOnCompleteListener(action::accept);
+        db.collection(GROUP_COLLECTION)
+                .document(gid)
+                .collection(TASK_COLLECTION)
+                .addSnapshotListener((v, e) -> {
+                    DataManager.getInstance().setDataHasChanged(true);
+                    Log.d(TAG, "Sync tasks");
+                });
     }
 
     public void getGroupTransactions(String gid, Consumer<Task<QuerySnapshot>> action) {
@@ -103,6 +119,13 @@ public class FirestoreRequests {
                 .collection(TRANSACTION_COLLECTION)
                 .get()
                 .addOnCompleteListener(action::accept);
+        db.collection(GROUP_COLLECTION)
+                .document(gid)
+                .collection(TRANSACTION_COLLECTION)
+                .addSnapshotListener((v, e) -> {
+                    DataManager.getInstance().setDataHasChanged(true);
+                    Log.d(TAG, "Sync transactions");
+                });
     }
 
     public void removeTask(UserTask task, Consumer<Void> success, Consumer<Exception> failure) {
@@ -143,6 +166,12 @@ public class FirestoreRequests {
                 .whereArrayContains(field, value)
                 .get()
                 .addOnCompleteListener(action::accept);
+        db.collection(GROUP_COLLECTION)
+                .whereArrayContains(field, value)
+                .addSnapshotListener((v, e) -> {
+                    DataManager.getInstance().setDataHasChanged(true);
+                    Log.d(TAG, "Sync group");
+                });
     }
 
     public void addGroupMember(String gid, String uid, Consumer<Void> success, Consumer<Exception> failure) {

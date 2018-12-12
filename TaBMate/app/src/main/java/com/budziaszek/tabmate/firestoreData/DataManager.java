@@ -26,6 +26,7 @@ public class DataManager {
     private final static String TAG = "DataManagerProcedure";
 
     private static DataManager instance;
+    private Boolean dataHasChanged = false;
 
     private int refreshCounter = 0;
     // Observers, that will be informed about data changes
@@ -52,6 +53,19 @@ public class DataManager {
 
     private DataManager() {
 
+    }
+
+    public Boolean getDataHasChanged(){
+        return dataHasChanged;
+    }
+
+    public void setDataHasChanged(Boolean hasChanged){
+        dataHasChanged = hasChanged;
+        if(dataHasChanged){
+            for (DataChangeListener listener : observers) {
+                listener.informAboutDataSynchronization();
+            }
+        }
     }
 
     /**
@@ -134,6 +148,15 @@ public class DataManager {
                 Log.d(TAG, "Check filtration " + task.getTitle());
             }
             informObserversRefreshFinished();
+
+            if(tasksChanged && groupsChanged && transactionsChanged){
+                for (DataChangeListener listener : observers) {
+                    Log.d("SyncProcedure", "Stop");
+                    DataManager.getInstance().setDataHasChanged(false);
+                    listener.informAboutDataSynchronization();
+                }
+            }
+
             if (tasksChanged) {
                 informObserversTasksChanged();
                 tasksChanged = false;

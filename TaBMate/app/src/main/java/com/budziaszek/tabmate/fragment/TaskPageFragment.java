@@ -77,9 +77,10 @@ public class TaskPageFragment extends BasicFragment {
                 return;
 
             Log.d(TAG, "Ask for refresh tasks");
-            DataManager.getInstance().refreshAllGroupsTasks();
+            DataManager.getInstance().refresh(((MainActivity) activity).getCurrentUserId());
 
             ((BasicFragment)getParentFragment()).informAboutNetworkConnection();
+            ((BasicFragment)getParentFragment()).informAboutDataSynchronization();
         });
         swipeLayout.setColorSchemeColors(
                 getResources().getColor(R.color.colorPrimary, getResources().newTheme()),
@@ -117,7 +118,7 @@ public class TaskPageFragment extends BasicFragment {
                         //TODO snackbar with undo
                         InformUser.inform(activity, R.string.task_moved);
                     }
-                });
+                }, ((MainActivity)activity).getCurrentUserId());
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
         tasksRecycler.setLayoutManager(mLayoutManager);
@@ -169,5 +170,11 @@ public class TaskPageFragment extends BasicFragment {
             tasksAdapter.notifyItemRemoved(i);
         }
     }
+
+    @Override
+    public void informAboutDataSynchronization() {
+        ((BasicFragment)getParentFragment()).informAboutDataSynchronization();
+    }
+
 
 }

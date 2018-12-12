@@ -1,5 +1,6 @@
 package com.budziaszek.tabmate.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -28,7 +29,9 @@ import com.budziaszek.tabmate.view.listener.TaskClickListener;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainPageFragment extends BasicFragment implements DataChangeListener {
@@ -40,8 +43,10 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
     private GroupsItemsAdapter groupsAdapter;
     private List<Group> groups = new ArrayList<>();
 
-    private TasksItemsAdapter tasksAdapter;
-    private List<UserTask> tasks = new ArrayList<>();
+    @SuppressLint("UseSparseArrays")
+    private Map<Integer, TasksItemsAdapter> tasksItemsAdapterMap = new HashMap<>();
+    @SuppressLint("UseSparseArrays")
+    private Map<Integer, List<UserTask>> tasks = new HashMap<>();
 
     private InvitationsItemsAdapter invitationsAdapter;
     private List<String> invitationsList = new ArrayList<>();
@@ -59,6 +64,10 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         mDisplayView = fView.findViewById(R.id.show_groups_layout);
         mProgressView = fView.findViewById(R.id.progress_groups);
 
+        tasks.put(R.drawable.ripple_effect_todo, new ArrayList<>());
+        tasks.put(R.drawable.ripple_effect_doing, new ArrayList<>());
+        tasks.put(R.drawable.ripple_effect_done, new ArrayList<>());
+
         //Refresh
         swipeLayout = fView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(() -> {
@@ -71,7 +80,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
             Log.d(TAG, "Ask for refresh invitations");
             DataManager.getInstance().refreshInvitations(((MainActivity) activity).getCurrentUserId());
 
-            informAboutNetworkConnection();
+            informAboutNetworkConnection(); informAboutDataSynchronization();
         });
         swipeLayout.setColorSchemeColors(
                 getResources().getColor(R.color.colorPrimary, getResources().newTheme()),
@@ -82,7 +91,9 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         // Groups
         setRecyclerGroups();
         setRecyclerInvitations();
-        setRecyclerTasks();
+        setRecyclerTasks(R.id.user_tasks_list_doing, R.drawable.ripple_effect_doing);
+        setRecyclerTasks(R.id.user_tasks_list_todo, R.drawable.ripple_effect_todo);
+        setRecyclerTasks(R.id.user_tasks_list_done, R.drawable.ripple_effect_done);
 
         DataManager instance = DataManager.getInstance();
         instance.addObserver(this);
@@ -98,7 +109,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         Log.d(TAG, "Ask for refresh invitations");
         DataManager.getInstance().refreshInvitations(((MainActivity) activity).getCurrentUserId());
 
-        informAboutNetworkConnection();
+        informAboutNetworkConnection(); informAboutDataSynchronization();
         return fView;
     }
 
@@ -114,13 +125,17 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
             @Override
             public void onItemLongClicked(int position) {
                 ((MainActivity) activity).setCurrentGroup(groups.get(position));
-                ((MainActivity) activity).startFragment(GroupFragment.class);
+                ((MainActivity) activity).startFragment(BudgetFragment.class);
             }
-
             @Override
             public void onItemClicked(int position) {
                 ((MainActivity) activity).setCurrentGroup(groups.get(position));
                 ((MainActivity) activity).startFragment(GroupFragment.class);
+            }
+            @Override
+            public void onButtonClicked(int position) {
+                ((MainActivity) activity).setCurrentGroup(groups.get(position));
+                ((MainActivity)activity).startFragment(TransactionFragment.class);
             }
         });
 
@@ -192,27 +207,41 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         invitationsRecycler.setAdapter(invitationsAdapter);
     }
 
-    private void setRecyclerTasks() {
-        RecyclerView tasksRecycler = fView.findViewById(R.id.user_tasks_list);
-        tasksAdapter = new TasksItemsAdapter(tasks, getContext(), R.drawable.ripple_effect_doing,
+    private void setRecyclerTasks(int recycler, int color) {
+        RecyclerView tasksRecycler = fView.findViewById(recycler);
+        tasksItemsAdapterMap.put(color, new TasksItemsAdapter(tasks.get(color), getContext(), color,
                 new TaskClickListener() {
                     @Override
                     public void onClick(int position) {
-                        ((MainActivity) activity).setCurrentTask(tasks.get(position));
+                        ((MainActivity) activity).setCurrentTask(tasks.get(color).get(position));
                         ((MainActivity) activity).startFragment(TaskFragment.class);
                     }
 
                     @Override
                     public void onLongClick(int position) {
-                        ((MainActivity) activity).setCurrentTask(tasks.get(position));
-                        ((MainActivity) activity).startFragment(TaskFragment.class);
+                        //((MainActivity) activity).setCurrentTask(tasks.get(position));
+                        //((MainActivity) activity).startFragment(TaskFragment.class);
+
+                        //UserTask task = tasks.get(color).get(position);
+                        UserTask task = tasks.get(color).get(position);
+                        if(task.getStatus() == UserTask.Status.ARCHIVED) {
+                            return;
+                        }
+                        task.setNextStatus();
+                        firestoreRequests.updateTask(task,
+                                (aVoid) -> {},
+                                (e) -> Log.d(TAG, e.getMessage())
+                        );
+
+                        DataManager.getInstance().refreshAllGroupsTasks();
+                        InformUser.inform(activity, R.string.task_moved);
                     }
-                });
+                }, ((MainActivity)activity).getCurrentUserId()));
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(fView.getContext());
         tasksRecycler.setLayoutManager(mLayoutManager);
         tasksRecycler.setItemAnimator(new DefaultItemAnimator());
-        tasksRecycler.setAdapter(tasksAdapter);
+        tasksRecycler.setAdapter(tasksItemsAdapterMap.get(color));
     }
 
     @Override
@@ -249,35 +278,39 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
     @Override
     public void tasksChanged() {
         List<UserTask> allTasks = DataManager.getInstance().getTasks();
-        List<UserTask> newTasks = new ArrayList<>();
-        List<UserTask> oldTasks = tasks;
+        tasks.get(R.drawable.ripple_effect_doing).clear();
+        tasks.get(R.drawable.ripple_effect_done).clear();
+        tasks.get(R.drawable.ripple_effect_todo).clear();
+
         String uid = ((MainActivity) activity).getCurrentUserId();
 
         for (UserTask task : allTasks) {
-            if (task.getStatus().name.equals(UserTask.Status.DOING.name)) {
-                if (task.getDoers().contains(uid)) {
-                    newTasks.add(task);
-                }
+            if (task.getDoers().contains(uid)) {
+                if (task.getStatus().name.equals(UserTask.Status.DOING.name))
+                    tasks.get(R.drawable.ripple_effect_doing).add(task);
+                else if (task.getStatus().name.equals(UserTask.Status.DONE.name))
+                    tasks.get(R.drawable.ripple_effect_done).add(task);
+                else if (task.getStatus().name.equals(UserTask.Status.TODO.name))
+                    tasks.get(R.drawable.ripple_effect_todo).add(task);
             }
         }
-        newTasks.sort(Comparator.comparing(UserTask::getTitle));
-        tasks = newTasks;
-        tasksAdapter.update(tasks);
 
-        //TODO check what exactly changed
-        for (int i = 0; i < newTasks.size(); i++) {
-            if (oldTasks.size() <= i) {
-                tasksAdapter.notifyItemInserted(i);
-            } else {
-                UserTask newTask = newTasks.get(i);
-                UserTask oldTask = oldTasks.get(i);
-                if (!oldTask.equals(newTask)) {
-                    tasksAdapter.notifyItemChanged(i);
-                }
-            }
+        for(Integer k:tasks.keySet()){
+            Log.d("ErrorP", k + " ");
+            tasks.get(k).sort(Comparator.comparing(UserTask::getTitle));
+            tasksItemsAdapterMap.get(k).update(tasks.get(k));
+            tasksItemsAdapterMap.get(k).notifyDataSetChanged();
         }
-        for (int i = newTasks.size(); i < oldTasks.size(); i++) {
-            tasksAdapter.notifyItemRemoved(i);
-        }
+//        tasksTODO.sort(Comparator.comparing(UserTask::getTitle));
+//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_todo).update(tasksTODO);
+//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_todo).notifyDataSetChanged();
+//
+//        tasksDOING.sort(Comparator.comparing(UserTask::getTitle));
+//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_doing).update(tasksDOING);
+//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_doing).notifyDataSetChanged();
+//
+//        tasksDONE.sort(Comparator.comparing(UserTask::getTitle));
+//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_done).update(tasksDONE);
+//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_done).notifyDataSetChanged();
     }
 }

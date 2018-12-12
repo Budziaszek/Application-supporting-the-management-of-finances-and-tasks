@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content">
 
                 <RelativeLayout
-                    android:id="@+id/no_network_connection"
+                    android:id="@+id/data_has_changed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
@@ -45,8 +45,25 @@
                         android:layout_height="wrap_content"
                         android:background="@color/colorAccent"
                         android:gravity="center"
+                        android:text="@string/data_has_changed"
+                        android:textColor="@android:color/white" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/no_network_connection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/data_has_changed">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorAccent"
+                        android:gravity="center"
                         android:text="@string/no_network_connection"
                         android:textColor="@android:color/white" />
+
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -75,10 +92,24 @@
                         android:textStyle="bold|italic" />
 
                     <android.support.v7.widget.RecyclerView
-                        android:id="@+id/user_tasks_list"
+                        android:id="@+id/user_tasks_list_todo"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_below="@+id/basic_title"
+                        android:elevation="0dp" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/user_tasks_list_doing"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/user_tasks_list_todo"
+                        android:elevation="0dp" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/user_tasks_list_done"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/user_tasks_list_doing"
                         android:elevation="0dp" />
 
                     <Button
@@ -86,7 +117,7 @@
                         style="?android:textAppearanceSmall"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/user_tasks_list"
+                        android:layout_below="@+id/user_tasks_list_done"
                         android:layout_margin="5dp"
                         android:layout_marginTop="16dp"
                         android:background="@color/colorAccentLightTransparent"
@@ -115,7 +146,7 @@
                         android:layout_alignParentTop="true"
                         android:elevation="4dp"
                         android:padding="10dp"
-                        android:text="@string/groups"
+                        android:text="@string/user_groups_with_budget"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="16sp"
                         android:textStyle="bold|italic" />

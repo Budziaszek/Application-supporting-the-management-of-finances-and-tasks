@@ -9,9 +9,11 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 
 import com.budziaszek.tabmate.R;
+import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.view.listener.DataChangeListener;
 
 public class BasicFragment extends Fragment implements DataChangeListener {
@@ -20,6 +22,12 @@ public class BasicFragment extends Fragment implements DataChangeListener {
     protected View mDisplayView;
     protected View mProgressView;
     protected SwipeRefreshLayout swipeLayout;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        informAboutNetworkConnection(); informAboutDataSynchronization();
+    }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     protected void showProgress(final boolean show) {
@@ -62,11 +70,23 @@ public class BasicFragment extends Fragment implements DataChangeListener {
     }
 
     public void informAboutNetworkConnection() {
+        if (fView == null || fView.findViewById(R.id.no_network_connection) == null)
+            return;
         //Check network
         if (checkNetworkConnection()) {
             fView.findViewById(R.id.no_network_connection).setVisibility(View.GONE);
         } else {
             fView.findViewById(R.id.no_network_connection).setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void informAboutDataSynchronization() {
+        if (fView == null || fView.findViewById(R.id.data_has_changed) == null || (swipeLayout!= null && swipeLayout.isRefreshing()))
+            return;
+        if (DataManager.getInstance().getDataHasChanged()) {
+            fView.findViewById(R.id.data_has_changed).setVisibility(View.VISIBLE);
+        } else {
+            fView.findViewById(R.id.data_has_changed).setVisibility(View.GONE);
         }
     }
 

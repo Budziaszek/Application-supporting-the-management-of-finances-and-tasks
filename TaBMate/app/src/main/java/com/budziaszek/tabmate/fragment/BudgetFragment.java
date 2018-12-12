@@ -70,11 +70,11 @@ public class BudgetFragment extends BasicFragment {
             Log.d(TAG, "Ask for refresh groups and users");
             DataManager.getInstance().refresh(((MainActivity) activity).getCurrentUserId());
 
-            informAboutNetworkConnection();
+            informAboutNetworkConnection(); informAboutDataSynchronization();
         });
 
         activity = getActivity();
-        informAboutNetworkConnection();
+        informAboutNetworkConnection(); informAboutDataSynchronization();
 
         // Transactions
         RecyclerView transactionsRecycler = fView.findViewById(R.id.transaction_history_list);
@@ -147,6 +147,7 @@ public class BudgetFragment extends BasicFragment {
         Integer id = item.getItemId();
         if(id >= 0 && id < groups.size()) {
             currentGroup = id;
+            ((MainActivity)activity).setCurrentGroup(groups.get(id));
             item.setChecked(true);
             transactions.clear();
             transactionsAdapter.update(transactions);
@@ -160,13 +161,16 @@ public class BudgetFragment extends BasicFragment {
 
     @Override
     public void groupsChanged() {
-        Log.d(TAG, "Transactions changed");
         groups = DataManager.getInstance().getGroups();
-        if(currentGroup == null || groups.size() < currentGroup - 1){
+        if(currentGroup == null) {
+            currentGroup = groups.indexOf(((MainActivity)activity).getCurrentGroup());
+        }
+        if(currentGroup == -1 || groups.size() < currentGroup - 1){
             currentGroup = 0;
         }
-        if(groups.size() != 0)
+        if(groups.size() != 0) {
             showGroupBudget(currentGroup);
+        }
     }
 
     @Override
@@ -199,10 +203,14 @@ public class BudgetFragment extends BasicFragment {
         for (int i = newTransactions.size(); i < oldTransactions.size(); i++) {
             transactionsAdapter.notifyItemRemoved(i);
         }
+
+        setLineChartBudget();
     }
 
     // TODO display only some transaction (from the given range)
     private void setLineChartBudget(){
+        Log.d(TAG, "Update chart");
+
         lineChartBudget = fView.findViewById(R.id.budget_linear);
         Description description = new Description();
         description.setText("");
@@ -217,8 +225,10 @@ public class BudgetFragment extends BasicFragment {
         legend.setEnabled(false);
 
         List<Entry> entries = new ArrayList<>();
-        if(transactions.size() == 0)
+        if(transactions.size() == 0) {
+            lineChartBudget.clear();
             return;
+        }
         Transaction transaction = null;
         for (int i = transactions.size() - 1; i >= 0; i--) {
             transaction = transactions.get(i);
@@ -227,14 +237,6 @@ public class BudgetFragment extends BasicFragment {
         if(transaction != null)
             entries.add(new Entry((float) transactions.size() +  1,
                     (float)(transaction.getAmountBeforeTransaction() + transaction.getAmount())));
-
-//        ArrayList<String> labels = new ArrayList<>();
-//        labels.add("January");
-//        labels.add("February");
-//        labels.add("March");
-//        labels.add("April");
-//        labels.add("May");
-//        labels.add("June");
 
         LineDataSet dataSet = new LineDataSet(entries, "");
         LineData data = new LineData(dataSet);
@@ -245,10 +247,8 @@ public class BudgetFragment extends BasicFragment {
 
     private void showGroupBudget(Integer i){
         Double balance = groups.get(i).getBudgetBalance();
-        if(balance == null)
-            balance = 0.0;
-        String balanceString = balance + " " + "zł";
-        budgetBalance.setText(balanceString);
+        budgetBalance.setText(groups.get(i).getStringBudgetBalance());
         group.setText(groups.get(i).getName());
+        setLineChartBudget();
     }
 }

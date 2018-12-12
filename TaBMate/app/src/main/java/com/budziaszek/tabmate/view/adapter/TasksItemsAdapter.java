@@ -4,15 +4,20 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
+import com.budziaszek.tabmate.firestoreData.DataManager;
+import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.view.listener.TaskClickListener;
 
@@ -30,11 +35,13 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
     private int color;
     private int deadlineVisible = View.GONE;
     private int preDeadlineTime = 3;
+    private String uid;
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView taskName;
         private TextView taskDescription;
         private TextView taskDeadline;
+        private Switch taskSwitch;
         private RelativeLayout taskItemLayout;
 
         private MyViewHolder(View view) {
@@ -53,16 +60,18 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
             taskName = view.findViewById(R.id.task_title);
             taskDescription = view.findViewById(R.id.task_description);
             taskDeadline = view.findViewById(R.id.task_date);
+            taskSwitch = view.findViewById(R.id.switch_play);
         }
     }
 
 
-    public TasksItemsAdapter(List<UserTask> groupsList, Context context, int color, TaskClickListener taskClickListener) {
+    public TasksItemsAdapter(List<UserTask> groupsList, Context context, int color, TaskClickListener taskClickListener, String uid) {
         //this.taskItemLayouts = new ArrayList<>();
         this.tasksList = groupsList;
         this.taskClickListener = taskClickListener;
         this.context = context;
         this.color = color;
+        this.uid = uid;
     }
 
     @Override
@@ -79,6 +88,25 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
         UserTask task = tasksList.get(position);
         holder.taskName.setText(task.getTitle());
         holder.taskDeadline.setText(task.getDateString());
+        if(task.isPlayed()){
+            holder.taskSwitch.setChecked(true);
+            holder.taskSwitch.setTextColor(Color.WHITE);
+        }
+
+        holder.taskSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                task.play();
+                FirestoreRequests firestoreRequests = new FirestoreRequests();
+                firestoreRequests.updateTask(task, v -> {}, e -> Log.d("Error", e.getMessage()));
+                holder.taskSwitch.setTextColor(Color.WHITE);
+            }else{
+                task.stop();
+                FirestoreRequests firestoreRequests = new FirestoreRequests();
+                firestoreRequests.updateTask(task, v -> {}, e -> Log.d("Error", e.getMessage()));
+                DataManager.getInstance().refreshAllGroupsTasks();
+                holder.taskSwitch.setTextColor(Color.BLACK);
+            }
+        });
 
         //Check deadline
         Calendar calendar = Calendar.getInstance();
@@ -97,6 +125,9 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
                 holder.taskDeadline.startAnimation(animation);
             }
         }
+        if(task.getStatus() != UserTask.Status.DOING || !task.getDoers().contains(uid)){
+            holder.taskSwitch.setVisibility(View.INVISIBLE);
+        }
 
         String description = task.getDescription();
         if (!description.equals("")) {
@@ -109,7 +140,9 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
 
     @Override
     public int getItemCount() {
-        return tasksList.size();
+        if (tasksList != null)
+            return tasksList.size();
+        return 0;
     }
 
     public void update(List<UserTask> data) {

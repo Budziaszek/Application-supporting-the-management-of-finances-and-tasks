@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
+import com.budziaszek.tabmate.firestoreData.DataManager;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.firestoreData.Transaction;
 import com.budziaszek.tabmate.firestoreData.UserTask;

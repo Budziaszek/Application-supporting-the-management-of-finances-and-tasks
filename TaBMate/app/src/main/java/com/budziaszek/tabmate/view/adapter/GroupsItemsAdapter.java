@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.firestoreData.Group;
 import com.budziaszek.tabmate.view.listener.GroupClickListener;
+import com.google.protobuf.StringValue;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView groupName;
+        private TextView groupBudget;
         private RelativeLayout groupItemLayout;
 
         private MyViewHolder(View view) {
@@ -27,13 +29,18 @@ public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.
 
             groupItemLayout = view.findViewById(R.id.group_item_layout);
             groupItemLayout.setOnClickListener(view1 ->
-                    groupClickListener.onItemClicked(getAdapterPosition()));
+                groupClickListener.onItemClicked(getAdapterPosition()));
             groupItemLayout.setOnLongClickListener(view12 -> {
                 groupClickListener.onItemLongClicked(getAdapterPosition());
                 return true;
             });
 
             groupName = view.findViewById(R.id.group_name);
+            groupBudget = view.findViewById(R.id.group_budget);
+
+            view.findViewById(R.id.group_budget_button).setOnClickListener(view12 -> {
+                groupClickListener.onButtonClicked(getAdapterPosition());
+            });
         }
     }
 
@@ -55,7 +62,7 @@ public class GroupsItemsAdapter extends RecyclerView.Adapter<GroupsItemsAdapter.
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Group group = groupsList.get(position);
         holder.groupName.setText(group.getName());
-        //layoutList.add(holder.groupItemLayout);
+        holder.groupBudget.setText(group.getStringBudgetBalance());
     }
 
     @Override

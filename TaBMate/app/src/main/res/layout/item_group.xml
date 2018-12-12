@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/group_item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,12 +17,42 @@
 
     <TextView
         android:id="@+id/group_name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
         android:padding="5dp"
+        android:text="@string/group"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/group_budget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="false"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/group_budget_button"
+        android:text="@string/budget"
+        android:paddingRight="10dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/group_budget_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/circle"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="+/-"
+        android:textColor="@color/colorAccentLight"
+        app:srcCompat="@drawable/ic_money" />
+
 
 </RelativeLayout>

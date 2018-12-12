@@ -30,7 +30,7 @@ public class TasksPagerFragment extends BasicFragment {
         Log.d(TAG, "Created");
         fView = inflater.inflate(R.layout.tasks_pager, container, false);
 
-        informAboutNetworkConnection();
+        informAboutNetworkConnection(); informAboutDataSynchronization();
         activity = getActivity();
 
         // Pager initialization

@@ -2,6 +2,7 @@
     <string name="app_name">TaB Mate</string>
 
     <string name="no_network_connection">No network connection</string>
+    <string name="data_has_changed">Data might has changed - swipe down to refresh</string>
 
     <!-- Strings related to login -->
     <string name="name_or_nickname">Name or nickname</string>
@@ -46,6 +47,7 @@
 
     <!-- Strings related to main page-->
     <string name="user_tasks">Your tasks</string>
+    <string name="user_groups_with_budget">Your groups with budget</string>
 
     <!-- Strings related to groups fragment -->
     <string name="members">Members</string>
@@ -101,14 +103,17 @@
     <string name="confirm_remove_task">Are you sure? It will not be included in statistics!</string>
     <string name="task_removed">Task removed</string>
     <string name="estimated_time">Estimated time</string>
+    <string name="spent_time">Time spent</string>
     <string name="your_vote">Your vote</string>
     <string name="vote">Vote</string>
-    <string name="readiness">Your readiness to do this task</string>
+    <string name="priority">Priority</string>
     <string name="task_no_doers">Without doers</string>
     <string name="task_todo">ToDo</string>
     <string name="task_doing">Doing</string>
     <string name="task_done">Done</string>
     <string name="task_archived">Archived</string>
+    <string name="perform">▶</string>
+    <string name="stop">❙❙</string>
 
     <!-- Strings related to budget -->
     <string name="budget">Budget</string>

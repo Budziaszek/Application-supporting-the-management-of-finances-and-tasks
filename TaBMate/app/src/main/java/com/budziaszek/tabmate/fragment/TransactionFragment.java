@@ -268,7 +268,8 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
                                 );
                     },
                     (e) -> InformUser.informFailure(activity, e));
-            ((MainActivity) activity).startFragment(BudgetFragment.class);
+            //((MainActivity) activity).startFragment(BudgetFragment.class);
+            activity.onBackPressed();
         } else {
             /*firestoreRequests.updateTransaction(transaction,
                     (x) -> {

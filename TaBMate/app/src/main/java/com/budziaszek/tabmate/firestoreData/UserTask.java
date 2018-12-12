@@ -1,6 +1,7 @@
 package com.budziaszek.tabmate.firestoreData;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import com.budziaszek.tabmate.R;
 
@@ -24,8 +25,10 @@ public class UserTask {
     private Status statusBeforeArchive;
     private Date date;
     private Map<String, Integer> timeEstimationVote;
-    private Map<String, Integer> readinessVote;
     private Integer estimatedTime;
+    private Long timeSpent;
+    private Integer priority;
+    private Date playDate;
 
     public enum Status {
 
@@ -96,8 +99,12 @@ public class UserTask {
         this.timeEstimationVote = timeEstimationVote;
     }
 
-    public void setReadinessVote(Map<String, Integer> readinessVote) {
-        this.readinessVote = readinessVote;
+    public void setTimeSpent(Long timeSpent) {
+        this.timeSpent = timeSpent;
+    }
+
+    public void setPlayDate(Date playDate) {
+        this.playDate = playDate;
     }
 
     public Map<String, Integer> getTimeEstimationVote() {
@@ -119,8 +126,9 @@ public class UserTask {
         this.status = Status.TODO;
         this.doers = new ArrayList<>();
         this.timeEstimationVote = new TreeMap<>();
-        this.readinessVote = new TreeMap<>();
+        this.priority = 5;
         this.estimatedTime = 0;
+        this.timeSpent = (long)0.0;
     }
 
     public UserTask(String title, String description, String group) {
@@ -130,8 +138,9 @@ public class UserTask {
         this.status = Status.TODO;
         this.doers = new ArrayList<>();
         this.timeEstimationVote = new TreeMap<>();
-        this.readinessVote = new TreeMap<>();
+        this.priority = 5;
         this.estimatedTime = 0;
+        this.timeSpent = (long)0.0;
     }
 
     public UserTask(String id, String title, String description, String group, /*ArrayList<String> tag,*/ ArrayList<String> doers, Status status) {
@@ -141,7 +150,7 @@ public class UserTask {
         this.group = group;
         this.doers = new ArrayList<>();
         this.timeEstimationVote = new TreeMap<>();
-        this.readinessVote = new TreeMap<>();
+        this.priority = 5;
         this.doers = doers;
         this.status = status;
     }
@@ -164,8 +173,8 @@ public class UserTask {
         this.doers.remove(id);
     }
 
-    public void addReadinessVote(String uid, Integer readiness){
-        readinessVote.put(uid, readiness);
+    public void setPriority(Integer priority){
+        this.priority = priority;
     }
 
     public List<String> getDoers(){
@@ -199,8 +208,8 @@ public class UserTask {
         return date;
     }
 
-    public Map<String, Integer> getReadinessVote() {
-        return readinessVote;
+    public Integer getPriority() {
+        return priority;
     }
 
     public void setTitle(String title) {
@@ -234,6 +243,37 @@ public class UserTask {
         @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
         return dateFormat.format(calendar.getTime());
+    }
+
+    public Long getTimeSpent() {
+        return timeSpent;
+    }
+
+    public String getStringTimeSpent() {
+        if(playDate!= null) {
+            timeSpent += (Calendar.getInstance().getTimeInMillis() - playDate.getTime()) / 1000 / 60;
+            playDate = Calendar.getInstance().getTime();
+        }
+        if (timeSpent == null)
+            return null;
+        return (int)Math.floor(timeSpent/60) + " h " + timeSpent%60 + " min";
+    }
+
+    public void play(){
+        playDate = Calendar.getInstance().getTime();
+    }
+
+    public void stop(){
+        timeSpent += (Calendar.getInstance().getTimeInMillis() - playDate.getTime())/1000/60;
+        playDate = null;
+    }
+
+    public Boolean isPlayed(){
+        return playDate != null;
+    }
+
+    public Date getPlayDate() {
+        return playDate;
     }
 
     @Override
