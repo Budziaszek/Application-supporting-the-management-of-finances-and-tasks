@@ -230,7 +230,7 @@ public class BudgetFragment extends BasicFragment {
             return;
         }
         Transaction transaction = null;
-        for (int i = transactions.size() - 1; transactions.size() - i < 100; i--) {
+        for (int i = transactions.size() - 1; transactions.size() - i < 100 && i >= 0; i--) {
             transaction = transactions.get(i);
             entries.add(new Entry((float) transactions.size() - i, transaction.getAmountBeforeTransaction().floatValue()));
         }
