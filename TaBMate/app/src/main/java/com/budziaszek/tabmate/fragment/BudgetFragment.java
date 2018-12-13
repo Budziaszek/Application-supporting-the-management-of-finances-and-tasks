@@ -104,6 +104,7 @@ public class BudgetFragment extends BasicFragment {
         Button newTransactionButton = fView.findViewById(R.id.new_transation_button);
         newTransactionButton.setOnClickListener(view -> {
             ((MainActivity)activity).setCurrentGroup(groups.get(currentGroup));
+            ((MainActivity)activity).setCurrentTransaction(null);
             ((MainActivity)activity).startFragment(TransactionFragment.class);
         });
 
@@ -207,7 +208,6 @@ public class BudgetFragment extends BasicFragment {
         setLineChartBudget();
     }
 
-    // TODO display only some transaction (from the given range)
     private void setLineChartBudget(){
         Log.d(TAG, "Update chart");
 
@@ -230,7 +230,7 @@ public class BudgetFragment extends BasicFragment {
             return;
         }
         Transaction transaction = null;
-        for (int i = transactions.size() - 1; i >= 0; i--) {
+        for (int i = transactions.size() - 1; transactions.size() - i < 100; i--) {
             transaction = transactions.get(i);
             entries.add(new Entry((float) transactions.size() - i, transaction.getAmountBeforeTransaction().floatValue()));
         }

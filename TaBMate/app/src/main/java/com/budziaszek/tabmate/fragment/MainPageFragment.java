@@ -2,15 +2,19 @@ package com.budziaszek.tabmate.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
@@ -151,8 +155,17 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
             ((MainActivity) activity).startFragment(GroupFragment.class);
         });
 
-        Button allTasksButton = fView.findViewById(R.id.all_tasks_button);
-        allTasksButton.setOnClickListener(view -> ((MainActivity) activity).startFragment(TasksPagerFragment.class));
+//        Button allTasksButton = fView.findViewById(R.id.all_tasks_button);
+//        allTasksButton.setOnClickListener(view -> ((MainActivity) activity).startFragment(TasksPagerFragment.class));
+
+        Button selectTasksButton = fView.findViewById(R.id.select_tasks_button);
+        selectTasksButton.setOnClickListener(view -> ((MainActivity) activity).startFragment(SelectTasksFragment.class));
+
+//        Button addTaskButton = fView.findViewById(R.id.add_task_button);
+//        addTaskButton.setOnClickListener(view -> {
+//            ((MainActivity) activity).setCurrentTask(null);
+//            ((MainActivity) activity).startFragment(TaskFragment.class);
+//        });
     }
 
     private void setRecyclerInvitations() {
@@ -258,7 +271,6 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         groups = newGroups;
         groupsAdapter.update(groups);
 
-        //TODO check what exactly changed
         for (int i = 0; i < newGroups.size(); i++) {
             if (oldGroups.size() <= i) {
                 groupsAdapter.notifyItemInserted(i);
@@ -296,21 +308,9 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
         }
 
         for(Integer k:tasks.keySet()){
-            Log.d("ErrorP", k + " ");
             tasks.get(k).sort(Comparator.comparing(UserTask::getTitle));
             tasksItemsAdapterMap.get(k).update(tasks.get(k));
             tasksItemsAdapterMap.get(k).notifyDataSetChanged();
         }
-//        tasksTODO.sort(Comparator.comparing(UserTask::getTitle));
-//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_todo).update(tasksTODO);
-//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_todo).notifyDataSetChanged();
-//
-//        tasksDOING.sort(Comparator.comparing(UserTask::getTitle));
-//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_doing).update(tasksDOING);
-//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_doing).notifyDataSetChanged();
-//
-//        tasksDONE.sort(Comparator.comparing(UserTask::getTitle));
-//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_done).update(tasksDONE);
-//        tasksItemsAdapterMap.get(R.drawable.ripple_effect_done).notifyDataSetChanged();
     }
 }

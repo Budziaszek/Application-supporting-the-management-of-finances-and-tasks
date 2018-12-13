@@ -21,10 +21,10 @@
                 android:icon="@drawable/ic_money"
                 android:title="@string/budget"/>
 
-        <item
-                android:id="@+id/nav_food"
-                android:icon="@drawable/ic_shopping"
-                android:title="@string/food"/>
+        <!--<item-->
+                <!--android:id="@+id/nav_food"-->
+                <!--android:icon="@drawable/ic_shopping"-->
+                <!--android:title="@string/food"/>-->
 
     </group>
 

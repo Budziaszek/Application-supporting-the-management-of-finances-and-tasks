@@ -20,8 +20,6 @@ public class FindTasksFragment extends BasicFragment {
 
     private static final String TAG = "FindTasksFragmentProcedure";
 
-    // private Activity activity;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

@@ -3,6 +3,7 @@
 
     <string name="no_network_connection">Brak połączenia z internetem</string>
     <string name="data_has_changed">Dane mogły ulec zmianie - przeciągnij w dół aby odświeżyć</string>
+    <string name="double_back">Kliknij ponownie WSTECZ aby wyjść</string>
 
     <!-- Strings related to login -->
     <string name="name_or_nickname">Imie lub nick</string>
@@ -48,7 +49,7 @@
 
     <!-- Strings related to main page-->
     <string name="user_tasks">Twoje zadania</string>
-    <string name="user_groups_with_budget">Twoje grupy i ich budżet</string>
+    <string name="user_groups_with_budget">Twoje grupy</string>
 
     <!-- Strings related to groups fragment -->
     <string name="members">Członkowie</string>
@@ -79,6 +80,7 @@
     <string name="saved">Zmiany zostały zapisane</string>
     <string name="name_required">Nazwa jest wywmagana</string>
     <string name="details_group">Szczegóły grupy</string>
+    <string name="currency">Waluta</string>
 
     <!-- Related to tasks fragment-->
     <string name="add_new_task">Dodaj nowe zadanie</string>
@@ -106,6 +108,12 @@
     <string name="task_todo">ToDo</string>
     <string name="task_doing">Doing</string>
     <string name="task_done">Done</string>
+    <string name="select_tasks">Dobierz nowe zadania</string>
+    <string name="select_tasks_info">Zostaniesz przypisany do zadań wybranych dla Ciebie według kryteriów jakie określisz.</string>
+    <string name="assign">Przydziel</string>
+    <string name="hours">Maksymalna ilość godzin</string>
+    <string name="number_of_tasks">Maksymalna ilość zadań</string>
+    <string name="tasks_not_found">Nie znaleziono zadań spełniających kryteria</string>
     <!--<string name="perform">▶</string>-->
     <!--<string name="stop">❚❚</string>-->
 
@@ -122,6 +130,93 @@
     <string name="new_category">Nowa kategoria</string>
     <string name="date">Data</string>
     <string name="error_amount">Błędna kwota</string>
+    <string name="income">income</string>
+    <string name="expenses">expenses</string>
+    <string name="expense">expense</string>
+
+    <string-array name="income">
+        <item>Salary</item>
+        <item>Gift</item>
+        <item>Investment</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="expenses">
+        <item>Food</item>
+        <item>Bills</item>
+        <item>Health care</item>
+        <item>Sport and recreation</item>
+        <item>Home maintenance</item>
+        <item>Transportation</item>
+        <item>Personal</item>
+        <item>Gifts</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="expenses_food">
+        <item>Groceries</item>
+        <item>Restaurants</item>
+        <item>Alcohol</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="expenses_bills">
+        <item>Electricity</item>
+        <item>Water</item>
+        <item>Heating</item>
+        <item>Garbage</item>
+        <item>Phones</item>
+        <item>Internet</item>
+        <item>Gas</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="expenses_health">
+        <item>Medicines</item>
+        <item>Clinics and hospitals</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="expenses_sport">
+        <item>Cinema</item>
+        <item>Theater</item>
+        <item>Gym</item>
+        <item>Swimming pool</item>
+        <item>Clubs</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="expenses_home">
+        <item>Cleaning supplies</item>
+        <item>Office supplies</item>
+        <item>Furniture</item>
+        <item>Repairs</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="expenses_personal">
+        <item>Clothing</item>
+        <item>Cosmetics</item>
+        <item>Hairdresser and barber</item>
+        <item>Beauty salon</item>
+        <item>Subscriptions</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="expenses_transportation">
+        <item>Public transport</item>
+        <item>Car maintenance</item>
+        <item>Fuel</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="expenses_gifts">
+        <item>Birthday</item>
+        <item>Wedding</item>
+        <item>Christmas</item>
+        <item>Valentine\'s Day</item>
+        <item>Other</item>
+    </string-array>
 
     <string name="basic">Podstawowe</string>
     <string name="title">Tytuł</string>

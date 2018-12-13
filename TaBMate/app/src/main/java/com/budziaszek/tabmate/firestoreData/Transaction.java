@@ -6,17 +6,18 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
+//TODO use or remove uid
 public class Transaction {
 
     private Double amount;
     private String title;
     private String description;
     private Date date;
+    private String category;
+    private String subcategory;
     private String uid;
     private String group;
     private Double amountBeforeTransaction;
-
 
     public Transaction() {
     }
@@ -57,6 +58,14 @@ public class Transaction {
         this.amountBeforeTransaction = amountBeforeTransaction;
     }
 
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setSubcategory(String subcategory) {
+        this.subcategory = subcategory;
+    }
+
     public Double getAmount() {
         return amount;
     }
@@ -83,6 +92,14 @@ public class Transaction {
 
     public Double getAmountBeforeTransaction() {
         return amountBeforeTransaction;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getSubcategory() {
+        return subcategory;
     }
 
     public String getDateString(){

@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.firestoreData.DataManager;
@@ -57,8 +58,10 @@ public class GroupFragment extends BasicFragment {
 
     private TextView groupName;
     private TextView groupDescription;
+    private TextView groupCurrency;
     private TextView groupNameInput;
     private TextView groupDescriptionInput;
+    private TextView groupCurrencyInput;
 
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
@@ -73,8 +76,10 @@ public class GroupFragment extends BasicFragment {
 
         groupName = fView.findViewById(R.id.group_name);
         groupDescription = fView.findViewById(R.id.group_description);
+        groupCurrency = fView.findViewById(R.id.group_currency);
         groupNameInput = fView.findViewById(R.id.group_name_input);
         groupDescriptionInput = fView.findViewById(R.id.group_description_input);
+        groupCurrencyInput = fView.findViewById(R.id.group_currency_input);
 
         // Add group
         if (group == null) {
@@ -169,6 +174,7 @@ public class GroupFragment extends BasicFragment {
     private void showGroup() {
         groupName.setText(group.getName());
         groupDescription.setText(group.getDescription());
+        groupCurrency.setText(group.getCurrency());
 
         Map<String, User> allUsers = DataManager.getInstance().getUsersInMap();
         users = new ArrayList<>();
@@ -283,9 +289,11 @@ public class GroupFragment extends BasicFragment {
         if (edit) {
             groupNameInput.setVisibility(View.VISIBLE);
             groupDescriptionInput.setVisibility(View.VISIBLE);
+            groupCurrencyInput.setVisibility(View.VISIBLE);
 
             groupName.setVisibility(View.INVISIBLE);
             groupDescription.setVisibility(View.INVISIBLE);
+            groupCurrency.setVisibility(View.INVISIBLE);
 
             if(isCreated) {
                 groupNameInput.setText("");
@@ -294,16 +302,20 @@ public class GroupFragment extends BasicFragment {
             else {
                 groupNameInput.setText(groupName.getText());
                 groupDescriptionInput.setText(groupDescription.getText());
+                groupCurrencyInput.setText(groupCurrency.getText());
             }
         } else {
             groupNameInput.setVisibility(View.INVISIBLE);
             groupDescriptionInput.setVisibility(View.INVISIBLE);
+            groupCurrencyInput.setVisibility(View.INVISIBLE);
 
             groupName.setVisibility(View.VISIBLE);
             groupDescription.setVisibility(View.VISIBLE);
+            groupCurrency.setVisibility(View.VISIBLE);
 
             groupName.setText(groupNameInput.getText().toString());
             groupDescription.setText(groupDescriptionInput.getText().toString());
+            groupCurrency.setText(groupCurrencyInput.getText().toString());
         }
     }
 
@@ -313,6 +325,7 @@ public class GroupFragment extends BasicFragment {
         if (!name.equals("")) {
             group.setName(name);
             group.setDescription(groupDescriptionInput.getText().toString());
+            group.setCurrency(groupCurrencyInput.getText().toString());
 
             if(isCreated){
                 group.addMember(((MainActivity)activity).getCurrentUserId());

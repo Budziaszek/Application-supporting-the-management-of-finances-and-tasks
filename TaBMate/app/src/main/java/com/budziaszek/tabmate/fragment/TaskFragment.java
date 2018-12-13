@@ -287,6 +287,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
                 taskTimeVote.setVisibility(View.GONE);
                 fView.findViewById(R.id.label_task_time_vote).setVisibility(View.GONE);
                 fView.findViewById(R.id.label_task_estimated_time).setVisibility(View.GONE);
+                fView.findViewById(R.id.label_task_spent_time).setVisibility(View.GONE);
             } else {
                 taskGroupInput.setVisibility(View.INVISIBLE);
                 taskTitleInput.setText(taskTitle.getText());
@@ -386,7 +387,8 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
                 firestoreRequests.addTask(task,
                         (x) -> InformUser.inform(activity, R.string.task_created),
                         (e) -> InformUser.informFailure(activity, e));
-                ((MainActivity) activity).startFragment(TasksPagerFragment.class);
+                //((MainActivity) activity).startFragment(TasksPagerFragment.class);
+                activity.onBackPressed();
             } else {
                 firestoreRequests.updateTask(task,
                         (x) -> {

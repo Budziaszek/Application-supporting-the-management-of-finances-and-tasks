@@ -10,6 +10,7 @@ public class Group {
     private String description;
     private List<String> members;
     private Double budgetBalance;
+    private String currency;
 
     public Group() {
     }
@@ -50,6 +51,10 @@ public class Group {
         members.add(memberId);
     }
 
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
     public String getId() {
         return id;
     }
@@ -71,10 +76,20 @@ public class Group {
     }
 
     public String getStringBudgetBalance() {
+        String currency;
+        if(getCurrency() == null){
+            currency = "";
+        }else{
+            currency = getCurrency();
+        }
         if(budgetBalance == null)
-            return 0.0 + " zł";
+            return 0.0 + " " + currency;
         else
-            return budgetBalance + " zł";
+            return budgetBalance + " " + currency;
+    }
+
+    public String getCurrency() {
+        return currency;
     }
 
     @Override

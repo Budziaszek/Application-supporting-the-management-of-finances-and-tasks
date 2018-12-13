@@ -113,18 +113,21 @@
                         android:elevation="0dp" />
 
                     <Button
-                        android:id="@+id/all_tasks_button"
+                        android:id="@+id/select_tasks_button"
                         style="?android:textAppearanceSmall"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/user_tasks_list_done"
-                        android:layout_margin="5dp"
-                        android:layout_marginTop="16dp"
-                        android:background="@color/colorAccentLightTransparent"
-                        android:padding="0dp"
-                        android:text="@string/all_tasks"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/colorAccentLightSemi"
+                        android:padding="5dp"
+                        android:text="@string/select_tasks"
                         android:textAllCaps="false"
-                        android:textColor="@color/colorPrimaryDarkSemi" />
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textStyle="bold" />
 
                 </RelativeLayout>
 
@@ -146,7 +149,7 @@
                         android:layout_alignParentTop="true"
                         android:elevation="4dp"
                         android:padding="10dp"
-                        android:text="@string/user_groups_with_budget"
+                        android:text="@string/user_groups"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="16sp"
                         android:textStyle="bold|italic" />
@@ -173,11 +176,12 @@
                         android:layout_below="@id/invitations_list"
                         android:layout_margin="5dp"
                         android:layout_marginTop="16dp"
-                        android:background="@color/colorAccentLightTransparent"
+                        android:background="@color/colorAccentLightSemi"
                         android:padding="0dp"
                         android:text="@string/create_group_long"
                         android:textAllCaps="false"
-                        android:textColor="@color/colorPrimaryDarkSemi"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textStyle="bold"
                         ndroid:textAllCaps="false" />
 
                 </RelativeLayout>

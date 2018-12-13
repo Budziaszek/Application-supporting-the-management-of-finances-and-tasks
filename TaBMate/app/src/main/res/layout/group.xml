@@ -129,6 +129,37 @@
                     android:textSize="16sp"
                     tools:ignore="LabelFor" />
 
+                <TextView
+                    android:id="@+id/label_group_currency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/group_description_input"
+                    android:padding="5dp"
+                    android:text="@string/currency"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/group_currency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/label_group_currency"
+                    android:padding="10dp"
+                    android:text="@string/currency"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/group_currency_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/label_group_currency"
+                    android:inputType="textMultiLine"
+                    android:padding="10dp"
+                    android:text="@string/currency"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp"
+                    tools:ignore="LabelFor" />
+
 
             </RelativeLayout>
 

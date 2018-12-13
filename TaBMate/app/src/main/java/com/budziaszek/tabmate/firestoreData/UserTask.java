@@ -64,8 +64,11 @@ public class UserTask {
     public void setNextStatus(){
         if(status == Status.TODO)
             status = Status.DOING;
-        else if(status == Status.DOING)
+        else if(status == Status.DOING) {
             status = Status.DONE;
+            if(isPlayed())
+                stop();
+        }
         else if(status == Status.DONE)
             setArchived();
         else if(status == Status.ARCHIVED)
@@ -208,6 +211,12 @@ public class UserTask {
         return date;
     }
 
+    public Date getDateForSort() {
+        if(date != null)
+            return date;
+        return new Date(0);
+    }
+
     public Integer getPriority() {
         return priority;
     }
@@ -250,12 +259,14 @@ public class UserTask {
     }
 
     public String getStringTimeSpent() {
-        if(playDate!= null) {
-            timeSpent += (Calendar.getInstance().getTimeInMillis() - playDate.getTime()) / 1000 / 60;
+        if(timeSpent == null){
+            timeSpent = (long)0.0;
+        }
+        if(playDate == null){
             playDate = Calendar.getInstance().getTime();
         }
-        if (timeSpent == null)
-            return null;
+        timeSpent += (Calendar.getInstance().getTimeInMillis() - playDate.getTime()) / 1000 / 60;
+        playDate = Calendar.getInstance().getTime();
         return (int)Math.floor(timeSpent/60) + " h " + timeSpent%60 + " min";
     }
 

@@ -3,8 +3,11 @@ package com.budziaszek.tabmate.activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
@@ -29,9 +32,12 @@ import com.budziaszek.tabmate.fragment.TasksPagerFragment;
 import com.budziaszek.tabmate.fragment.MainPageFragment;
 
 import com.budziaszek.tabmate.fragment.UserFragment;
+import com.budziaszek.tabmate.view.InformUser;
 import com.budziaszek.tabmate.view.KeyboardManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.List;
 
 /**
  * Activity with drawer. Starts new fragments, allow switching between drawer and back mode.
@@ -49,6 +55,7 @@ public class MainActivity extends AppCompatActivity
 
     // Fragments
     private Class newFragment = null;
+    private boolean doubleBackToExitPressedOnce = false;
 
     // User data
     private Group currentGroup;
@@ -83,8 +90,29 @@ public class MainActivity extends AppCompatActivity
         enableBack(false);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+            return;
+        }
+        FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        if(fragments != null){
+            for(Fragment fragment : fragments){
+                if(fragment != null && fragment.isVisible())
+                    if(fragment instanceof MainPageFragment || fragment instanceof DashboardFragment
+                            || fragment instanceof TasksPagerFragment || fragment instanceof BudgetFragment
+                             || fragment instanceof UserFragment){
+                        if (doubleBackToExitPressedOnce)
+                            finish();
+                        else{
+                            this.doubleBackToExitPressedOnce = true;
+                            InformUser.inform(this, R.string.double_back);
+                            new Handler().postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
+                        }
+                        return;
+                    } else {
+                        super.onBackPressed();
+                        return;
+                    }
+            }
         }
     }
 
