@@ -164,7 +164,7 @@
                 android:padding="0dp"
                 android:text="@string/assign"
                 android:textAllCaps="false"
-                android:textColor="@color/colorAccentLight"
+                android:textColor="@color/colorAccentDark"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 

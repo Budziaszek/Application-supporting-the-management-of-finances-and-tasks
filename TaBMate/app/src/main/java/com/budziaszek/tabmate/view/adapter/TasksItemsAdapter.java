@@ -22,6 +22,7 @@ import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.view.listener.TaskClickListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -66,9 +67,9 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
     }
 
 
-    public TasksItemsAdapter(List<UserTask> groupsList, Context context, int color, TaskClickListener taskClickListener, String uid) {
+    public TasksItemsAdapter(List<UserTask> tasksList, Context context, int color, TaskClickListener taskClickListener, String uid) {
         //this.taskItemLayouts = new ArrayList<>();
-        this.tasksList = groupsList;
+        this.tasksList = tasksList;
         this.taskClickListener = taskClickListener;
         this.context = context;
         this.color = color;
@@ -89,25 +90,24 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
         UserTask task = tasksList.get(position);
         holder.taskName.setText(task.getTitle());
         holder.taskDeadline.setText(task.getDateString());
-        if(task.isPlayed()){
+
+        if(task.getPlayDate() != null)
             holder.taskSwitch.setChecked(true);
-            holder.taskSwitch.setTextColor(Color.WHITE);
-        }
+        else
+            holder.taskSwitch.setChecked(false);
+
 
         holder.taskSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
                 task.play();
-                FirestoreRequests firestoreRequests = new FirestoreRequests();
-                firestoreRequests.updateTask(task, v -> {}, e -> Log.d("Error", e.getMessage()));
-                holder.taskSwitch.setTextColor(Color.WHITE);
             }else{
                 task.stop();
-                FirestoreRequests firestoreRequests = new FirestoreRequests();
-                firestoreRequests.updateTask(task, v -> {}, e -> Log.d("Error", e.getMessage()));
-                DataManager.getInstance().refreshAllGroupsTasks();
-                holder.taskSwitch.setTextColor(Color.BLACK);
             }
+            FirestoreRequests firestoreRequests = new FirestoreRequests();
+            firestoreRequests.updateTask(task, v -> {}, e -> Log.d("Error", e.getMessage()));
+            DataManager.getInstance().refreshAllGroupsTasks();
         });
+
 
         //Check deadline
         Calendar calendar = Calendar.getInstance();
@@ -144,6 +144,11 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
         if (tasksList != null)
             return tasksList.size();
         return 0;
+    }
+
+    public void updateAll(List<UserTask> data){
+        tasksList = data;
+        notifyDataSetChanged();
     }
 
     public void update(List<UserTask> data) {

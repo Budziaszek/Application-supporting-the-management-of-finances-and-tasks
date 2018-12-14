@@ -232,10 +232,6 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
                     @Override
                     public void onLongClick(int position) {
-                        //((MainActivity) activity).setCurrentTask(tasks.get(position));
-                        //((MainActivity) activity).startFragment(TaskFragment.class);
-
-                        //UserTask task = tasks.get(color).get(position);
                         UserTask task = tasks.get(color).get(position);
                         if(task.getStatus() == UserTask.Status.ARCHIVED) {
                             return;
@@ -309,8 +305,8 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
         for(Integer k:tasks.keySet()){
             tasks.get(k).sort(Comparator.comparing(UserTask::getTitle));
-            tasksItemsAdapterMap.get(k).update(tasks.get(k));
-            tasksItemsAdapterMap.get(k).notifyDataSetChanged();
+            tasksItemsAdapterMap.get(k).updateAll(tasks.get(k));
+            //tasksItemsAdapterMap.get(k).notifyDataSetChanged();
         }
     }
 }

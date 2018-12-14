@@ -16,7 +16,8 @@
 
     <color name="colorSectionBackgroundTransparent">#3510495c</color>
     <color name="colorSectionBackgroundLight">#93bbc9</color>
-    <color name="colorSectionBackground">#d7f5ff</color>
+    <color name="colorSectionBackgroundLightTransparent">#ae93bbc9</color>
+    <color name="colorSectionBackground">#f1f9fc</color>
 
     <color name="colorPrimaryTransparent">#502d728f</color>
     <color name="colorPrimaryDarkTransparent">#5010495c</color>

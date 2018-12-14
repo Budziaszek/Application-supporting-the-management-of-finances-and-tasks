@@ -149,12 +149,10 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             UserTask task = ((MainActivity) activity).getCurrentTask();
             task.addDoer(((MainActivity) getActivity()).getCurrentUserId());
             firestoreRequests.updateTask(task,
-                    (aVoid) -> {
-                        DataManager.getInstance().refreshAllGroupsTasks();
-                        activity.onBackPressed();
-                    },
+                    (aVoid) -> DataManager.getInstance().refreshAllGroupsTasks(),
                     (e) -> InformUser.informFailure(activity, e)
             );
+            activity.onBackPressed();
         });
 
         showTask();
@@ -268,32 +266,41 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
     private void setEditing(Boolean edit) {
         isEdited = edit;
 
-        if (edit) {
-            taskTitleInput.setVisibility(View.VISIBLE);
-            taskDescriptionInput.setVisibility(View.VISIBLE);
+        int inputVisibility;
+        int displayVisibility;
+        int additionalVisibility;
 
-            taskTitle.setVisibility(View.INVISIBLE);
-            taskDescription.setVisibility(View.INVISIBLE);
+        if(edit){
+            inputVisibility = View.VISIBLE;
+            displayVisibility = View.INVISIBLE;
+            additionalVisibility = View.GONE;
+        } else {
+            inputVisibility = View.INVISIBLE;
+            displayVisibility = View.VISIBLE;
+            additionalVisibility = View.VISIBLE;
+        }
 
-            if (isCreated) {
-                taskGroupInput.setVisibility(View.VISIBLE);
-                taskGroup.setVisibility(View.INVISIBLE);
-                taskTitleInput.setText("");
-                taskDescriptionInput.setText("");
-                //seekBar.setVisibility(View.GONE);
-                //fView.findViewById(R.id.label_priority_vote).setVisibility(View.INVISIBLE);
-                taskEstimatedTime.setVisibility(View.GONE);
-                taskSpentTime.setVisibility(View.GONE);
-                taskTimeVote.setVisibility(View.GONE);
-                fView.findViewById(R.id.label_task_time_vote).setVisibility(View.GONE);
-                fView.findViewById(R.id.label_task_estimated_time).setVisibility(View.GONE);
-                fView.findViewById(R.id.label_task_spent_time).setVisibility(View.GONE);
-            } else {
-                taskGroupInput.setVisibility(View.INVISIBLE);
-                taskTitleInput.setText(taskTitle.getText());
-                taskDescriptionInput.setText(taskDescription.getText());
-            }
+        taskTitleInput.setVisibility(inputVisibility);
+        taskDescriptionInput.setVisibility(inputVisibility);
+        taskTitle.setVisibility(displayVisibility);
+        taskDescription.setVisibility(displayVisibility);
 
+        if (isCreated) {
+            taskGroupInput.setVisibility(inputVisibility);
+            taskGroup.setVisibility(displayVisibility);
+            taskTitleInput.setText("");
+            taskDescriptionInput.setText("");
+            taskEstimatedTime.setVisibility(additionalVisibility);
+            taskSpentTime.setVisibility(additionalVisibility);
+            taskTimeVote.setVisibility(additionalVisibility);
+            fView.findViewById(R.id.label_task_time_vote).setVisibility(additionalVisibility);
+            fView.findViewById(R.id.label_task_estimated_time).setVisibility(additionalVisibility);
+            fView.findViewById(R.id.label_task_spent_time).setVisibility(additionalVisibility);
+        } else {
+            taskGroupInput.setVisibility(View.INVISIBLE);
+        }
+
+        if(edit) {
             taskStatus.setOnClickListener(view -> {
                 newStatus = UserTask.getNextStatus(newStatus);
                 taskStatus.setText(newStatus.name);
@@ -320,8 +327,8 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
 
                 numberPicker.setMaxValue(100);
                 numberPicker.setMinValue(0);
-                Integer value = task.getTimeEstimationVote().get(((MainActivity)getActivity()).getCurrentUserId());
-                if(value != null)
+                Integer value = task.getTimeEstimationVote().get(((MainActivity) getActivity()).getCurrentUserId());
+                if (value != null)
                     numberPicker.setValue(value);
 
                 numberPicker.setWrapSelectorWheel(false);
@@ -336,17 +343,9 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             });
             taskTimeVote.setBackgroundColor(getResources().getColor(R.color.colorAccentLight, activity.getTheme()));
 
-        } else {
-            taskTitleInput.setVisibility(View.INVISIBLE);
-            taskDescriptionInput.setVisibility(View.INVISIBLE);
-            taskGroupInput.setVisibility(View.INVISIBLE);
-
-            taskTitle.setVisibility(View.VISIBLE);
-            taskTitle.setText(taskTitleInput.getText().toString());
-
-            taskDescription.setVisibility(View.VISIBLE);
-            taskDescription.setText(taskDescriptionInput.getText().toString());
-
+            fView.findViewById(R.id.label_task_description).setVisibility(View.VISIBLE);
+        }
+        else {
             taskDeadline.setOnClickListener(view -> {
             });
             taskDeadline.setBackgroundColor(Color.TRANSPARENT);
@@ -358,6 +357,18 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             taskTimeVote.setOnClickListener(view -> {
             });
             taskTimeVote.setBackgroundColor(Color.TRANSPARENT);
+
+            taskTitle.setText(taskTitleInput.getText().toString());
+            taskDescription.setText(taskDescriptionInput.getText().toString());
+
+            if(task.getDescription() == null || task.getDescription().equals("")){
+                taskDescription.setVisibility(View.GONE);
+                taskDescriptionInput.setVisibility(View.GONE);
+                fView.findViewById(R.id.label_task_description).setVisibility(View.GONE);
+            }else{
+                taskDescription.setVisibility(View.VISIBLE);
+                fView.findViewById(R.id.label_task_description).setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -380,6 +391,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             taskEstimatedTime.setText(String.valueOf(task.getEstimatedTime()));
             taskSpentTime.setText(String.valueOf(task.getTimeSpent()));
             task.setPriority(seekBar.getProgress());
+            task.stop();
 
             //Save data
             if (isCreated) {

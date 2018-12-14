@@ -340,11 +340,13 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
                 transactionSubcategory.setVisibility(View.GONE);
                 fView.findViewById(R.id.label_transaction_subcategory).setVisibility(View.GONE);
             }
-            if(transaction.getDescription() == null) {
+            if(transaction.getDescription() == null || transaction.getDescription().equals("")) {
                 transactionDescription.setVisibility(View.GONE);
                 transactionDescriptionInput.setVisibility(View.GONE);
                 fView.findViewById(R.id.label_transaction_description).setVisibility(View.GONE);
             }
+        }else{
+            fView.findViewById(R.id.label_transaction_description).setVisibility(View.VISIBLE);
         }
     }
 

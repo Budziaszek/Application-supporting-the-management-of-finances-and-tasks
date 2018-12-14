@@ -119,6 +119,7 @@
     <string name="hours">Maximum number of hours</string>
     <string name="number_of_tasks">Maximum number of tasks</string>
     <string name="tasks_not_found">No tasks matching the criteria were found</string>
+    <string name="subtasks">Subtasks</string>
     <string name="perform">▶</string>
     <string name="stop">❙❙</string>
 
@@ -173,6 +174,7 @@
         <item>Garbage</item>
         <item>Phones</item>
         <item>Internet</item>
+        <item>Television</item>
         <item>Gas</item>
         <item>Other</item>
     </string-array>
@@ -195,7 +197,7 @@
     <string-array name="expenses_home">
         <item>Cleaning supplies</item>
         <item>Office supplies</item>
-        <item>Furniture</item>
+        <item>Furniture and equipment</item>
         <item>Repairs</item>
         <item>Other</item>
     </string-array>
@@ -206,6 +208,9 @@
         <item>Hairdresser and barber</item>
         <item>Beauty salon</item>
         <item>Subscriptions</item>
+        <item>Books</item>
+        <item>Games</item>
+        <item>Devices</item>
         <item>Other</item>
     </string-array>
 

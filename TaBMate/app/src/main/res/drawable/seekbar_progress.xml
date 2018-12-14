@@ -16,9 +16,9 @@
                     android:drawable="@android:color/transparent" />
                 <item>
                     <shape android:shape="rectangle"
-                        android:tint="@color/colorAccentLight">
+                        android:tint="@color/colorPrimarySemi">
                         <size android:height="20dp" />
-                        <solid android:color="@color/colorAccentLight" />
+                        <solid android:color="@color/colorPrimarySemi" />
                     </shape>
                 </item>
             </selector>

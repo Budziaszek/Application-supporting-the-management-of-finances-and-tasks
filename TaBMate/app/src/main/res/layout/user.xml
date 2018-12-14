@@ -83,10 +83,11 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
-                android:background="@color/colorAccentLight"
+                android:background="@color/colorPrimarySemi"
                 android:text="@string/change_password"
                 android:textAllCaps="false"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorAccentDark"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/change_email_button"
@@ -98,10 +99,11 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
-                android:background="@color/colorAccentLight"
+                android:background="@color/colorPrimarySemi"
                 android:text="@string/change_email"
                 android:textAllCaps="false"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorAccentDark"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/change_nick_button"
@@ -113,10 +115,11 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
-                android:background="@color/colorAccentLight"
+                android:background="@color/colorPrimarySemi"
                 android:text="@string/change_nick"
                 android:textAllCaps="false"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorAccentDark"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/remove_account_button"
@@ -128,10 +131,11 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
-                android:background="@color/colorAccentLight"
+                android:background="@color/colorPrimarySemi"
                 android:text="@string/remove_account"
                 android:textAllCaps="false"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorAccentDark"
+                android:textStyle="bold" />
 
 
         </RelativeLayout>

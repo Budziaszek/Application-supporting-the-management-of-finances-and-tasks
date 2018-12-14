@@ -145,7 +145,6 @@ public class DataManager {
         if (refreshCounter == 0) {
             for (UserTask task : tasks.values()) {
                 checkIfMatchFiltration(task);
-                Log.d(TAG, "Check filtration " + task.getTitle());
             }
             informObserversRefreshFinished();
 

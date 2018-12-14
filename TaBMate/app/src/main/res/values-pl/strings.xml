@@ -114,6 +114,7 @@
     <string name="hours">Maksymalna ilość godzin</string>
     <string name="number_of_tasks">Maksymalna ilość zadań</string>
     <string name="tasks_not_found">Nie znaleziono zadań spełniających kryteria</string>
+    <string name="subtasks">Podzadania</string>
     <!--<string name="perform">▶</string>-->
     <!--<string name="stop">❚❚</string>-->
 
@@ -130,76 +131,80 @@
     <string name="new_category">Nowa kategoria</string>
     <string name="date">Data</string>
     <string name="error_amount">Błędna kwota</string>
-    <string name="income">income</string>
-    <string name="expenses">expenses</string>
-    <string name="expense">expense</string>
+    <string name="income">wpływ</string>
+    <string name="expenses">wydatki</string>
+    <string name="expense">wydatek</string>
 
     <string-array name="income">
-        <item>Salary</item>
-        <item>Gift</item>
-        <item>Investment</item>
-        <item>Other</item>
+        <item>Wypłata</item>
+        <item>Prezent</item>
+        <item>Inwestycja</item>
+        <item>Inne</item>
     </string-array>
 
     <string-array name="expenses">
-        <item>Food</item>
-        <item>Bills</item>
-        <item>Health care</item>
-        <item>Sport and recreation</item>
-        <item>Home maintenance</item>
-        <item>Transportation</item>
-        <item>Personal</item>
-        <item>Gifts</item>
-        <item>Other</item>
+        <item>Jedzenie</item>
+        <item>Rachunki</item>
+        <item>Zdrowie</item>
+        <item>Sport i rekreacja</item>
+        <item>Utrzymanie domu</item>
+        <item>Transport</item>
+        <item>Osobiste</item>
+        <item>Prezenty</item>
+        <item>Inne</item>
     </string-array>
 
     <string-array name="expenses_food">
-        <item>Groceries</item>
-        <item>Restaurants</item>
-        <item>Alcohol</item>
-        <item>Other</item>
+        <item>Produkty spożywcze</item>
+        <item>Restauracje</item>
+        <item>Alkohol</item>
+        <item>Inne</item>
     </string-array>
 
     <string-array name="expenses_bills">
-        <item>Electricity</item>
-        <item>Water</item>
-        <item>Heating</item>
-        <item>Garbage</item>
-        <item>Phones</item>
+        <item>Prąd</item>
+        <item>Woda</item>
+        <item>Ogrzewanie</item>
+        <item>Śmieci</item>
+        <item>Telefony</item>
         <item>Internet</item>
-        <item>Gas</item>
-        <item>Other</item>
+        <item>Telewizja</item>
+        <item>Gaz</item>
+        <item>Inne</item>
     </string-array>
 
     <string-array name="expenses_health">
-        <item>Medicines</item>
-        <item>Clinics and hospitals</item>
-        <item>Other</item>
+        <item>Leki</item>
+        <item>Przychodnie i szpitale</item>
+        <item>Inne</item>
     </string-array>
 
     <string-array name="expenses_sport">
-        <item>Cinema</item>
-        <item>Theater</item>
-        <item>Gym</item>
-        <item>Swimming pool</item>
-        <item>Clubs</item>
-        <item>Other</item>
+        <item>Kino</item>
+        <item>Teatr</item>
+        <item>Siłownia</item>
+        <item>Basen</item>
+        <item>Kluby</item>
+        <item>Inne</item>
     </string-array>
 
     <string-array name="expenses_home">
-        <item>Cleaning supplies</item>
-        <item>Office supplies</item>
-        <item>Furniture</item>
-        <item>Repairs</item>
-        <item>Other</item>
+        <item>Środki czystości</item>
+        <item>Przybory biurowe</item>
+        <item>Meble i sprzęt</item>
+        <item>Naprawy</item>
+        <item>Inne</item>
     </string-array>
 
     <string-array name="expenses_personal">
-        <item>Clothing</item>
-        <item>Cosmetics</item>
-        <item>Hairdresser and barber</item>
-        <item>Beauty salon</item>
-        <item>Subscriptions</item>
+        <item>Ubrania</item>
+        <item>Kosmetyki</item>
+        <item>Fryzjer i barber</item>
+        <item>Salon piękności</item>
+        <item>Subskrybcje</item>
+        <item>Książki</item>
+        <item>Gry</item>
+        <item>Urządzenia</item>
         <item>Other</item>
     </string-array>
 

@@ -75,7 +75,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/colorSectionBackgroundTransparent">
+                    android:background="@drawable/gradient_background_section">
 
                     <TextView
                         android:id="@+id/basic_title"
@@ -139,7 +139,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="5dp"
-                    android:background="@color/colorSectionBackgroundTransparent">
+                    android:background="@drawable/gradient_background_section">
 
                     <TextView
                         android:id="@+id/groups_title"

@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,10 +26,11 @@ public class UserTask {
     private Status statusBeforeArchive;
     private Date date;
     private Map<String, Integer> timeEstimationVote;
-    private Integer estimatedTime;
-    private Long timeSpent;
+    private Integer estimatedTime = 0;
+    private Long timeSpent = (long)0.0;
     private Integer priority;
     private Date playDate;
+    private Map<String, Boolean> subtasks = new HashMap<>();
 
     public enum Status {
 
@@ -62,19 +64,19 @@ public class UserTask {
     }
 
     public void setNextStatus(){
+        if(status == Status.TODO )
+            stop();
         if(status == Status.TODO)
             status = Status.DOING;
-        else if(status == Status.DOING) {
+        else if(status == Status.DOING)
             status = Status.DONE;
-            if(isPlayed())
-                stop();
-        }
         else if(status == Status.DONE)
             setArchived();
         else if(status == Status.ARCHIVED)
             status = Status.TODO;
         else
             status = Status.TODO;
+        playDate = null;
     }
 
     public void setArchived(){
@@ -108,6 +110,14 @@ public class UserTask {
 
     public void setPlayDate(Date playDate) {
         this.playDate = playDate;
+    }
+
+    public void setSubtasks(Map<String, Boolean> subtasks) {
+        this.subtasks = subtasks;
+    }
+
+    public void putSubtask(String subtask, Boolean isDone){
+        subtasks.put(subtask, isDone);
     }
 
     public Map<String, Integer> getTimeEstimationVote() {
@@ -221,6 +231,10 @@ public class UserTask {
         return priority;
     }
 
+    public Date getPlayDate() {
+        return playDate;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -262,12 +276,15 @@ public class UserTask {
         if(timeSpent == null){
             timeSpent = (long)0.0;
         }
-        if(playDate == null){
+        if(playDate != null) {
             playDate = Calendar.getInstance().getTime();
+            timeSpent += (Calendar.getInstance().getTimeInMillis() - playDate.getTime()) / 1000 / 60;
         }
-        timeSpent += (Calendar.getInstance().getTimeInMillis() - playDate.getTime()) / 1000 / 60;
-        playDate = Calendar.getInstance().getTime();
         return (int)Math.floor(timeSpent/60) + " h " + timeSpent%60 + " min";
+    }
+
+    public Map<String, Boolean> getSubtasks() {
+        return subtasks;
     }
 
     public void play(){
@@ -275,16 +292,11 @@ public class UserTask {
     }
 
     public void stop(){
+        if(playDate == null){
+            return;
+        }
         timeSpent += (Calendar.getInstance().getTimeInMillis() - playDate.getTime())/1000/60;
         playDate = null;
-    }
-
-    public Boolean isPlayed(){
-        return playDate != null;
-    }
-
-    public Date getPlayDate() {
-        return playDate;
     }
 
     @Override

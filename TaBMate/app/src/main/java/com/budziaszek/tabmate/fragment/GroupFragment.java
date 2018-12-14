@@ -304,6 +304,7 @@ public class GroupFragment extends BasicFragment {
                 groupDescriptionInput.setText(groupDescription.getText());
                 groupCurrencyInput.setText(groupCurrency.getText());
             }
+            fView.findViewById(R.id.label_group_description).setVisibility(View.VISIBLE);
         } else {
             groupNameInput.setVisibility(View.INVISIBLE);
             groupDescriptionInput.setVisibility(View.INVISIBLE);
@@ -316,6 +317,15 @@ public class GroupFragment extends BasicFragment {
             groupName.setText(groupNameInput.getText().toString());
             groupDescription.setText(groupDescriptionInput.getText().toString());
             groupCurrency.setText(groupCurrencyInput.getText().toString());
+
+            if(group.getDescription() == null || group.getDescription().equals("")){
+                groupDescription.setVisibility(View.GONE);
+                groupDescriptionInput.setVisibility(View.GONE);
+                fView.findViewById(R.id.label_group_description).setVisibility(View.GONE);
+            }else{
+                groupDescription.setVisibility(View.VISIBLE);
+                fView.findViewById(R.id.label_group_description).setVisibility(View.VISIBLE);
+            }
         }
     }
 
