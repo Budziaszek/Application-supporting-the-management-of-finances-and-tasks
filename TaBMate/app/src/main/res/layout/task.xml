@@ -234,18 +234,39 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/task_date"
                     android:padding="5dp"
-                    android:text="@string/deadline"
+                    android:text="@string/subtasks"
                     android:textSize="12sp" />
 
-                <TextView
+                <LinearLayout
                     android:id="@+id/task_subtasks"
+                    android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/label_task_subtasks"
+                    android:layout_below="@+id/label_task_subtasks" />
+
+                <TextView
+                    android:id="@+id/add_subtask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/task_subtasks"
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="10dp"
-                    android:text="@string/subtasks"
+                    android:text="@string/add_subtask"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/remove_subtask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/task_subtasks"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toEndOf="@id/add_subtask"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp"
+                    android:text="@string/remove_subtasks"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="18sp" />
 
@@ -253,7 +274,7 @@
                     android:id="@+id/label_task_estimated_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/task_subtasks"
+                    android:layout_below="@+id/add_subtask"
                     android:padding="5dp"
                     android:text="@string/estimated_time"
                     android:textSize="12sp" />
@@ -274,7 +295,7 @@
                     android:id="@+id/label_task_spent_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/task_subtasks"
+                    android:layout_below="@+id/add_subtask"
                     android:layout_centerHorizontal="true"
                     android:padding="5dp"
                     android:text="@string/spent_time"
@@ -298,7 +319,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_below="@+id/task_subtasks"
+                    android:layout_below="@+id/add_subtask"
                     android:padding="5dp"
                     android:text="@string/your_vote"
                     android:textSize="12sp" />

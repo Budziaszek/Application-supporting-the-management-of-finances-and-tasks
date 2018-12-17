@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,7 +19,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -38,8 +43,11 @@ import com.budziaszek.tabmate.view.adapter.MembersItemsAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDateSetListener,
         NumberPicker.OnValueChangeListener {
@@ -69,9 +77,14 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
     private TextView taskSpentTime;
     private TextView taskTimeVote;
     private SeekBar seekBar;
+    private TextView addSubtask;
+    private TextView removeSubtasks;
+    private List<CheckBox> subtaskCheckbox = new ArrayList<>();
+    private LinearLayout layout;
 
     private MembersItemsAdapter doersAdapter;
     private List<User> doers = new ArrayList<>();
+    //private Map<String, Boolean> subtasks = new HashMap<>();
 
     private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
@@ -97,8 +110,17 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         taskSpentTime = fView.findViewById(R.id.task_spent_time);
         taskTimeVote = fView.findViewById(R.id.task_time_vote);
         seekBar = fView.findViewById(R.id.priority_seek_bar);
+        layout = fView.findViewById(R.id.task_subtasks);
 
         seekBar.setOnTouchListener((v, event) -> !isEdited);
+        addSubtask = fView.findViewById(R.id.add_subtask);
+        addSubtask.setOnClickListener(view -> {});
+
+        removeSubtasks = fView.findViewById(R.id.remove_subtask);
+        removeSubtasks.setOnClickListener(view -> {
+            for(CheckBox checkBox:subtaskCheckbox)
+                checkBox.setVisibility(View.GONE);
+        });
 
         // Add task
         if (task == null) {
@@ -120,6 +142,10 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             isCreated = true;
             setEditing(true);
         } else {
+            // Subtasks
+            for(Map.Entry<String, Boolean> entry : task.getSubtasks().entrySet()){
+                showSubtask(entry.getKey(), entry.getValue());
+            }
             newStatus = task.getStatus();
             isCreated = false;
             setEditing(false);
@@ -196,6 +222,10 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        if(subtaskCheckbox.size()>0 && subtaskCheckbox.get(0).getVisibility() == View.GONE) {
+            subtaskCheckbox.clear();
+        }
+
         if (id == R.id.action_edit) {
             fView.findViewById(R.id.doers_layout).setVisibility(View.INVISIBLE);
             setEditing(true);
@@ -214,6 +244,23 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             return true;
         }
         return false;
+    }
+
+    private void showSubtask(String key, Boolean value){
+        CheckBox cb = new CheckBox(activity);
+        cb.setText(key);
+        cb.setChecked(value);
+        cb.setPadding(5, 5, 5, 5);
+        cb.setTextSize(18);
+        layout.addView(cb);
+//        cb.setOnClickListener(v -> {
+//            CheckBox checkBox = (CheckBox) v;
+//            if(checkBox.getText().equals(key)) {
+//                boolean checked = checkBox.isChecked();
+//                subtasks.put(key, checked);
+//            }
+//        });
+        subtaskCheckbox.add(cb);
     }
 
     /**
@@ -259,7 +306,6 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
                 doers.add(allUsers.get(doer));
             }
         }
-
         doersAdapter.update(doers);
     }
 
@@ -343,23 +389,43 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             });
             taskTimeVote.setBackgroundColor(getResources().getColor(R.color.colorAccentLight, activity.getTheme()));
 
+            addSubtask.setOnClickListener(view -> alertNewSubtask());
+            addSubtask.setBackgroundColor(getResources().getColor(R.color.colorAccentLight, activity.getTheme()));
+            addSubtask.setText(R.string.add_subtask);
+            addSubtask.setVisibility(View.VISIBLE);
+
+            removeSubtasks.setVisibility(View.VISIBLE);
+            removeSubtasks.setBackgroundColor(getResources().getColor(R.color.colorAccentLight, activity.getTheme()));
+
             fView.findViewById(R.id.label_task_description).setVisibility(View.VISIBLE);
+
+            for(CheckBox checkBox:subtaskCheckbox)
+                checkBox.setEnabled(true);
         }
         else {
-            taskDeadline.setOnClickListener(view -> {
-            });
+            taskDeadline.setOnClickListener(view -> {});
             taskDeadline.setBackgroundColor(Color.TRANSPARENT);
 
-            taskStatus.setOnClickListener(view -> {
-            });
+            taskStatus.setOnClickListener(view -> {});
             taskStatus.setBackgroundColor(Color.TRANSPARENT);
 
-            taskTimeVote.setOnClickListener(view -> {
-            });
+            taskTimeVote.setOnClickListener(view -> {});
             taskTimeVote.setBackgroundColor(Color.TRANSPARENT);
 
             taskTitle.setText(taskTitleInput.getText().toString());
             taskDescription.setText(taskDescriptionInput.getText().toString());
+
+            addSubtask.setOnClickListener(view -> {});
+            addSubtask.setBackgroundColor(Color.TRANSPARENT);
+
+            removeSubtasks.setVisibility(View.GONE);
+            removeSubtasks.setBackgroundColor(Color.TRANSPARENT);
+
+            if(task.getSubtasks().size() == 0){
+                addSubtask.setText(R.string.no_subtasks);
+            }else{
+                addSubtask.setVisibility(View.GONE);
+            }
 
             if(task.getDescription() == null || task.getDescription().equals("")){
                 taskDescription.setVisibility(View.GONE);
@@ -369,6 +435,9 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
                 taskDescription.setVisibility(View.VISIBLE);
                 fView.findViewById(R.id.label_task_description).setVisibility(View.VISIBLE);
             }
+
+            for(CheckBox checkBox:subtaskCheckbox)
+                checkBox.setEnabled(false);
         }
     }
 
@@ -379,6 +448,19 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             //Set data
             task.setTitle(title);
             task.setDescription(taskDescriptionInput.getText().toString());
+
+            Map<String, Boolean> subtasks = task.getSubtasks();
+            subtasks.clear();
+            for(CheckBox checkBox:subtaskCheckbox){
+                subtasks.put(checkBox.getText().toString(),checkBox.isChecked());
+                Log.d("ProcedureSprawdzam", checkBox.getText().toString() + " " + checkBox.isChecked());
+            }
+
+            for(int i = 0; i<subtaskCheckbox.size(); i++) {
+                subtaskCheckbox.get(i).setVisibility(View.VISIBLE);
+                Boolean checked = task.getSubtasks().get(subtaskCheckbox.get(i).getText().toString());
+                subtaskCheckbox.get(i).setChecked(checked);
+            }
 
             if(task.getStatus() != UserTask.Status.ARCHIVED && newStatus == UserTask.Status.ARCHIVED)
                 task.setArchived();
@@ -415,6 +497,38 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             return false;
         }
 
+    }
+
+    /**
+     * Alert gets from user subtask name.
+     */
+    private void alertNewSubtask() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
+        builder.setTitle(getResources().getString(R.string.enter_subtask));
+
+        // Set up the input
+        final EditText input = new EditText(getActivity());
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
+        input.setPadding(20, 20, 20, 20);
+        input.setBackgroundColor(getResources().getColor(R.color.colorAccentLightSemi, getActivity().getTheme()));
+
+        FrameLayout container = new FrameLayout(getActivity());
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(30, 10, 30, 10);
+        input.setLayoutParams(params);
+        container.addView(input);
+
+        builder.setView(container);
+
+        // Set up the buttons
+        builder.setPositiveButton(getResources().getString(R.string.add), (dialog, which) -> {
+            String subtask = input.getText().toString();
+            //subtasks.put(subtask, false);
+            showSubtask(subtask, false);
+        });
+        builder.setNegativeButton(getResources().getString(R.string.cancel), (dialog, which) -> dialog.cancel());
+
+        builder.show();
     }
 
     @Override

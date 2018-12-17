@@ -115,6 +115,12 @@
     <string name="number_of_tasks">Maksymalna ilość zadań</string>
     <string name="tasks_not_found">Nie znaleziono zadań spełniających kryteria</string>
     <string name="subtasks">Podzadania</string>
+    <string name="enter_subtask">Wpisz podzadanie</string>
+    <string name="add_subtask">Dodaj podzadanie</string>
+    <string name="add">Dodaj</string>
+    <string name="no_subtasks">Brak podzadań</string>
+    <string name="remove_subtasks">Usuń podzadania</string>
+
     <!--<string name="perform">▶</string>-->
     <!--<string name="stop">❚❚</string>-->
 
