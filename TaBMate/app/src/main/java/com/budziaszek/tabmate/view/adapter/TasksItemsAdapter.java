@@ -4,14 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -22,7 +20,6 @@ import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
 import com.budziaszek.tabmate.firestoreData.UserTask;
 import com.budziaszek.tabmate.view.listener.TaskClickListener;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -89,13 +86,12 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
     public void onBindViewHolder(MyViewHolder holder, int position) {
         UserTask task = tasksList.get(position);
         holder.taskName.setText(task.getTitle());
-        holder.taskDeadline.setText(task.getDateString());
+        holder.taskDeadline.setText(task.dateString(true));
 
         if(task.getPlayDate() != null)
             holder.taskSwitch.setChecked(true);
         else
             holder.taskSwitch.setChecked(false);
-
 
         holder.taskSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
@@ -105,7 +101,6 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
             }
             FirestoreRequests firestoreRequests = new FirestoreRequests();
             firestoreRequests.updateTask(task, v -> {}, e -> Log.d("Error", e.getMessage()));
-            DataManager.getInstance().refreshAllGroupsTasks();
         });
 
 

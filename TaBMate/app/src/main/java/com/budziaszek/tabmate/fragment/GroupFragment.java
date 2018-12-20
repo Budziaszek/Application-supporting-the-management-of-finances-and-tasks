@@ -298,6 +298,7 @@ public class GroupFragment extends BasicFragment {
             if(isCreated) {
                 groupNameInput.setText("");
                 groupDescriptionInput.setText("");
+                groupCurrencyInput.setText("");
             }
             else {
                 groupNameInput.setText(groupName.getText());

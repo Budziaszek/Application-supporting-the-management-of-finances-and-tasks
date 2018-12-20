@@ -62,13 +62,13 @@
                     android:id="@+id/tasks_histogram_layout"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="200dp"
                     android:layout_below="@id/no_network_connection"
                     android:layout_marginBottom="5dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/colorSectionBackgroundTransparent">
+                    android:background="@color/colorSectionBackgroundLightTransparent"
+                    android:minHeight="200dp">
 
                     <TextView
                         android:id="@+id/basic_title"
@@ -85,10 +85,45 @@
                         android:textStyle="bold|italic" />
 
                     <com.github.mikephil.charting.charts.PieChart
-                        android:id="@+id/chart"
+                        android:id="@+id/pie_chart"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:layout_below="@id/basic_title"/>
+                        android:layout_below="@id/basic_title"
+                        android:layout_margin="10dp" />
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/bar_chart1"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_below="@id/pie_chart" />
+
+                    <TextView
+                        android:id="@+id/info_bar1"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/bar_chart1"
+                        android:elevation="4dp"
+                        android:padding="10dp"
+                        android:text="@string/display_bar_max"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="10sp" />
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/bar_chart2"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_below="@id/info_bar1" />
+
+                    <TextView
+                        android:id="@+id/info_bar2"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/bar_chart2"
+                        android:elevation="4dp"
+                        android:padding="10dp"
+                        android:text="@string/display_bar_max"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="10sp" />
 
                 </RelativeLayout>
 
@@ -100,7 +135,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="5dp"
-                    android:background="@color/colorSectionBackgroundTransparent">
+                    android:background="@color/colorSectionBackgroundLightTransparent">
 
                     <TextView
                         android:id="@+id/budget_linear_title"
@@ -110,10 +145,17 @@
                         android:layout_alignParentTop="true"
                         android:elevation="4dp"
                         android:padding="10dp"
-                        android:text="@string/basic"
+                        android:text="@string/budget"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="16sp"
                         android:textStyle="bold|italic" />
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/pie_chart_budget"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_below="@id/budget_linear_title"
+                        android:layout_margin="10dp" />
 
                 </RelativeLayout>
             </RelativeLayout>

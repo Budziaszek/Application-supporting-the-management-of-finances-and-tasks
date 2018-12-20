@@ -37,4 +37,15 @@
     <color name="colorItemDoneSelected">#1eff00</color>
     <color name="colorItemArchivedSelected">#6e6e76</color>
 
+    <color name="c1">#237807</color>
+    <color name="c2">#9acd32</color>
+    <color name="c3">#ffd700</color>
+    <color name="c4">#d2691e</color>
+    <color name="c5">#b22222</color>
+    <color name="c6">#7422b2</color>
+    <color name="c7">#2422b2</color>
+    <color name="c8">#0883fa</color>
+    <color name="c9">#58544f</color>
+
+
 </resources>

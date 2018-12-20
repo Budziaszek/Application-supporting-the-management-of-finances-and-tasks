@@ -43,11 +43,8 @@ import com.budziaszek.tabmate.view.adapter.MembersItemsAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDateSetListener,
         NumberPicker.OnValueChangeListener {
@@ -71,6 +68,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
     private TextView taskStatus;
     private UserTask.Status newStatus;
     private TextView taskDeadline;
+    private TextView taskcCmpletion;
     private TextView taskGroup;
     private Spinner taskGroupInput;
     private TextView taskEstimatedTime;
@@ -104,6 +102,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         taskDescriptionInput = fView.findViewById(R.id.task_description_input);
         taskStatus = fView.findViewById(R.id.task_status);
         taskDeadline = fView.findViewById(R.id.task_date);
+        taskcCmpletion = fView.findViewById(R.id.task_completion);
         taskGroup = fView.findViewById(R.id.task_group);
         taskGroupInput = fView.findViewById(R.id.spinner_group);
         taskEstimatedTime = fView.findViewById(R.id.task_estimated_time);
@@ -112,7 +111,13 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         seekBar = fView.findViewById(R.id.priority_seek_bar);
         layout = fView.findViewById(R.id.task_subtasks);
 
-        seekBar.setOnTouchListener((v, event) -> !isEdited);
+        seekBar.setOnTouchListener((view, motionEvent) -> {
+            if(!isEdited) {
+                InformUser.inform(activity, R.string.set_edit);
+                return true;
+            }
+            return false;
+        });
         addSubtask = fView.findViewById(R.id.add_subtask);
         addSubtask.setOnClickListener(view -> {});
 
@@ -124,6 +129,9 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
 
         // Add task
         if (task == null) {
+            taskcCmpletion.setVisibility(View.GONE);
+            fView.findViewById(R.id.label_task_completion).setVisibility(View.GONE);
+
             newStatus = UserTask.Status.TODO;
             List<Group> groupsList = DataManager.getInstance().getGroups();
             Group groups[] = new Group[groupsList.size()];
@@ -253,13 +261,15 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         cb.setPadding(5, 5, 5, 5);
         cb.setTextSize(18);
         layout.addView(cb);
-//        cb.setOnClickListener(v -> {
-//            CheckBox checkBox = (CheckBox) v;
-//            if(checkBox.getText().equals(key)) {
-//                boolean checked = checkBox.isChecked();
-//                subtasks.put(key, checked);
-//            }
-//        });
+        cb.setOnClickListener(v -> {
+            CheckBox checkBox = (CheckBox) v;
+            if(checkBox.getText().equals(key)) {
+                if(!isEdited) {
+                    checkBox.setChecked(!checkBox.isChecked());
+                    InformUser.inform(activity, R.string.set_edit);
+                }
+            }
+        });
         subtaskCheckbox.add(cb);
     }
 
@@ -271,9 +281,9 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         taskDescription.setText(task.getDescription());
         taskTitleInput.setText(task.getTitle());
         taskDescriptionInput.setText(task.getDescription());
-        taskDeadline.setText(task.getDateString());
+        taskDeadline.setText(task.dateString(true));
         taskEstimatedTime.setText((task.getEstimatedTime() != null ? String.valueOf(task.getEstimatedTime()) + " h" : "0 h"));
-        taskSpentTime.setText((task.getTimeSpent() != null ? task.getStringTimeSpent() : "0 h"));
+        taskSpentTime.setText((task.getTimeSpent() != null ? task.timeSpentString() : "0 h"));
         Integer timeVote = task.getTimeEstimationVote().get(((MainActivity)activity).getCurrentUserId());
         Integer priority = task.getPriority();
         if(timeVote != null)
@@ -281,6 +291,16 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         else
             taskTimeVote.setText(R.string.vote);
         seekBar.setProgress(priority);
+
+        if(task.getStatus() == UserTask.Status.DONE
+                || (task.getStatus() == UserTask.Status.ARCHIVED && task.getCompletionDate() != null)){
+            taskcCmpletion.setVisibility(View.VISIBLE);
+            fView.findViewById(R.id.label_task_completion).setVisibility(View.VISIBLE);
+            taskcCmpletion.setText(task.dateString(false));
+        }else{
+            taskcCmpletion.setVisibility(View.GONE);
+            fView.findViewById(R.id.label_task_completion).setVisibility(View.GONE);
+        }
 
         TextView taskGroup = fView.findViewById(R.id.task_group);
         Group group = DataManager.getInstance().getGroup(task.getGroup());
@@ -399,8 +419,8 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
 
             fView.findViewById(R.id.label_task_description).setVisibility(View.VISIBLE);
 
-            for(CheckBox checkBox:subtaskCheckbox)
-                checkBox.setEnabled(true);
+//            for(CheckBox checkBox:subtaskCheckbox)
+//                checkBox.setEnabled(true);
         }
         else {
             taskDeadline.setOnClickListener(view -> {});
@@ -436,8 +456,8 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
                 fView.findViewById(R.id.label_task_description).setVisibility(View.VISIBLE);
             }
 
-            for(CheckBox checkBox:subtaskCheckbox)
-                checkBox.setEnabled(false);
+//            for(CheckBox checkBox:subtaskCheckbox)
+//                checkBox.setEnabled(false);
         }
     }
 
@@ -470,8 +490,9 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
             if(!taskTimeVote.getText().toString().equals(getResources().getString(R.string.vote)))
                 task.addTimeEstimationVote(((MainActivity)getActivity()).getCurrentUserId(),
                         Integer.parseInt(taskTimeVote.getText().toString()));
-            taskEstimatedTime.setText(String.valueOf(task.getEstimatedTime()));
-            taskSpentTime.setText(String.valueOf(task.getTimeSpent()));
+            taskEstimatedTime.setText((task.getEstimatedTime() != null ? String.valueOf(task.getEstimatedTime()) + " h" : "0 h"));
+            taskSpentTime.setText((task.getTimeSpent() != null ? task.timeSpentString() : "0 h"));
+
             task.setPriority(seekBar.getProgress());
             task.stop();
 
@@ -536,7 +557,7 @@ public class TaskFragment extends BasicFragment implements DatePickerDialog.OnDa
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, monthOfYear, dayOfMonth);
         task.setDate(calendar.getTime());
-        taskDeadline.setText(task.getDateString());
+        taskDeadline.setText(task.dateString(true));
         DataManager.getInstance().refreshAllGroupsTasks();
     }
 

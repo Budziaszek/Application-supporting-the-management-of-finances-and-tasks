@@ -25,12 +25,16 @@ public class UserTask {
     private Status status;
     private Status statusBeforeArchive;
     private Date date;
+    private Date completionDate;
     private Map<String, Integer> timeEstimationVote;
     private Integer estimatedTime = 0;
     private Long timeSpent = (long)0.0;
     private Integer priority;
     private Date playDate;
     private Map<String, Boolean> subtasks = new HashMap<>();
+    @SuppressLint("SimpleDateFormat")
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private Map<String, Long> timeSpentByDate = new HashMap<>();
 
     public enum Status {
 
@@ -77,6 +81,9 @@ public class UserTask {
         else
             status = Status.TODO;
         playDate = null;
+        if(status == Status.DONE){
+            setCompletionDate(Calendar.getInstance().getTime());
+        }
     }
 
     public void setArchived(){
@@ -118,6 +125,14 @@ public class UserTask {
 
     public void putSubtask(String subtask, Boolean isDone){
         subtasks.put(subtask, isDone);
+    }
+
+    public void setTimeSpentByDate(Map<String, Long> timeSpentByDate) {
+        this.timeSpentByDate = timeSpentByDate;
+    }
+
+    public Date getCompletionDate() {
+        return completionDate;
     }
 
     public Map<String, Integer> getTimeEstimationVote() {
@@ -235,6 +250,14 @@ public class UserTask {
         return playDate;
     }
 
+    public Map<String, Long> getTimeSpentByDate() {
+        return timeSpentByDate;
+    }
+
+    public void setCompletionDate(Date completionDate) {
+        this.completionDate = completionDate;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -249,19 +272,27 @@ public class UserTask {
 
     public void setStatus(Status status) {
         this.status = status;
+        if(status == UserTask.Status.DONE)
+            setCompletionDate(Calendar.getInstance().getTime());
+        if(status == Status.TODO)
+            stop();
+        playDate = null;
     }
 
     public void setDate(Date date){
         this.date = date;
     }
 
-    public String getDateString(){
-        if(date == null){
+    public String dateString(Boolean deadline){
+        if((deadline && date == null) || (!deadline && completionDate == null)){
             return "Unknown";
         }
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
+        if(deadline)
+            calendar.setTime(date);
+        else
+            calendar.setTime(completionDate);
 
         @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -272,7 +303,7 @@ public class UserTask {
         return timeSpent;
     }
 
-    public String getStringTimeSpent() {
+    public String timeSpentString() {
         if(timeSpent == null){
             timeSpent = (long)0.0;
         }
@@ -295,7 +326,15 @@ public class UserTask {
         if(playDate == null){
             return;
         }
-        timeSpent += (Calendar.getInstance().getTimeInMillis() - playDate.getTime())/1000/60;
+        long newTime = (Calendar.getInstance().getTimeInMillis() - playDate.getTime())/1000/60;
+        timeSpent += newTime;
+        String date = simpleDateFormat.format(Calendar.getInstance().getTime());
+        if(timeSpentByDate.containsKey(date)){
+            long timeSpentTotal = timeSpentByDate.get(date) + newTime;
+            timeSpentByDate.put(date, timeSpentTotal);
+        }else{
+            timeSpentByDate.put(date, newTime);
+        }
         playDate = null;
     }
 

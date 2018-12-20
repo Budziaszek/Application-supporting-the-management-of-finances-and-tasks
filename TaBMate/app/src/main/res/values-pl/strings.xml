@@ -120,9 +120,15 @@
     <string name="add">Dodaj</string>
     <string name="no_subtasks">Brak podzadań</string>
     <string name="remove_subtasks">Usuń podzadania</string>
-
-    <!--<string name="perform">▶</string>-->
-    <!--<string name="stop">❚❚</string>-->
+    <string name="set_edit">Kliknij ikonę edycji, aby zmienić dane</string>
+    <string name="completion">Ukończenie</string>
+    <string name="display_bar_max">Na histogramie wyświetlono dane dla maksymalnej ilości użytkowników. Zmień opcje filtracji, by wyświetlić dane dla innych użytkowników.</string>
+    <string name="time_spent_bar">Czas spędzony na wykonywaniu zadań [h]</string>
+    <string name="tasks_done_bar">Zadania ukończone</string>
+    <string name="tasks_done_pie">Ilość zadań według statusu</string>
+    <string name="budget_pie">Wydatki według kategorii (bieżący miesiąc)</string>
+    <string name="perform">▶</string>
+    <string name="stop">❚❚</string>
 
     <!-- Strings related to budget -->
     <string name="budget">Budżet</string>

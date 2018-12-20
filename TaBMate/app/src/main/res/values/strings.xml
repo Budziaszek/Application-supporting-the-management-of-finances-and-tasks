@@ -125,6 +125,13 @@
     <string name="add">Add</string>
     <string name="no_subtasks">No subtasks</string>
     <string name="remove_subtasks">Remove subtasks</string>
+    <string name="set_edit">Click edit icon to change data</string>
+    <string name="completion">Completion</string>
+    <string name="display_bar_max">Bar chart shows data for maximum number of users. Change filtration options to see data for another users.</string>
+    <string name="time_spent_bar">Time spent on tasks [h]</string>
+    <string name="tasks_done_bar">Tasks finished</string>
+    <string name="tasks_done_pie">Number of tasks by status</string>
+    <string name="budget_pie">Expenses by category (current month)</string>
     <string name="perform">▶</string>
     <string name="stop">❙❙</string>
 

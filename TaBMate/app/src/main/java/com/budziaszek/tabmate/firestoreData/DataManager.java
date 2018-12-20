@@ -55,13 +55,13 @@ public class DataManager {
 
     }
 
-    public Boolean getDataHasChanged(){
+    public Boolean getDataHasChanged() {
         return dataHasChanged;
     }
 
-    public void setDataHasChanged(Boolean hasChanged){
+    public void setDataHasChanged(Boolean hasChanged) {
         dataHasChanged = hasChanged;
-        if(dataHasChanged){
+        if (dataHasChanged) {
             for (DataChangeListener listener : observers) {
                 listener.informAboutDataSynchronization();
             }
@@ -148,7 +148,7 @@ public class DataManager {
             }
             informObserversRefreshFinished();
 
-            if(tasksChanged && groupsChanged && transactionsChanged){
+            if (tasksChanged && groupsChanged && transactionsChanged) {
                 for (DataChangeListener listener : observers) {
                     Log.d("SyncProcedure", "Stop");
                     DataManager.getInstance().setDataHasChanged(false);
@@ -182,7 +182,7 @@ public class DataManager {
     }
 
     public Group getGroup(String gid) {
-        if(gid != null)
+        if (gid != null)
             return groups.get(gid);
         return null;
     }
@@ -205,6 +205,17 @@ public class DataManager {
         return new ArrayList<>(users.values());
     }
 
+    public List<User> getSelectedUsers() {
+        if (users == null)
+            return null;
+        List<User> selected = new ArrayList<>();
+        for (User user : users.values()) {
+            if (selectedUsersIds.contains(user.getId()))
+                selected.add(user);
+        }
+        return selected;
+    }
+
     public Map<String, User> getUsersInMap() {
         return users;
     }
@@ -215,10 +226,21 @@ public class DataManager {
         return new ArrayList<>(tasks.values());
     }
 
-    public List<Transaction> getTransactions(){
+    public List<Transaction> getTransactions() {
         if (transactions == null)
             return null;
         return new ArrayList<>(transactions.values());
+    }
+
+    public List<Transaction> getFiltratedTransactions() {
+        if (transactions == null)
+            return null;
+        List<Transaction> filtratedTransactions = new ArrayList<>();
+        for (Transaction transaction : transactions.values()) {
+            if (selectedGroupsIds.contains(transaction.getGroup()))
+                filtratedTransactions.add(transaction);
+        }
+        return filtratedTransactions;
     }
 
     public List<UserTask> getFiltratedTasks() {
@@ -490,7 +512,6 @@ public class DataManager {
         User user = documentSnapshot.toObject(User.class);
         if (user != null) {
             users.put(user.getId(), user);
-            selectedUsersIds.add(user.getId());
             if (!selectedUsersIds.contains(user.getId()))
                 selectedUsersIds.add(user.getId());
             Log.d(TAG, "User: " + user.getId() + " (" + user.getName() + ")");

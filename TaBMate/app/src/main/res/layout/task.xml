@@ -229,6 +229,29 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/label_task_completion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/task_status"
+                    android:layout_alignParentEnd="true"
+                    android:padding="5dp"
+                    android:text="@string/completion"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/task_completion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/label_task_completion"
+                    android:layout_alignParentEnd="true"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp"
+                    android:text="@string/completion"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp" />
+
+                <TextView
                     android:id="@+id/label_task_subtasks"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
