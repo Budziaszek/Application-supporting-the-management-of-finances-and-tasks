@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.firestoreData.User;
+import com.budziaszek.tabmate.data.User;
 import com.budziaszek.tabmate.view.listener.MemberClickListener;
 
 import java.util.List;

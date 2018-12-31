@@ -1,4 +1,4 @@
-package com.budziaszek.tabmate.firestoreData;
+package com.budziaszek.tabmate.data;
 
 import java.util.ArrayList;
 import java.util.List;

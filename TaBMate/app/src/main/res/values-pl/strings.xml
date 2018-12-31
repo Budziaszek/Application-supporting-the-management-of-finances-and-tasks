@@ -46,6 +46,7 @@
     <string name="enter_new_nick">Podaj nową nazwę</string>
     <string name="remove_account">Usuń konto</string>
     <string name="are_you_sure">Jesteś pewien?</string>
+    <string name="back_click_accept">Kliknij przycisk lub WSTECZ by zaakceptować</string>
 
     <!-- Strings related to main page-->
     <string name="user_tasks">Twoje zadania</string>
@@ -81,15 +82,16 @@
     <string name="name_required">Nazwa jest wywmagana</string>
     <string name="details_group">Szczegóły grupy</string>
     <string name="currency">Waluta</string>
+    <string name="cannot_leave">Nie możesz opuścić tej grupy</string>
 
     <!-- Related to tasks fragment-->
     <string name="add_new_task">Dodaj nowe zadanie</string>
     <string name="task_created">Zadanie utworzone</string>
     <string name="task_moved">Zadanie przeniesione na nastepny etap</string>
-    <string name="find_tasks">Wyszukaj zadania</string>
-    <string name="find">Szukaj</string>
+    <string name="filtrate_tasks">Wyszukaj zadania</string>
+    <string name="filtrate">Szukaj</string>
     <string name="details_task">Szczegóły zadania</string>
-    <string name="doers">Wykonawcy</string>
+    <string name="users">Użytkownicy</string>
     <string name="join_task">Dołącz do wykonywania</string>
     <string name="status">Status</string>
     <string name="group">Grupa</string>
@@ -104,7 +106,7 @@
     <string name="your_vote">Twój głos</string>
     <string name="vote">Głosuj</string>
     <string name="priority">Twoja gotowość do wykonania zadania</string>
-    <string name="task_no_doers">Bez wykonawców</string>
+    <string name="no_users">Bez użytkowników</string>
     <string name="task_todo">ToDo</string>
     <string name="task_doing">Doing</string>
     <string name="task_done">Done</string>
@@ -126,7 +128,11 @@
     <string name="time_spent_bar">Czas spędzony na wykonywaniu zadań [h]</string>
     <string name="tasks_done_bar">Zadania ukończone</string>
     <string name="tasks_done_pie">Ilość zadań według statusu</string>
-    <string name="budget_pie">Wydatki według kategorii (bieżący miesiąc)</string>
+    <string name="budget_pie_expenses">Wydatki według kategorii (bieżący miesiąc)</string>
+    <string name="budget_pie_income">Wpływy według kategorii (bieżący miesiąc)</string>
+    <string name="tasks_finished_total">Całkowita ilość zadań ukończonych (w tym miesiącu): </string>
+    <string name="tasks_finished_on_time">Ilość zadań ukończonych w terminie (w tym miesiącu): </string>
+    <string name="tasks_after_deadline">Ilość zadań po terminie: </string>
     <string name="perform">▶</string>
     <string name="stop">❚❚</string>
 
@@ -146,6 +152,10 @@
     <string name="income">wpływ</string>
     <string name="expenses">wydatki</string>
     <string name="expense">wydatek</string>
+    <string name="joint_transaction">Wspólny wydatek/przychód</string>
+    <string name="user">Użytkownik</string>
+    <string name="expenses_total">Całkowite wydatki (obecny miesiąc): </string>
+    <string name="income_total">Całkowity przychód (obecny miesiąc): </string>
 
     <string-array name="income">
         <item>Wypłata</item>

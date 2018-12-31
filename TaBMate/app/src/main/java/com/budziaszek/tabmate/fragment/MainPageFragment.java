@@ -1,32 +1,26 @@
 package com.budziaszek.tabmate.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
-import com.budziaszek.tabmate.firestoreData.DataManager;
-import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
-import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.firestoreData.UserTask;
-import com.budziaszek.tabmate.view.listener.DataChangeListener;
+import com.budziaszek.tabmate.data.DataManager;
+import com.budziaszek.tabmate.data.FirestoreRequests;
+import com.budziaszek.tabmate.data.Group;
+import com.budziaszek.tabmate.data.Task;
 import com.budziaszek.tabmate.view.adapter.GroupsItemsAdapter;
 import com.budziaszek.tabmate.view.adapter.TasksItemsAdapter;
 import com.budziaszek.tabmate.view.listener.GroupClickListener;
-import com.budziaszek.tabmate.view.InformUser;
+import com.budziaszek.tabmate.view.helper.InformUser;
 import com.budziaszek.tabmate.view.listener.InvitationClickListener;
 import com.budziaszek.tabmate.view.adapter.InvitationsItemsAdapter;
 import com.budziaszek.tabmate.view.listener.TaskClickListener;
@@ -38,24 +32,22 @@ import java.util.List;
 import java.util.Map;
 
 
-public class MainPageFragment extends BasicFragment implements DataChangeListener {
+public class MainPageFragment extends BasicFragment {
 
     private static final String TAG = "MainPageFragmentProcedure";
-
-    private Activity activity;
 
     private GroupsItemsAdapter groupsAdapter;
     private List<Group> groups = new ArrayList<>();
 
+    //private Activity activity;
+
     @SuppressLint("UseSparseArrays")
     private Map<Integer, TasksItemsAdapter> tasksItemsAdapterMap = new HashMap<>();
     @SuppressLint("UseSparseArrays")
-    private Map<Integer, List<UserTask>> tasks = new HashMap<>();
+    private Map<Integer, List<Task>> tasks = new HashMap<>();
 
     private InvitationsItemsAdapter invitationsAdapter;
     private List<String> invitationsList = new ArrayList<>();
-
-    private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -150,7 +142,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
         Button newGroupButton = fView.findViewById(R.id.new_group_button);
         newGroupButton.setOnClickListener(view -> {
-            ((MainActivity) activity).enableBack(true);
+            ((MainActivity) activity).setBackEnabled(true);
             ((MainActivity) activity).setCurrentGroup(null);
             ((MainActivity) activity).startFragment(GroupFragment.class);
         });
@@ -159,7 +151,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 //        allTasksButton.setOnClickListener(view -> ((MainActivity) activity).startFragment(TasksPagerFragment.class));
 
         Button selectTasksButton = fView.findViewById(R.id.select_tasks_button);
-        selectTasksButton.setOnClickListener(view -> ((MainActivity) activity).startFragment(SelectTasksFragment.class));
+        selectTasksButton.setOnClickListener(view -> ((MainActivity) activity).startFragment(AssignTasksFragment.class));
 
 //        Button addTaskButton = fView.findViewById(R.id.add_task_button);
 //        addTaskButton.setOnClickListener(view -> {
@@ -174,7 +166,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
             @Override
             public void onAcceptClicked(int position) {
                 showProgress(true);
-                firestoreRequests.addGroupMember(invitationsList.get(position), ((MainActivity) activity).getCurrentUserId(),
+                FirestoreRequests.addGroupMember(invitationsList.get(position), ((MainActivity) activity).getCurrentUserId(),
                         (aVoid) -> {
                             showProgress(false);
                             Log.d(TAG, "Invitation accepted.");
@@ -183,7 +175,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
                             InformUser.inform(getActivity(), R.string.invitation_incorrect);
                             showProgress(false);
                         });
-                firestoreRequests.removeInvitation(invitationsList.get(position), ((MainActivity) activity).getCurrentUserId(),
+                FirestoreRequests.removeInvitation(invitationsList.get(position), ((MainActivity) activity).getCurrentUserId(),
                         (aVoid) -> {
                             showProgress(false);
                             Log.d(TAG, "(Invalid) Invitation removed.");
@@ -200,7 +192,7 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
             @Override
             public void onRemoveClicked(int position) {
-                firestoreRequests.removeInvitation(invitationsList.get(position), ((MainActivity) activity).getCurrentUserId(),
+                FirestoreRequests.removeInvitation(invitationsList.get(position), ((MainActivity) activity).getCurrentUserId(),
                         (aVoid) -> {
                             showProgress(false);
                             //TODO snackbar
@@ -232,17 +224,16 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
                     @Override
                     public void onLongClick(int position) {
-                        UserTask task = tasks.get(color).get(position);
-                        if(task.getStatus() == UserTask.Status.ARCHIVED) {
+                        Task task = tasks.get(color).get(position);
+                        if(task.getStatus() == Task.Status.ARCHIVED) {
                             return;
                         }
                         task.setNextStatus();
-                        firestoreRequests.updateTask(task,
+                        FirestoreRequests.updateTask(task,
                                 (aVoid) -> {},
                                 (e) -> Log.d(TAG, e.getMessage())
                         );
-
-                        DataManager.getInstance().refreshAllGroupsTasks();
+                        DataManager.getInstance().refresh(((MainActivity)activity).getCurrentUserId());
                         InformUser.inform(activity, R.string.task_moved);
                     }
                 }, ((MainActivity)activity).getCurrentUserId()));
@@ -285,26 +276,26 @@ public class MainPageFragment extends BasicFragment implements DataChangeListene
 
     @Override
     public void tasksChanged() {
-        List<UserTask> allTasks = DataManager.getInstance().getTasks();
+        List<Task> allTasks = DataManager.getInstance().getTasks();
         tasks.get(R.drawable.ripple_effect_doing).clear();
         tasks.get(R.drawable.ripple_effect_done).clear();
         tasks.get(R.drawable.ripple_effect_todo).clear();
 
         String uid = ((MainActivity) activity).getCurrentUserId();
 
-        for (UserTask task : allTasks) {
+        for (Task task : allTasks) {
             if (task.getDoers().contains(uid)) {
-                if (task.getStatus().name.equals(UserTask.Status.DOING.name))
+                if (task.getStatus().name.equals(Task.Status.DOING.name))
                     tasks.get(R.drawable.ripple_effect_doing).add(task);
-                else if (task.getStatus().name.equals(UserTask.Status.DONE.name))
+                else if (task.getStatus().name.equals(Task.Status.DONE.name))
                     tasks.get(R.drawable.ripple_effect_done).add(task);
-                else if (task.getStatus().name.equals(UserTask.Status.TODO.name))
+                else if (task.getStatus().name.equals(Task.Status.TODO.name))
                     tasks.get(R.drawable.ripple_effect_todo).add(task);
             }
         }
 
         for(Integer k:tasks.keySet()){
-            tasks.get(k).sort(Comparator.comparing(UserTask::getTitle));
+            tasks.get(k).sort(Comparator.comparing(Task::getTitle));
             tasksItemsAdapterMap.get(k).updateAll(tasks.get(k));
             //tasksItemsAdapterMap.get(k).notifyDataSetChanged();
         }

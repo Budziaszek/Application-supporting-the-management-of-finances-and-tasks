@@ -1,6 +1,5 @@
 package com.budziaszek.tabmate.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,13 +9,14 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.firestoreData.DataManager;
-import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.firestoreData.User;
+import com.budziaszek.tabmate.activity.MainActivity;
+import com.budziaszek.tabmate.data.DataManager;
+import com.budziaszek.tabmate.data.Group;
+import com.budziaszek.tabmate.data.User;
 
 import java.util.List;
 
-public class FindTasksFragment extends BasicFragment {
+public class FiltrateFragment extends BasicFragment {
 
     private static final String TAG = "FindTasksFragmentProcedure";
 
@@ -24,9 +24,14 @@ public class FindTasksFragment extends BasicFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "Created");
-        View fView = inflater.inflate(R.layout.tasks_find, container, false);
+        View fView = inflater.inflate(R.layout.filtrate, container, false);
 
-        Activity activity = getActivity();
+        activity = getActivity();
+        if(((MainActivity) activity).getFiltrateGroups()){
+            fView.findViewById(R.id.find_group_layout).setVisibility(View.VISIBLE);
+        }else{
+            fView.findViewById(R.id.find_group_layout).setVisibility(View.GONE);
+        }
 
         // Allow groups selection
         LinearLayout layout = fView.findViewById(R.id.groups_checkboxes);
@@ -79,14 +84,14 @@ public class FindTasksFragment extends BasicFragment {
             });
         }
         CheckBox cb = new CheckBox(activity);
-        cb.setText(R.string.task_no_doers);
+        cb.setText(R.string.no_users);
         cb.setChecked(DataManager.getInstance().getUserUnspecifiedSelected());
         cb.setPadding(5, 5, 5, 5);
         cb.setTextSize(18);
         layoutUsers.addView(cb);
         cb.setOnClickListener(v -> {
             CheckBox checkBox = (CheckBox) v;
-            if(checkBox.getText().equals(getResources().getString(R.string.task_no_doers))) {
+            if(checkBox.getText().equals(getResources().getString(R.string.no_users))) {
                 boolean checked = checkBox.isChecked();
                 if (checked) {
                     Log.d(TAG, ((CheckBox) v).getText().toString() + " clicked true");
@@ -97,6 +102,43 @@ public class FindTasksFragment extends BasicFragment {
                 }
             }
         });
+        fView.findViewById(R.id.accept_button).setOnClickListener(view -> activity.onBackPressed());
+
+//        //Allow category selection
+//        LinearLayout layoutCategories = fView.findViewById(R.id.category_checkboxes);
+//        List<String> categories = Arrays.asList(getResources().getStringArray(R.array.expenses));
+//
+//        for(String category: categories){
+//            cb = new CheckBox(activity);
+//            cb.setText(category);
+//            cb.setChecked(DataManager.getInstance().getSelectedCategories().contains(category));
+//            cb.setPadding(5, 5, 5, 5);
+//            cb.setTextSize(18);
+//            layoutCategories.addView(cb);
+//            cb.setOnClickListener(v -> {
+//                CheckBox checkBox = (CheckBox) v;
+//                if(checkBox.getText().equals(category)) {
+//                    boolean checked = checkBox.isChecked();
+//                    if (checked) {
+//                        Log.d(TAG, ((CheckBox) v).getText().toString() + " clicked add");
+//                        DataManager.getInstance().addSelectedCategory(category);
+//                    } else {
+//                        Log.d(TAG, ((CheckBox) v).getText().toString() + " clicked remove");
+//                        DataManager.getInstance().removeSelectedCategory(category);
+//                    }
+//                }
+//            });
+//        }
+//        Calendar calendar = Calendar.getInstance();
+//        transaction.setDate(calendar.getTime());
+//        fView.findViewById(R.id.date).setText(transaction.getDateString());
+//        fView.findViewById(R.id.date).setOnClickListener(view -> {
+//            int day = calendar.get(Calendar.DAY_OF_MONTH);
+//            int month = calendar.get(Calendar.MONTH);
+//            int year = calendar.get(Calendar.YEAR);
+//            DatePickerDialog picker = new DatePickerDialog(getContext(), TransactionFragment.this, year, month, day);
+//            picker.show();
+//        });
 
         return fView;
     }

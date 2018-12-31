@@ -1,11 +1,9 @@
 package com.budziaszek.tabmate.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
@@ -25,24 +23,22 @@ import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
-import com.budziaszek.tabmate.firestoreData.DataManager;
-import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
-import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.firestoreData.Transaction;
-import com.budziaszek.tabmate.view.InformUser;
-import com.budziaszek.tabmate.view.KeyboardManager;
+import com.budziaszek.tabmate.data.DataManager;
+import com.budziaszek.tabmate.data.FirestoreRequests;
+import com.budziaszek.tabmate.data.Group;
+import com.budziaszek.tabmate.data.Transaction;
+import com.budziaszek.tabmate.view.helper.InformUser;
+import com.budziaszek.tabmate.view.helper.KeyboardManager;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 
 public class TransactionFragment extends BasicFragment implements DatePickerDialog.OnDateSetListener,
         NumberPicker.OnValueChangeListener {
 
     private static final String TAG = "transactionFragmentProcedure";
-    private Activity activity;
-
-    private View fView;
+    //private Activity activity;
+    //private View fView;
 
     private Transaction transaction;
 
@@ -66,8 +62,6 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
     private Spinner transactionSubcategoryInput;
     private ArrayAdapter<String> dataAdapter;
     private ArrayAdapter<String> dataAdapterMain;
-
-    private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -159,7 +153,7 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
 
         switchInOut(false);
         showTransaction();
-        ((MainActivity) activity).enableBack(true);
+        ((MainActivity) activity).setBackEnabled(true);
         return fView;
     }
 
@@ -208,7 +202,7 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
                 setEditing(false);
                 activity.invalidateOptionsMenu();
                 KeyboardManager.hideKeyboard(activity);
-                ((MainActivity) activity).enableBack(false);
+                ((MainActivity) activity).setBackEnabled(false);
             }
             return true;
         } else if (id == R.id.action_remove) {
@@ -258,8 +252,12 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
         transactionTitleInput.setText(transaction.getTitle());
         transactionDescriptionInput.setText(transaction.getDescription());
         transactionDate.setText(transaction.getDateString());
-        transactionCategory.setText(transaction.getCategory());
-        transactionSubcategory.setText(transaction.getSubcategory());
+        //transactionCategory.setText(transaction.getCategory());
+        //transactionSubcategory.setText(transaction.getSubcategory());
+        if(transaction.getSubcategory() != null)
+            transactionCategory.setText(String.valueOf(transaction.getCategory() + " (" + transaction.getSubcategory() +")"));
+        else
+            transactionCategory.setText(String.valueOf(transaction.getCategory()));
 
         TextView transactionGroup = fView.findViewById(R.id.transaction_group);
         Group group = DataManager.getInstance().getGroup(transaction.getGroup());
@@ -290,8 +288,8 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
             transactionDescription.setText(transactionDescriptionInput.getText().toString());
             transactionAmount.setText(transactionAmountInput.getText().toString());
             transactionDate.setText(transaction.getDateString());
-            transactionCategory.setText(transactionCategoryInput.getSelectedItem().toString());
-            transactionSubcategory.setText(transactionSubcategoryInput.getSelectedItem().toString());
+            transactionCategory.setText(transaction.getCategory());
+            transactionSubcategory.setText(transaction.getSubcategory());
         } catch (Exception e) {
             Log.d(TAG, "Error setting text");
         }
@@ -305,17 +303,28 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
         transactionAmountInput.setVisibility(inputVisibility);
         transactionSubcategoryInput.setVisibility(inputVisibility);
         transactionCategoryInput.setVisibility(inputVisibility);
-        fView.findViewById(R.id.label_transaction_subcategory).setVisibility(inputVisibility);
+        fView.findViewById(R.id.isCommon).setVisibility(inputVisibility);
 
         transactionTitle.setVisibility(displayVisibility);
         transactionDescription.setVisibility(displayVisibility);
         transactionAmount.setVisibility(displayVisibility);
         transactionSubcategory.setVisibility(displayVisibility);
         transactionCategory.setVisibility(displayVisibility);
+        fView.findViewById(R.id.label_transaction_subcategory).setVisibility(displayVisibility);
+        fView.findViewById(R.id.label_transaction_user).setVisibility(displayVisibility);
+        fView.findViewById(R.id.transaction_user).setVisibility(displayVisibility);
 
         if (!isCreated) {
             transactionTitleInput.setText(transactionTitle.getText());
             transactionDescriptionInput.setText(transactionDescription.getText());
+            if(transaction.getUid() == null){
+                ((TextView)fView.findViewById(R.id.transaction_user))
+                        .setText(activity.getResources().getString(R.string.joint_transaction));
+            }
+            else{
+                ((TextView)fView.findViewById(R.id.transaction_user))
+                        .setText(DataManager.getInstance().getUsersInMap().get(transaction.getUid()).getName());
+            }
         }
 
         Calendar calendar = Calendar.getInstance();
@@ -337,11 +346,6 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
         }
 
         if (!edit) {
-            if (transaction.getSubcategory() == null) {
-                transactionSubcategoryInput.setVisibility(View.GONE);
-                transactionSubcategory.setVisibility(View.GONE);
-                fView.findViewById(R.id.label_transaction_subcategory).setVisibility(View.GONE);
-            }
             if (transaction.getDescription() == null || transaction.getDescription().equals("")) {
                 transactionDescription.setVisibility(View.GONE);
                 transactionDescriptionInput.setVisibility(View.GONE);
@@ -379,6 +383,14 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
         transaction.setTitle(title);
         transaction.setDescription(transactionDescriptionInput.getText().toString());
         transaction.setCategory(transactionCategoryInput.getSelectedItem().toString());
+
+        if(!((CheckBox)fView.findViewById(R.id.isCommon)).isChecked()){
+            transaction.setUid(((MainActivity)activity).getCurrentUserId());
+        }
+        else{
+            transaction.setUid(null);
+        }
+
         try {
             transaction.setSubcategory(transactionSubcategoryInput.getSelectedItem().toString());
         } catch (Exception e) {
@@ -392,10 +404,10 @@ public class TransactionFragment extends BasicFragment implements DatePickerDial
 
         //Save data
         if (isCreated) {
-            firestoreRequests.addTransaction(transaction,
+            FirestoreRequests.addTransaction(transaction,
                     (x) -> {
                         InformUser.inform(activity, R.string.transaction_added);
-                        firestoreRequests.updateGroup(group, group.getId(),
+                        FirestoreRequests.updateGroup(group, group.getId(),
                                 (y) -> {
                                     DataManager.getInstance().refresh(((MainActivity) activity).getCurrentUserId());
                                 },

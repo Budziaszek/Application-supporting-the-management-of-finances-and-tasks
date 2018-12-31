@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.budziaszek.tabmate.firestoreData.Group;
+import com.budziaszek.tabmate.data.Group;
 
 
 public class GroupSpinnerAdapter extends ArrayAdapter<Group> {

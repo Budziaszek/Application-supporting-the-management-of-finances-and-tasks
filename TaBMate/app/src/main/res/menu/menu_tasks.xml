@@ -10,7 +10,7 @@
         <item
             android:id="@+id/action_find_tasks"
             android:icon="@android:drawable/ic_menu_search"
-            android:title="@string/find_tasks"
+            android:title="@string/filtrate_tasks"
             app:showAsAction="ifRoom" />
         <item
             android:id="@+id/action_archived_tasks"

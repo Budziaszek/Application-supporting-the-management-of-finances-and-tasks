@@ -1,25 +1,24 @@
 package com.budziaszek.tabmate.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
-import com.budziaszek.tabmate.firestoreData.DataManager;
-import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.firestoreData.Transaction;
-import com.budziaszek.tabmate.firestoreData.User;
-import com.budziaszek.tabmate.firestoreData.UserTask;
-import com.budziaszek.tabmate.view.listener.DataChangeListener;
+import com.budziaszek.tabmate.data.DataManager;
+import com.budziaszek.tabmate.data.Group;
+import com.budziaszek.tabmate.data.Task;
+import com.budziaszek.tabmate.data.Transaction;
+import com.budziaszek.tabmate.data.User;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -29,15 +28,13 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,17 +45,18 @@ import java.util.List;
 
 
 //TODO refresh
-public class DashboardFragment extends BasicFragment implements DataChangeListener, IAxisValueFormatter {
+public class DashboardFragment extends BasicFragment implements IAxisValueFormatter {
 
     private static final String TAG = "DashboardFragmentProcedure";
 
-    private Activity activity;
+    //private Activity activity;
 
     private List<Group> groups = new ArrayList<>();
     private List<User> users = new ArrayList<>();
-    private List<UserTask> tasks = new ArrayList<>();
+    private List<Task> tasks = new ArrayList<>();
     private List<Transaction> transactions = new ArrayList<>();
     private List<Integer> colors = new ArrayList<>();
+    private Integer currentGroup;
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     @SuppressLint("SimpleDateFormat")
@@ -112,14 +110,7 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
             Log.d(TAG, "Ask for refresh groups and users");
             instance.refresh(((MainActivity) activity).getCurrentUserId());
         } else {
-            groupsChanged();
-            tasksChanged();
-            transactionsChanged();
-            users = DataManager.getInstance().getSelectedUsers();
-            setPieChartTasks();
-            setBarChartTasks(true);
-            setBarChartTasks(false);
-            setPieChartBudget();
+            refreshFinished();
         }
 
         informAboutNetworkConnection();
@@ -141,58 +132,86 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        menu.clear();    //remove all items
-        getActivity().getMenuInflater().inflate(R.menu.menu_dashboard, menu);
+        if (currentGroup == null)
+            return;
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.menu_budget, menu);
+
+        SubMenu sub = menu.findItem(R.id.group_item).getSubMenu();
+        int count = 0;
+        for (Group group : DataManager.getInstance().getGroups()) {
+            MenuItem item = sub.add(1, count, count, group.getName());
+            item.setCheckable(true);
+            item.setChecked(currentGroup == count);
+            count++;
+        }
+        sub.setGroupCheckable(1, true, true);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_find_tasks) {
-            ((MainActivity) activity).enableBack(true);
-            ((MainActivity) activity).startFragment(FindTasksFragment.class);
+        Integer id = item.getItemId();
+        if (id == R.id.action_find) {
+            ((MainActivity) activity).setBackEnabled(true);
+            ((MainActivity) activity).setFiltrateGroups(false);
+            ((MainActivity) activity).startFragment(FiltrateFragment.class);
             return true;
+        }else if (id >= 0 && id < groups.size()) {
+            currentGroup = id;
+            ((MainActivity) activity).setCurrentGroup(groups.get(id));
+            item.setChecked(true);
+            refreshFinished();
         }
-        return false;
+        return true;
     }
 
-    //TODO refresh charts
     @Override
     public void groupsChanged() {
-        List<Group> newGroups = DataManager.getInstance().getGroups();
-        List<Group> oldGroups = groups;
-        newGroups.sort(Comparator.comparing(Group::getName));
-        groups = newGroups;
+        groups = DataManager.getInstance().getGroups();
+        if (currentGroup == null) {
+            currentGroup = groups.indexOf(((MainActivity) activity).getCurrentGroup());
+        }
+        if (currentGroup == -1 || groups.size() < currentGroup - 1) {
+            currentGroup = 0;
+        }
+        if (groups.size() != 0) {
+            update();
+        }
     }
 
     @Override
     public void tasksChanged() {
-        List<UserTask> allTasks = DataManager.getInstance().getFiltratedTasks();
-        List<UserTask> newTasks = new ArrayList<>();
-        List<UserTask> oldTasks = tasks;
-        tasks = allTasks;
-        String uid = ((MainActivity) activity).getCurrentUserId();
+        List<Task> allTasks = DataManager.getInstance().getFiltratedTasks();
+        List<Task> newTasks = new ArrayList<>();
+
+        for(Task task:allTasks){
+            if(task.getGroup().equals(((MainActivity) activity).getCurrentGroup().getId()))
+                newTasks.add(task);
+        }
+
+        tasks = newTasks;
     }
 
     @Override
     public void transactionsChanged() {
-//        List<Transaction> allTransactions = DataManager.getInstance().getFiltratedTransactions();
-//        List<Transaction> newTransactions = new ArrayList<>();
-//        List<Transaction> oldTransactions = transactions;
-//
-//        for (Transaction transaction : allTransactions) {
-//            newTransactions.add(transaction);
-//        }
-        //allTransactions.sort(Comparator.comparing(Transaction::getDate).reversed());
-        transactions = DataManager.getInstance().getFiltratedTransactions();
+        List<Transaction> allTransactions = DataManager.getInstance().getFiltratedTransactions();
+        List<Transaction> newTransactions = new ArrayList<>();
+
+        for(Transaction transaction:allTransactions){
+            if(transaction.getGroup().equals(((MainActivity) activity).getCurrentGroup().getId()))
+                newTransactions.add(transaction);
+        }
+
+        transactions = newTransactions;
     }
 
     private void setPieChartTasks() {
         PieChart pieChartTasks = fView.findViewById(R.id.pie_chart);
         Description description = new Description();
         description.setTextSize(12);
-        description.setTextColor(getResources().getColor(R.color.colorPrimaryDark, activity.getTheme()));
+        try {
+            description.setTextColor(getResources().getColor(R.color.colorPrimaryDark, activity.getTheme()));
+        }catch(Exception e){return;}
         description.setText(getResources().getString(R.string.tasks_done_pie));
         pieChartTasks.setDescription(description);
         pieChartTasks.setDrawHoleEnabled(false);
@@ -204,9 +223,9 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         legend.setForm(Legend.LegendForm.CIRCLE);
 
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(countTasksByStatus(UserTask.Status.TODO), UserTask.Status.TODO.name));
-        entries.add(new PieEntry(countTasksByStatus(UserTask.Status.DOING), UserTask.Status.DOING.name));
-        entries.add(new PieEntry(countTasksByStatus(UserTask.Status.DONE), UserTask.Status.DONE.name));
+        entries.add(new PieEntry(countTasksByStatus(Task.Status.TODO, false, false), Task.Status.TODO.name));
+        entries.add(new PieEntry(countTasksByStatus(Task.Status.DOING, false, false), Task.Status.DOING.name));
+        entries.add(new PieEntry(countTasksByStatus(Task.Status.DONE, false, false), Task.Status.DONE.name));
 
         PieDataSet dataSet = new PieDataSet(entries, "");
 //        dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
@@ -236,10 +255,13 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         Description description = new Description();
         description.setTextSize(12);
         description.setTextColor(getResources().getColor(R.color.colorPrimaryDark, activity.getTheme()));
+        description.setYOffset(-10);
+        try {
         if (time)
             description.setText(getResources().getString(R.string.time_spent_bar));
         else
             description.setText(getResources().getString(R.string.tasks_done_bar));
+        }catch(Exception e){return;}
         barChartTasks.setDescription(description);
         barChartTasks.setDragEnabled(false);
         barChartTasks.setScaleEnabled(false);
@@ -288,7 +310,7 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         }
         BarData data = new BarData(dataSets);
         data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            if(value!=0)
+            if (value != 0)
                 return String.valueOf(value);
             return "";
         });
@@ -311,12 +333,23 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         }
     }
 
-    private void setPieChartBudget() {
-        PieChart pieChartTasks = fView.findViewById(R.id.pie_chart_budget);
+    private void setPieChartBudget(boolean expense) {
         Description description = new Description();
         description.setTextSize(9);
         description.setTextColor(getResources().getColor(R.color.colorPrimaryDark, activity.getTheme()));
-        description.setText(getResources().getString(R.string.budget_pie));
+        PieChart pieChartTasks;
+
+        try {
+            if (expense) {
+                pieChartTasks = fView.findViewById(R.id.pie_chart_budget);
+                description.setText(getResources().getString(R.string.budget_pie_expenses));
+            } else {
+                pieChartTasks = fView.findViewById(R.id.pie_chart_budget2);
+                description.setText(getResources().getString(R.string.budget_pie_income));
+            }
+        }catch (Exception e){return;}
+
+
         pieChartTasks.setDescription(description);
         pieChartTasks.setDrawHoleEnabled(false);
         pieChartTasks.setEntryLabelTextSize(8);
@@ -328,9 +361,23 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         legend.setWordWrapEnabled(true);
 
         List<PieEntry> entries = new ArrayList<>();
-        List<String> categories = Arrays.asList(getResources().getStringArray(R.array.expenses));
-        for (String category : categories)
-            entries.add(new PieEntry(countTransactionsByCategoryByMonth(category, -1), category));
+        List<String> categories;
+        float total = 0;
+        if(expense)
+            categories = Arrays.asList(getResources().getStringArray(R.array.expenses));
+        else
+            categories = Arrays.asList(getResources().getStringArray(R.array.income));
+        for (String category : categories) {
+            float n = countTransactionsByCategoryByMonth(category, -1);
+            entries.add(new PieEntry(n, category));
+            total+=n;
+        }
+
+        if(expense)
+            ((TextView)fView.findViewById(R.id.expenses_total_t)).setText(new DecimalFormat("#.##").format(total));
+        else
+            ((TextView)fView.findViewById(R.id.income_total_t)).setText(new DecimalFormat("#.##").format(total));
+
 
         PieDataSet dataSet = new PieDataSet(entries, "");
         dataSet.setColors(new int[]{R.color.c1, R.color.c2, R.color.c3, R.color.c4, R.color.c5, R.color.c6, R.color.c7, R.color.c8, R.color.c9}, getContext());
@@ -341,30 +388,53 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         PieData data = new PieData(dataSet);
         data.setValueTextColor(getResources().getColor(R.color.colorAccentLight, activity.getTheme()));
         data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            if(value!=0)
+            if (value != 0)
                 return String.valueOf(value);
             return "";
         });
         pieChartTasks.setData(data);
         pieChartTasks.invalidate(); // refresh
-
-        //mLineData.notifyDataChanged();
-        //mChart.notifyDataSetChanged();
     }
 
-    private int countTasksByStatus(UserTask.Status status) {
+    private int countTasksByStatus(Task.Status status, Boolean useDate, Boolean onTime) {
         int counter = 0;
-        for (UserTask task : tasks) {
+        Calendar cal = Calendar.getInstance();
+        int month = cal.get(Calendar.MONTH);
+        for (Task task : tasks) {
             if (task.getStatus().equals(status)) {
-                counter++;
+                if(!useDate)
+                    counter++;
+                else{
+                    cal.setTime(task.getCompletionDate());
+                    if (cal.get(Calendar.MONTH) == month)
+                        if(onTime && task.getCompletionDate()!= null && task.getDeadline() != null){
+                            if(task.getDeadline().getTime() >= task.getCompletionDate().getTime())
+                                counter++;
+                        }
+                        else
+                            counter++;
+                }
             }
         }
         Log.d(TAG, status.name + " size " + counter);
         return counter;
     }
 
-    private int countTransactionsByCategoryByMonth(String category, int month) {
+    private int countTasksAfterDeadline() {
         int counter = 0;
+        Calendar cal = Calendar.getInstance();
+        for (Task task : tasks) {
+                if(task.getDeadline() != null){
+                    if(task.getDeadline().getTime() < cal.getTimeInMillis())
+                        counter++;
+                }
+        }
+        Log.d(TAG, "after deadline size " + counter);
+        return counter;
+    }
+
+    private float countTransactionsByCategoryByMonth(String category, int month) {
+        float counter = 0;
         Calendar cal = Calendar.getInstance();
         if (month == -1) //current month
             month = cal.get(Calendar.MONTH);
@@ -372,8 +442,9 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
         for (Transaction transaction : transactions) {
             if (transaction.getCategory().equals(category)) {
                 cal.setTime(transaction.getDate());
-                if (cal.get(Calendar.MONTH) == month)
+                if (cal.get(Calendar.MONTH) == month) {
                     counter += Math.abs(transaction.getAmount());
+                }
             }
         }
         Log.d(TAG, category + " size " + counter);
@@ -382,8 +453,8 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
 
     private int countCompletedTasksByUserByDate(String user, Date date) {
         int counter = 0;
-        for (UserTask task : tasks) {
-            if (task.getStatus() == UserTask.Status.DONE || task.getStatusBeforeArchive() == UserTask.Status.DONE) {
+        for (Task task : tasks) {
+            if (task.getStatus() == Task.Status.DONE || task.getStatusBeforeArchive() == Task.Status.DONE) {
                 if (task.getDoers().contains(user) && task.getCompletionDate() != null)
                     if (simpleDateFormat.format(task.getCompletionDate()).equals(simpleDateFormat.format(date)))
                         counter++;
@@ -395,7 +466,7 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
 
     private int countTimeSpentByUserByDate(String user, Date date) {
         int counter = 0;
-        for (UserTask task : tasks) {
+        for (Task task : tasks) {
             if (task.getTimeSpentByDate().containsKey(simpleDateFormat.format(date))) {
                 if (task.getDoers().contains(user))
                     counter += task.getTimeSpentByDate().get(simpleDateFormat.format(date));
@@ -409,33 +480,42 @@ public class DashboardFragment extends BasicFragment implements DataChangeListen
     public String getFormattedValue(float value, AxisBase axis) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -((Float) (6f - value)).intValue());
-//        if (value == 0) {
-//            return "Monday";
-//        } else if (value == 1) {
-//            return "Tuesday";
-//        } else if (value == 2) {
-//            return "Wednesday";
-//        } else if (value == 3) {
-//            return "Thursday";
-//        } else if (value == 4) {
-//            return "Friday";
-//        } else if (value == 5) {
-//            return "Saturday";
-//        } else if (value == 6) {
-//            return "Sunday";
-//        } else {
-//            return "";
-//        }
         return simpleDateFormatSmall.format(calendar.getTime());
     }
 
     @Override
-    public void finished() {
-        super.finished();
-        setPieChartTasks();
-        users = DataManager.getInstance().getSelectedUsers();
-        setBarChartTasks(true);
-        setBarChartTasks(false);
-        setPieChartBudget();
+    public void refreshFinished() {
+        super.refreshFinished();
+        if (activity != null) {
+            groupsChanged();
+            tasksChanged();
+            transactionsChanged();
+            update();
+        }
     }
+
+    private void update(){
+        ((TextView)fView.findViewById(R.id.group_name)).setText(((MainActivity)activity).getCurrentGroup().getName());
+        users = DataManager.getInstance().getSelectedUsers();
+        setPieChartTasks();
+        setBarChartTasks(true);
+        //setBarChartTasks(false);
+        fView.findViewById(R.id.bar_chart1).setVisibility(View.GONE);
+        setPieChartBudget(true);
+        setPieChartBudget(false);
+        ((TextView)fView.findViewById(R.id.tasks_finished_total_t))
+                .setText(String.valueOf(
+                        countTasksByStatus(Task.Status.DONE, true, false)
+                                + countTasksByStatus(Task.Status.ARCHIVED, true, false)
+                ));
+        ((TextView)fView.findViewById(R.id.tasks_finished_on_time_t))
+                .setText(String.valueOf(
+                        countTasksByStatus(Task.Status.DONE, true, true)
+                                + countTasksByStatus(Task.Status.ARCHIVED, true, true)
+                ));
+        ((TextView)fView.findViewById(R.id.tasks_after_deadline_t))
+                .setText(String.valueOf(countTasksAfterDeadline()));
+    }
+
+
 }

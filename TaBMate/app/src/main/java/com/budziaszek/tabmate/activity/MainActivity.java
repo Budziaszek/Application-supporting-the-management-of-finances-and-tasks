@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,18 +21,18 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.firestoreData.DataManager;
-import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.firestoreData.Transaction;
-import com.budziaszek.tabmate.firestoreData.UserTask;
+import com.budziaszek.tabmate.data.DataManager;
+import com.budziaszek.tabmate.data.Group;
+import com.budziaszek.tabmate.data.Task;
+import com.budziaszek.tabmate.data.Transaction;
 import com.budziaszek.tabmate.fragment.BudgetFragment;
 import com.budziaszek.tabmate.fragment.DashboardFragment;
 import com.budziaszek.tabmate.fragment.TasksPagerFragment;
 import com.budziaszek.tabmate.fragment.MainPageFragment;
 
 import com.budziaszek.tabmate.fragment.UserFragment;
-import com.budziaszek.tabmate.view.InformUser;
-import com.budziaszek.tabmate.view.KeyboardManager;
+import com.budziaszek.tabmate.view.helper.InformUser;
+import com.budziaszek.tabmate.view.helper.KeyboardManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -49,21 +48,22 @@ public class MainActivity extends AppCompatActivity
 
     // Drawer
     private DrawerLayout drawer;
-    private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
-    private Boolean isListenerRegistered;
+    private TextView user_email;
 
-    // Fragments
+
+    // For fragments and informative
     private Class newFragment = null;
     private boolean doubleBackToExitPressedOnce = false;
+    private Boolean isListenerRegistered;
 
-    // User data
-    private Group currentGroup;
-    private UserTask currentTask;
-    private Transaction currentTransaction;
     private FirebaseUser user = null;
+    private Group currentGroup;
+    private Task currentTask;
+    private Transaction currentTransaction;
     private Boolean isArchiveVisible = false;
-    private TextView user_email;
+    private Boolean filtrateGroups = true;
+
 
 
     @Override
@@ -71,10 +71,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(null);
         Log.d(TAG, "Created");
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.nav_main);
         initializeDrawer();
 
-        navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerLayout = navigationView.getHeaderView(0);
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        enableBack(false);
+        setBackEnabled(false);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
             return;
@@ -163,9 +163,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_edit) {
-            return false;
-        }
         return false;
     }
 
@@ -186,10 +183,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     public Group getCurrentGroup() {
+        if(currentGroup == null)
+            return DataManager.getInstance().getGroups().get(0);
         return currentGroup;
     }
 
-    public UserTask getCurrentTask() {
+    public Task getCurrentTask() {
         return currentTask;
     }
 
@@ -215,7 +214,7 @@ public class MainActivity extends AppCompatActivity
         currentGroup = group;
     }
 
-    public void setCurrentTask(UserTask task) {
+    public void setCurrentTask(Task task) {
         currentTask = task;
     }
 
@@ -228,7 +227,7 @@ public class MainActivity extends AppCompatActivity
      *
      * @param enable if true displays back icon instead of drawer (hamburger)
      */
-    public void enableBack(boolean enable) {
+    public void setBackEnabled(boolean enable) {
         if (enable) {
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             // Remove hamburger
@@ -240,7 +239,6 @@ public class MainActivity extends AppCompatActivity
             }
             if (!isListenerRegistered) {
                 toggle.setToolbarNavigationClickListener(v -> {
-                    Log.d(TAG, "Back arrow clicked");
                     onBackPressed();
                 });
                 isListenerRegistered = true;
@@ -314,7 +312,7 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        enableBack(false);
+        setBackEnabled(false);
     }
 
     /**
@@ -331,6 +329,8 @@ public class MainActivity extends AppCompatActivity
                     Intent myIntent = new Intent(MainActivity.this, LoginActivity.class);
                     MainActivity.this.startActivity(myIntent);
                     Log.d(TAG, "User logged out.");
+                    DataManager.getInstance().clear();
+                    user = null;
                     finish();
                 })
                 .setNegativeButton(android.R.string.no, (dialog, which) -> {
@@ -339,4 +339,11 @@ public class MainActivity extends AppCompatActivity
                 .show();
     }
 
+    public Boolean getFiltrateGroups() {
+        return filtrateGroups;
+    }
+
+    public void setFiltrateGroups(Boolean filtrateGroups) {
+        this.filtrateGroups = filtrateGroups;
+    }
 }

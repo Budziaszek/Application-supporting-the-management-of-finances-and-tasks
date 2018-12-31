@@ -1,16 +1,17 @@
-package com.budziaszek.tabmate.firestoreData;
+package com.budziaszek.tabmate.data;
 
 import android.app.Activity;
 import android.util.Log;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.view.listener.DataChangeListener;
-import com.budziaszek.tabmate.view.InformUser;
-import com.google.android.gms.tasks.Task;
+import com.budziaszek.tabmate.view.helper.InformUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,31 +30,54 @@ public class DataManager {
     private Boolean dataHasChanged = false;
 
     private int refreshCounter = 0;
+
     // Observers, that will be informed about data changes
     private List<DataChangeListener> observers = new ArrayList<>();
     private Boolean groupsChanged = false;
     private Boolean tasksChanged = false;
-    private Boolean invitationsChanged = false;
     private Boolean transactionsChanged = false;
 
     // All data from database
     private Map<String, Group> groups;
     private Map<String, User> users;
-    private Map<String, UserTask> tasks;
+    private Map<String, Task> tasks;
     private List<String> invitations;
     private Map<String, Transaction> transactions;
 
     // Filtrated data and filters
-    private Map<String, UserTask> filtratedTasks;
+    private Map<String, Task> filtratedTasks;
     private Set<String> selectedGroupsIds;
     private Set<String> selectedUsersIds;
+    //private Set<String> selectedCategories;
+    private Date selectedDate;
     private Boolean isUserUnspecifiedSelected = true;
-
-    private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
     private DataManager() {
 
     }
+
+    public void clear(){
+        dataHasChanged = false;
+        refreshCounter = 0;
+        //observers.clear();
+        groupsChanged = false;
+        tasksChanged = false;
+        //invitationsChanged = false;
+        transactionsChanged = false;
+        groups = null;
+        users = null;
+        tasks = null;
+        invitations = null;
+        transactions = null;
+        filtratedTasks = null;
+        selectedGroupsIds = null;
+        selectedUsersIds = null;
+        isUserUnspecifiedSelected = true;
+    }
+
+//    public void setSelectedCategories(Set<String> selectedCategories) {
+//        this.selectedCategories = selectedCategories;
+//    }
 
     public Boolean getDataHasChanged() {
         return dataHasChanged;
@@ -117,12 +141,12 @@ public class DataManager {
     }
 
     /**
-     * Informs observers about refresh finished.
+     * Informs observers about refresh refreshFinished.
      */
     private void informObserversRefreshFinished() {
-        Log.d(TAG, "Refresh finished");
+        Log.d(TAG, "Refresh refreshFinished");
         for (DataChangeListener listener : observers) {
-            listener.finished();
+            listener.refreshFinished();
         }
     }
 
@@ -143,17 +167,15 @@ public class DataManager {
     private void decreaseRefreshCounter() {
         refreshCounter--;
         if (refreshCounter == 0) {
-            for (UserTask task : tasks.values()) {
+            for (Task task : tasks.values()) {
                 checkIfMatchFiltration(task);
             }
             informObserversRefreshFinished();
 
-            if (tasksChanged && groupsChanged && transactionsChanged) {
-                for (DataChangeListener listener : observers) {
-                    Log.d("SyncProcedure", "Stop");
-                    DataManager.getInstance().setDataHasChanged(false);
-                    listener.informAboutDataSynchronization();
-                }
+            for (DataChangeListener listener : observers) {
+                Log.d("SyncProcedure", "Stop");
+                DataManager.getInstance().setDataHasChanged(false);
+                listener.informAboutDataSynchronization();
             }
 
             if (tasksChanged) {
@@ -163,10 +185,6 @@ public class DataManager {
             if (groupsChanged) {
                 informObserversGroupsChanged();
                 groupsChanged = false;
-            }
-            if (invitationsChanged) {
-                informObserversInvitationsChanged();
-                invitationsChanged = false;
             }
             if (transactionsChanged) {
                 informObserversTransactionsChanged();
@@ -187,7 +205,7 @@ public class DataManager {
         return null;
     }
 
-    /*public UserTask getTask(String tid){
+    /*public Task getTask(String tid){
         return tasks.get(tid);
     }*/
 
@@ -216,11 +234,25 @@ public class DataManager {
         return selected;
     }
 
+//    public void removeSelectedCategory(String category){
+//        selectedCategories.remove(category);
+//    }
+//
+//    public void addSelectedCategory(String category){
+//        selectedCategories.add(category);
+//    }
+//
+//    public Set<String> getSelectedCategories() {
+//        if(selectedCategories == null)
+//            return new HashSet<>();
+//        return selectedCategories;
+//    }
+
     public Map<String, User> getUsersInMap() {
         return users;
     }
 
-    public List<UserTask> getTasks() {
+    public List<Task> getTasks() {
         if (tasks == null)
             return null;
         return new ArrayList<>(tasks.values());
@@ -238,12 +270,14 @@ public class DataManager {
         List<Transaction> filtratedTransactions = new ArrayList<>();
         for (Transaction transaction : transactions.values()) {
             if (selectedGroupsIds.contains(transaction.getGroup()))
-                filtratedTransactions.add(transaction);
+                if(selectedUsersIds.contains(transaction.getUid())
+                        || (transaction.getUid() == null && isUserUnspecifiedSelected))
+                    filtratedTransactions.add(transaction);
         }
         return filtratedTransactions;
     }
 
-    public List<UserTask> getFiltratedTasks() {
+    public List<Task> getFiltratedTasks() {
         if (filtratedTasks == null)
             return getTasks();
         return new ArrayList<>(filtratedTasks.values());
@@ -301,7 +335,7 @@ public class DataManager {
     //TODO refresh on close filtration
     private void refreshFiltratedTasks() {
         filtratedTasks.clear();
-        for (UserTask task : tasks.values()) {
+        for (Task task : tasks.values()) {
             checkIfMatchFiltration(task);
         }
         informObserversTasksChanged();
@@ -313,7 +347,7 @@ public class DataManager {
      */
     public void refresh(String uid) {
         refreshCounter++;
-        firestoreRequests.getUser(uid, this::checkUser);
+        FirestoreRequests.getUser(uid, this::checkUser);
         if (groups == null) {
             groups = new TreeMap<>();
             selectedGroupsIds = new HashSet<>();
@@ -329,7 +363,7 @@ public class DataManager {
         transactions.clear();
 
         refreshCounter++;
-        firestoreRequests.getGroupByField("members", uid, this::checkGroupsTask);
+        FirestoreRequests.getGroup("members", uid, this::checkGroupsTask);
     }
 
     /**
@@ -340,9 +374,7 @@ public class DataManager {
             invitations = new ArrayList<>();
         }
         invitations.clear();
-
-        refreshCounter++;
-        firestoreRequests.getUser(uid, this::checkAndManageInvitations);
+        FirestoreRequests.getUser(uid, this::checkAndManageInvitations);
     }
 
     /**
@@ -365,7 +397,7 @@ public class DataManager {
         for (String id : gid) {
             Log.d(TAG, "Refresh tasks for group: " + id);
             refreshCounter++;
-            firestoreRequests.getGroupTasks(id, this::checkTasksTask);
+            FirestoreRequests.getTasks(id, this::checkTasksTask);
         }
     }
 
@@ -375,13 +407,13 @@ public class DataManager {
     private void refreshGroupTasks(String gid) {
         Log.d(TAG, "Refresh tasks for group: " + gid);
         refreshCounter++;
-        firestoreRequests.getGroupTasks(gid, this::checkTasksTask);
+        FirestoreRequests.getTasks(gid, this::checkTasksTask);
     }
 
     /**
      * Check if Firestore task was successful and call function to proceed documents or inform about exception.
      */
-    private void checkGroupsTask(Task<QuerySnapshot> task) {
+    private void checkGroupsTask(com.google.android.gms.tasks.Task<QuerySnapshot> task) {
         if (task.isSuccessful()) {
             if (task.getResult().getDocuments().isEmpty()) {
                 Log.d(TAG, "No group found");
@@ -400,7 +432,7 @@ public class DataManager {
     /**
      * Check if Firestore task was successful and call function to proceed documents or inform about exception.
      */
-    private void checkTasksTask(Task<QuerySnapshot> task) {
+    private void checkTasksTask(com.google.android.gms.tasks.Task<QuerySnapshot> task) {
         if (task.isSuccessful()) {
             if (!task.getResult().getDocuments().isEmpty()) {
                 addTasks(task.getResult().getDocuments());
@@ -416,7 +448,7 @@ public class DataManager {
     /**
      * Check if Firestore task was successful and call function to proceed documents or inform about exception.
      */
-    private void checkTransactions(Task<QuerySnapshot> task) {
+    private void checkTransactions(com.google.android.gms.tasks.Task<QuerySnapshot> task) {
         if (task.isSuccessful()) {
             if (!task.getResult().getDocuments().isEmpty()) {
                 addTransactions(task.getResult().getDocuments());
@@ -438,11 +470,11 @@ public class DataManager {
             if (user.getInvitations() != null) {
                 invitations = user.getInvitations();
                 Log.d(TAG, "Invitations " + invitations.toString());
-                invitationsChanged = true;
-                //informObserversInvitationsChanged();
+                //invitationsChanged = true;
+                informObserversInvitationsChanged();
             }
         }
-        decreaseRefreshCounter();
+        //decreaseRefreshCounter();
     }
 
     /**
@@ -461,10 +493,10 @@ public class DataManager {
                 refreshGroupTasks(group.getId());
                 for (String uid : group.getMembers()) {
                     refreshCounter++;
-                    firestoreRequests.getUser(uid, this::checkUser);
+                    FirestoreRequests.getUser(uid, this::checkUser);
                 }
                 refreshCounter++;
-                firestoreRequests.getGroupTransactions(group.getId(), this::checkTransactions);
+                FirestoreRequests.getTransactions(group.getId(), this::checkTransactions);
             }
         }
         //informObserversGroupsChanged();
@@ -476,7 +508,7 @@ public class DataManager {
      */
     private void addTasks(List<DocumentSnapshot> documents) {
         for (DocumentSnapshot document : documents) {
-            UserTask task = document.toObject(UserTask.class);
+            Task task = document.toObject(Task.class);
             if (task != null) {
                 task.setId(document.getId());
                 if (!tasks.containsKey(document.getId())) {
@@ -523,7 +555,7 @@ public class DataManager {
      * Removes group and informs about result.
      */
     public void removeGroup(String group, Activity activity) {
-        firestoreRequests.removeGroup(group,
+        FirestoreRequests.removeGroup(group,
                 (aVoid) -> InformUser.inform(activity, R.string.left_group),
                 (e) -> InformUser.informFailure(activity, e)
         );
@@ -532,8 +564,8 @@ public class DataManager {
     /**
      * Removes group and informs about result.
      */
-    public void removeTask(UserTask task, Activity activity) {
-        firestoreRequests.removeTask(task,
+    public void removeTask(Task task, Activity activity) {
+        FirestoreRequests.removeTask(task,
                 (aVoid) -> InformUser.inform(activity, R.string.task_removed),
                 (e) -> InformUser.informFailure(activity, e)
         );
@@ -543,7 +575,7 @@ public class DataManager {
      * Removes user from group and informs about result.
      */
     public void removeGroupMember(String user, String group, Activity activity) {
-        firestoreRequests.removeGroupMember(group,
+        FirestoreRequests.removeGroupMember(group,
                 user,
                 (aVoid) -> InformUser.inform(activity, R.string.left_group),
                 (e) -> InformUser.informFailure(activity, e)
@@ -553,7 +585,7 @@ public class DataManager {
     /**
      * Check if task matches filtration and add to filtrated set if so.
      */
-    private void checkIfMatchFiltration(UserTask task) {
+    private void checkIfMatchFiltration(Task task) {
         if (selectedGroupsIds.contains(task.getGroup())) {
             if (task.getDoers().size() == 0 && isUserUnspecifiedSelected) {
                 filtratedTasks.put(task.getId(), task);
@@ -565,5 +597,13 @@ public class DataManager {
                     return;
                 }
         }
+    }
+
+    public Date getSelectedDate() {
+        return selectedDate;
+    }
+
+    public void setSelectedDate(Date selectedDate) {
+        this.selectedDate = selectedDate;
     }
 }

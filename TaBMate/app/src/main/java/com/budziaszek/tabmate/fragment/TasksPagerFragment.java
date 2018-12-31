@@ -1,6 +1,5 @@
 package com.budziaszek.tabmate.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -19,7 +18,7 @@ import com.budziaszek.tabmate.view.adapter.TasksPagesAdapter;
 public class TasksPagerFragment extends BasicFragment {
 
     private static final String TAG = "TasksPagerFragmentProcedure";
-    private Activity activity;
+    //private Activity activity;
     private TasksPagesAdapter adapter;
     private ViewPager viewPager;
 
@@ -70,13 +69,14 @@ public class TasksPagerFragment extends BasicFragment {
         int id = item.getItemId();
 
         if (id == R.id.action_add_task) {
-            ((MainActivity) activity).enableBack(true);
+            ((MainActivity) activity).setBackEnabled(true);
             ((MainActivity) activity).setCurrentTask(null);
             ((MainActivity) activity).startFragment(TaskFragment.class);
             return true;
         } else if (id == R.id.action_find_tasks) {
-            ((MainActivity) activity).enableBack(true);
-            ((MainActivity) activity).startFragment(FindTasksFragment.class);
+            ((MainActivity) activity).setFiltrateGroups(true);
+            ((MainActivity) activity).setBackEnabled(true);
+            ((MainActivity) activity).startFragment(FiltrateFragment.class);
             return true;
         } else if (id == R.id.action_archived_tasks) {
             adapter.changeArchivedVisibility();

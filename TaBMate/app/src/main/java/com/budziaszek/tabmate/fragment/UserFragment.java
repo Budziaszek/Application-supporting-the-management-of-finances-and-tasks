@@ -1,6 +1,5 @@
 package com.budziaszek.tabmate.fragment;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,10 +16,10 @@ import android.widget.TextView;
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.LoginActivity;
 import com.budziaszek.tabmate.activity.MainActivity;
-import com.budziaszek.tabmate.firestoreData.DataManager;
-import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
-import com.budziaszek.tabmate.firestoreData.User;
-import com.budziaszek.tabmate.view.InformUser;
+import com.budziaszek.tabmate.data.DataManager;
+import com.budziaszek.tabmate.data.FirestoreRequests;
+import com.budziaszek.tabmate.data.User;
+import com.budziaszek.tabmate.view.helper.InformUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -29,13 +28,8 @@ import java.util.Objects;
 public class UserFragment extends BasicFragment {
 
     private static final String TAG = "UserFragmentProcedure";
-    private Activity activity;
-
-    private View fView;
     private TextView email;
     private TextView nick;
-
-    private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -132,7 +126,7 @@ public class UserFragment extends BasicFragment {
 
                                 User userData = DataManager.getInstance().getUsersInMap().get(userChanged.getUid());
                                 userData.setEmail(userChanged.getEmail());
-                                firestoreRequests.updateUser(userData, (x) -> {
+                                FirestoreRequests.updateUser(userData, (x) -> {
                                 }, (e) -> {
                                 });
                                 DataManager.getInstance().refresh(userChanged.getUid());
@@ -171,7 +165,7 @@ public class UserFragment extends BasicFragment {
         builder.setPositiveButton(getResources().getString(R.string.submit), (dialog, which) -> {
             User user = DataManager.getInstance().getUsersInMap().get(((MainActivity) getActivity()).getCurrentUserId());
             user.setName(input.getText().toString());
-            firestoreRequests.updateUser(user, (x) -> {
+            FirestoreRequests.updateUser(user, (x) -> {
             }, (x) -> {
             });
             DataManager.getInstance().refresh(user.getId());
@@ -198,7 +192,7 @@ public class UserFragment extends BasicFragment {
                                 .addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         Log.d(TAG, "User account deleted.");
-                                        firestoreRequests.removeUser(uid, (x) -> {}, (e) -> Log.e(TAG, e.getMessage()));
+                                        FirestoreRequests.removeUser(uid, (x) -> {}, (e) -> Log.e(TAG, e.getMessage()));
                                         //TODO remove from groups (members, tasks doers) but not doing it probably will not affect execution
                                         FirebaseAuth.getInstance().signOut();
                                         Intent myIntent = new Intent(activity, LoginActivity.class);

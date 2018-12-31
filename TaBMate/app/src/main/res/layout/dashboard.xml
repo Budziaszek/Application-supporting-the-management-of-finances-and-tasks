@@ -59,10 +59,50 @@
 
 
                 <RelativeLayout
+                    android:id="@+id/group_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_below="@id/no_network_connection"
+                    android:background="@color/colorSectionBackground"
+                    android:gravity="start"
+                    android:padding="5dp"
+                    android:paddingBottom="10dp"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/group"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:padding="5dp"
+                        android:text="@string/group"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/group_name"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_below="@id/group"
+                        android:elevation="4dp"
+                        android:padding="10dp"
+                        android:text="@string/group"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:id="@+id/tasks_histogram_layout"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/no_network_connection"
+                    android:layout_below="@id/group_layout"
                     android:layout_marginBottom="5dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
@@ -84,11 +124,90 @@
                         android:textSize="16sp"
                         android:textStyle="bold|italic" />
 
+                    <TextView
+                        android:id="@+id/tasks_finished_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/basic_title"
+                        android:layout_marginEnd="5dp"
+                        android:elevation="4dp"
+                        android:padding="5dp"
+                        android:text="@string/tasks_finished_total"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tasks_finished_on_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/tasks_finished_total"
+                        android:layout_marginEnd="5dp"
+                        android:elevation="4dp"
+                        android:padding="5dp"
+                        android:text="@string/tasks_finished_on_time"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tasks_after_deadline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/tasks_finished_on_time"
+                        android:layout_marginEnd="5dp"
+                        android:elevation="4dp"
+                        android:padding="5dp"
+                        android:text="@string/tasks_after_deadline"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tasks_finished_total_t"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/basic_title"
+                        android:layout_marginEnd="5dp"
+                        android:layout_toEndOf="@id/tasks_finished_total"
+                        android:elevation="4dp"
+                        android:padding="5dp"
+                        android:text="@string/tasks"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tasks_finished_on_time_t"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tasks_finished_total"
+                        android:layout_marginEnd="5dp"
+                        android:layout_toEndOf="@id/tasks_finished_on_time"
+                        android:elevation="4dp"
+                        android:padding="5dp"
+                        android:text="@string/tasks"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tasks_after_deadline_t"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tasks_finished_on_time"
+                        android:layout_marginEnd="5dp"
+                        android:layout_toEndOf="@id/tasks_after_deadline"
+                        android:elevation="4dp"
+                        android:padding="5dp"
+                        android:text="@string/tasks"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="12sp" />
+
+
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/pie_chart"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:layout_below="@id/basic_title"
+                        android:layout_below="@id/tasks_after_deadline"
                         android:layout_margin="10dp" />
 
                     <com.github.mikephil.charting.charts.BarChart
@@ -150,11 +269,72 @@
                         android:textSize="16sp"
                         android:textStyle="bold|italic" />
 
+                    <TextView
+                        android:id="@+id/expenses_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/budget_linear_title"
+                        android:layout_marginEnd="5dp"
+                        android:elevation="4dp"
+                        android:padding="5dp"
+                        android:text="@string/expenses_total"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/expenses_total_t"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/budget_linear_title"
+                        android:layout_marginEnd="5dp"
+                        android:layout_toEndOf="@id/expenses_total"
+                        android:elevation="4dp"
+                        android:padding="5dp"
+                        android:text="@string/expenses"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/income_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/expenses_total"
+                        android:layout_marginEnd="5dp"
+                        android:elevation="4dp"
+                        android:padding="5dp"
+                        android:text="@string/income_total"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/income_total_t"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/expenses_total"
+                        android:layout_marginEnd="5dp"
+                        android:layout_toEndOf="@id/expenses_total"
+                        android:elevation="4dp"
+                        android:padding="5dp"
+                        android:text="@string/income"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="12sp" />
+
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/pie_chart_budget"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:layout_below="@id/budget_linear_title"
+                        android:layout_below="@id/income_total"
+                        android:layout_margin="10dp" >
+
+                    </com.github.mikephil.charting.charts.PieChart>
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/pie_chart_budget2"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_below="@+id/pie_chart_budget"
                         android:layout_margin="10dp" />
 
                 </RelativeLayout>

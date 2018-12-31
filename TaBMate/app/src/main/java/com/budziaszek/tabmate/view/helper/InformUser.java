@@ -1,4 +1,4 @@
-package com.budziaszek.tabmate.view;
+package com.budziaszek.tabmate.view.helper;
 
 import android.content.Context;
 import android.widget.Toast;

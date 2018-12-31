@@ -1,6 +1,5 @@
 package com.budziaszek.tabmate.fragment;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -17,18 +16,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.budziaszek.tabmate.firestoreData.DataManager;
-import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
-import com.budziaszek.tabmate.firestoreData.UserTask;
-import com.budziaszek.tabmate.view.InformUser;
+import com.budziaszek.tabmate.data.DataManager;
+import com.budziaszek.tabmate.data.FirestoreRequests;
+import com.budziaszek.tabmate.view.helper.InformUser;
 import com.budziaszek.tabmate.activity.MainActivity;
-import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.firestoreData.User;
-import com.budziaszek.tabmate.view.KeyboardManager;
-import com.budziaszek.tabmate.view.adapter.GroupSpinnerAdapter;
+import com.budziaszek.tabmate.data.Group;
+import com.budziaszek.tabmate.data.User;
+import com.budziaszek.tabmate.view.helper.KeyboardManager;
 import com.budziaszek.tabmate.view.adapter.MembersItemsAdapter;
 import com.budziaszek.tabmate.R;
 import com.google.android.gms.tasks.Task;
@@ -44,7 +40,7 @@ public class GroupFragment extends BasicFragment {
 
     private static final String TAG = "GroupFragmentProcedure";
 
-    private Activity activity;
+    //private Activity activity;
     private Group group;
 
     private MembersItemsAdapter membersAdapter;
@@ -62,8 +58,6 @@ public class GroupFragment extends BasicFragment {
     private TextView groupNameInput;
     private TextView groupDescriptionInput;
     private TextView groupCurrencyInput;
-
-    private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,7 +102,7 @@ public class GroupFragment extends BasicFragment {
         Button addMemberButton = fView.findViewById(R.id.add_member_button);
         addMemberButton.setOnClickListener(view -> alertNewMember());
 
-        ((MainActivity) activity).enableBack(true);
+        ((MainActivity) activity).setBackEnabled(true);
         showGroup();
         return fView;
     }
@@ -204,7 +198,7 @@ public class GroupFragment extends BasicFragment {
                 InformUser.inform(getActivity(), R.string.user_is_a_member);
             } else {
                 //Add
-                firestoreRequests.addInvitation(newMemberId, currentGroup.getId(),
+                FirestoreRequests.addInvitation(newMemberId, currentGroup.getId(),
                         (aVoid) -> InformUser.inform(getActivity(), R.string.invitation_sent),
                         (e) -> InformUser.inform(getActivity(), R.string.invitation_incorrect));
             }
@@ -249,7 +243,7 @@ public class GroupFragment extends BasicFragment {
         // Set up the buttons
         builder.setPositiveButton(getResources().getString(R.string.send), (dialog, which) -> {
             newMemberEmail = input.getText().toString();
-            firestoreRequests.getUserByField("email", newMemberEmail, this::checkInvitationTask);
+            FirestoreRequests.getUser("email", newMemberEmail, this::checkInvitationTask);
         });
         builder.setNegativeButton(getResources().getString(R.string.cancel), (dialog, which) -> dialog.cancel());
 
@@ -260,6 +254,11 @@ public class GroupFragment extends BasicFragment {
      * Displays alert and removes user group group if submitted.
      */
     public void alertLeaveGroup() {
+        if(group.getId().equals(((MainActivity) activity).getCurrentUserId())){
+            InformUser.inform(activity, R.string.cannot_leave);
+            return;
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, android.R.style.Theme_Material_Dialog_Alert);
 
         builder.setTitle(R.string.leave_group)
@@ -340,17 +339,17 @@ public class GroupFragment extends BasicFragment {
 
             if(isCreated){
                 group.addMember(((MainActivity)activity).getCurrentUserId());
-                firestoreRequests.addGroup(group,
+                FirestoreRequests.addGroup(group,
                         (documentReference) -> {
                             InformUser.inform(activity, R.string.group_created);
-                            ((MainActivity) activity).enableBack(false);
+                            ((MainActivity) activity).setBackEnabled(false);
                             ((MainActivity) activity).startFragment(MainPageFragment.class);
                         },
                         (e) ->
                             InformUser.informFailure(activity, e)
                         );
             }else {
-                firestoreRequests.updateGroup(group, group.getId(),
+                FirestoreRequests.updateGroup(group, group.getId(),
                         (x) -> {},
                         (e) -> InformUser.informFailure(activity, e)
                 );

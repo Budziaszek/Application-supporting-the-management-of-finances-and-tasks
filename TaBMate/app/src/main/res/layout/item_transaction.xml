@@ -58,7 +58,7 @@
         android:layout_marginEnd="5dp"
         android:layout_marginStart="5dp"
         android:gravity="end"
-        android:text="@string/date"
+        android:text="@string/deadline"
         android:textColor="@color/colorAccentDark"
         android:textSize="16sp"
         android:textStyle="bold"

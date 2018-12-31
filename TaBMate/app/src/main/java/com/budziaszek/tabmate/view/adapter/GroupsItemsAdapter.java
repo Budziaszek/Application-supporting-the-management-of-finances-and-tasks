@@ -8,9 +8,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.firestoreData.Group;
+import com.budziaszek.tabmate.data.Group;
 import com.budziaszek.tabmate.view.listener.GroupClickListener;
-import com.google.protobuf.StringValue;
 
 import java.util.List;
 

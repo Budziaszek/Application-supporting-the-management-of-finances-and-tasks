@@ -18,11 +18,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
-import com.budziaszek.tabmate.view.InformUser;
+import com.budziaszek.tabmate.data.Group;
+import com.budziaszek.tabmate.view.helper.InformUser;
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
-import com.budziaszek.tabmate.firestoreData.User;
-import com.budziaszek.tabmate.view.KeyboardManager;
+import com.budziaszek.tabmate.data.FirestoreRequests;
+import com.budziaszek.tabmate.data.User;
+import com.budziaszek.tabmate.view.helper.KeyboardManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -50,7 +51,6 @@ public class LoginActivity extends Activity {
     //Firebase
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
-    private FirestoreRequests firestoreRequests = new FirestoreRequests();
 
     private Boolean doRegister = false;
 
@@ -67,6 +67,10 @@ public class LoginActivity extends Activity {
             emailRegisterButton.setVisibility(View.GONE);
             emailSignInButton.setVisibility(View.VISIBLE);
             emailSignUpButton.setVisibility(View.VISIBLE);
+
+            findViewById(R.id.user_name).setVisibility(View.GONE);
+            findViewById(R.id.password_confirm).setVisibility(View.GONE);
+
             doRegister = false;
         }
     }
@@ -79,29 +83,43 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
         initializeForm();
 
+        currentUser = auth.getCurrentUser();
         if (currentUser != null) {
             Log.d(TAG, "User is logged in.");
-            startMain();
+            startMainActivity();
         }
+
+        FirebaseAuth.AuthStateListener mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                // User is signed in
+                Log.d(TAG, "onAuthStateChanged:signed_in");
+            } else {
+                // User is signed out
+                Log.d(TAG, "onAuthStateChanged:signed_out");
+                if(this.getClass() != LoginActivity.class)
+                    finish();
+            }
+        };
+        auth.addAuthStateListener(mAuthListener);
 
         //doLoginTask("ananke.moro@gmail.com", "zabcia3");
     }
 
-
     /**
      * Starts MainActivity. Called after successful login/register of if user is already logged in.
      */
-    public void startMain() {
+    private void startMainActivity() {
         Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
         LoginActivity.this.startActivity(myIntent);
         finish();
     }
 
     private void initializeForm() {
-        nameView = findViewById(R.id.user_name);
+        nameView = findViewById(R.id.user_name_text);
 
-        emailView = findViewById(R.id.email);
-        passwordView = findViewById(R.id.password);
+        emailView = findViewById(R.id.email_text);
+        passwordView = findViewById(R.id.password_text);
         passwordView.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attempt(false);
@@ -109,7 +127,7 @@ public class LoginActivity extends Activity {
             }
             return false;
         });
-        passwordConfirmView = findViewById(R.id.password_confirm);
+        passwordConfirmView = findViewById(R.id.password_confirm_text);
         passwordConfirmView.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attempt(true);
@@ -134,6 +152,9 @@ public class LoginActivity extends Activity {
             nameView.requestFocus();
             passwordConfirmView.setVisibility(View.VISIBLE);
             emailRegisterButton.setVisibility(View.VISIBLE);
+
+            findViewById(R.id.user_name).setVisibility(View.VISIBLE);
+            findViewById(R.id.password_confirm).setVisibility(View.VISIBLE);
         });
 
         emailSignInButton = findViewById(R.id.email_sign_in_button);
@@ -143,7 +164,7 @@ public class LoginActivity extends Activity {
         });
 
         forgotPasswordButton = findViewById(R.id.forgot_password_button);
-        forgotPasswordButton.setOnClickListener(view -> alertForgotPassword());
+        forgotPasswordButton.setOnClickListener(view -> resetPassword());
 
         loginFormView = findViewById(R.id.login_form);
         progressView = findViewById(R.id.login_progress);
@@ -264,7 +285,7 @@ public class LoginActivity extends Activity {
     /**
      * Represents an asynchronous login used to authenticate, where Firebase is used.
      */
-    protected void doLoginTask(final String email, final String password) {
+    private void doLoginTask(final String email, final String password) {
         showProgress(true);
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(LoginActivity.this, task -> {
@@ -279,7 +300,7 @@ public class LoginActivity extends Activity {
                     } else {
                         Log.d(TAG, "Login user success.");
                         showProgress(false);
-                        startMain();
+                        startMainActivity();
                     }
                 });
     }
@@ -295,8 +316,9 @@ public class LoginActivity extends Activity {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "Register user in Firestore success.");
-                        addUser(task.getResult().getUser().getUid(), name, email);
+                        createUser(task.getResult().getUser().getUid(), name, email);
                         currentUser = auth.getCurrentUser();
+                        createUserGroup(name, task.getResult().getUser().getUid());
                         sendVerificationEmail();
                         doLoginTask(email, password);
                     } else {
@@ -324,18 +346,28 @@ public class LoginActivity extends Activity {
     /**
      * Creates User instance and adds new user to Firestore database to store more information.
      */
-    public void addUser(String id, String name, String email) {
+    private void createUser(String id, String name, String email) {
         User newUser = new User(id, name, email);
-        firestoreRequests.addUser(newUser, id,
+        FirestoreRequests.addUser(newUser, id,
                 (Void) -> Log.d(TAG, "Add user document to Firestore success."),
                 (e) -> InformUser.informFailure(this, e));
     }
 
+    /**
+     * Creates Group instance and adds new group to Firestore database to store more information.
+     */
+    private void createUserGroup(String name, String uid) {
+        Group newGroup = new Group(name, "");
+        newGroup.addMember(uid);
+        FirestoreRequests.addGroup(newGroup, uid,
+                (Void) -> Log.d(TAG, "Add group document to Firestore success."),
+                (e) -> InformUser.informFailure(this, e));
+    }
 
     /**
      * Alert to enter email if user forgot password.
      */
-    public void alertForgotPassword() {
+    private void resetPassword() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, android.R.style.Theme_Material_Dialog_Alert);
         builder.setTitle(R.string.enter_email);
@@ -362,6 +394,9 @@ public class LoginActivity extends Activity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             InformUser.inform(LoginActivity.this, R.string.email_reset_sent);
+                        }else{
+                            if(task.getException()!= null)
+                                InformUser.informFailure(this, task.getException());
                         }
                     });
         });

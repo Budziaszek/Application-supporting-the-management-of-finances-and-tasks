@@ -67,6 +67,16 @@
                     android:layout_toEndOf="@id/expenses"
                     android:padding="10dp" />
 
+                <CheckBox
+                    android:id="@+id/isCommon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/switch_in_out"
+                    android:text="@string/joint_transaction"
+                    android:padding="10dp"
+                    android:textColor="@color/colorPrimaryDark"
+                    />
+
                 <TextView
                     android:id="@+id/income"
                     android:layout_width="wrap_content"
@@ -81,7 +91,7 @@
                     android:id="@+id/label_transaction_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/expenses"
+                    android:layout_below="@id/isCommon"
                     android:padding="5dp"
                     android:text="@string/amount"
                     android:textSize="12sp" />
@@ -227,6 +237,28 @@
                     android:text="@string/group"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/label_transaction_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/transaction_date"
+                    android:layout_alignParentEnd="true"
+                    android:padding="5dp"
+                    android:text="@string/user"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/transaction_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@+id/label_transaction_user"
+                    android:padding="10dp"
+                    android:text="@string/user"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp" />
+
 
                 <TextView
                     android:id="@+id/label_transaction_category"

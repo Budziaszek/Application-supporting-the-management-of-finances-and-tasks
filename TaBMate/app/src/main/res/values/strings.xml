@@ -45,6 +45,7 @@
     <string name="enter_new_nick">Enter new name</string>
     <string name="remove_account">Remove account</string>
     <string name="are_you_sure">Are you sure?</string>
+    <string name="back_click_accept">Click here or BACK to accept</string>
 
     <!-- Strings related to main page-->
     <string name="user_tasks">Your tasks</string>
@@ -85,14 +86,14 @@
     <string name="add_new_task">Add new task</string>
     <string name="task_created">Task created</string>
     <string name="task_moved">Task moved to next stage</string>
-    <string name="find_tasks">Find tasks</string>
-    <string name="find">Find</string>
+    <string name="filtrate_tasks">Filtrate tasks</string>
+    <string name="filtrate">Filtrate</string>
     <string name="details">Details</string>
     <string name="basic">Basic</string>
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="details_task">Task details</string>
-    <string name="doers">Doers</string>
+    <string name="users">Users</string>
     <string name="join_task">Join task</string>
     <string name="status">Status</string>
     <string name="group">Group</string>
@@ -108,7 +109,7 @@
     <string name="your_vote">Your vote</string>
     <string name="vote">Vote</string>
     <string name="priority">Priority</string>
-    <string name="task_no_doers">Without doers</string>
+    <string name="no_users">Without users</string>
     <string name="task_todo">ToDo</string>
     <string name="task_doing">Doing</string>
     <string name="task_done">Done</string>
@@ -131,7 +132,13 @@
     <string name="time_spent_bar">Time spent on tasks [h]</string>
     <string name="tasks_done_bar">Tasks finished</string>
     <string name="tasks_done_pie">Number of tasks by status</string>
-    <string name="budget_pie">Expenses by category (current month)</string>
+    <string name="budget_pie_expenses">Expenses by category (current month)</string>
+    <string name="budget_pie_income">Income by category (current month)</string>
+    <string name="cannot_leave">You cannot leave this group</string>
+    <string name="tasks_finished_total">Total number of tasks completed (current month): </string>
+    <string name="tasks_finished_on_time">Number of tasks completed on time (current month): </string>
+    <string name="tasks_after_deadline">Number of tasks after deadline: </string>
+
     <string name="perform">▶</string>
     <string name="stop">❙❙</string>
 
@@ -152,6 +159,10 @@
     <string name="income">income</string>
     <string name="expenses">expenses</string>
     <string name="expense">expense</string>
+    <string name="joint_transaction">Joint transaction (with others)</string>
+    <string name="user">User</string>
+    <string name="expenses_total">Total expenses (current month): </string>
+    <string name="income_total">Total income (current month): </string>
 
     <string-array name="income">
         <item>Salary</item>

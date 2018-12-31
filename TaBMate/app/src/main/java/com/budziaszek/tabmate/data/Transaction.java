@@ -1,4 +1,4 @@
-package com.budziaszek.tabmate.firestoreData;
+package com.budziaszek.tabmate.data;
 
 import android.annotation.SuppressLint;
 
@@ -9,6 +9,7 @@ import java.util.Date;
 //TODO use or remove uid
 public class Transaction {
 
+    private String id;
     private Double amount;
     private String title;
     private String description;
@@ -28,6 +29,10 @@ public class Transaction {
         this.description = description;
         this.date = date;
         this.uid = uid;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setAmount(Double amount) {
@@ -64,6 +69,10 @@ public class Transaction {
 
     public void setSubcategory(String subcategory) {
         this.subcategory = subcategory;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public Double getAmount() {

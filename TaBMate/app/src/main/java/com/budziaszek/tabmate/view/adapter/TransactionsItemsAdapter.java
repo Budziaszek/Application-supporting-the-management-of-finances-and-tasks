@@ -10,7 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.firestoreData.Transaction;
+import com.budziaszek.tabmate.data.Transaction;
 import com.budziaszek.tabmate.view.listener.TransactionClickListener;
 
 import java.util.List;

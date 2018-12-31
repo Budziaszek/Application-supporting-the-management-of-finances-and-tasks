@@ -5,6 +5,6 @@ public interface DataChangeListener {
     void groupsChanged();
     void invitationsChanged();
     void transactionsChanged();
-    void finished();
+    void refreshFinished();
     void informAboutDataSynchronization();
 }

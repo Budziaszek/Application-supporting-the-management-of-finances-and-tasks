@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:background="@drawable/gradient_background_trio">
+
+    <TextView
+        android:id="@+id/find_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="@string/filtrate"
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
+
+    <View
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_below="@id/find_title"
+        android:background="@color/colorAccent" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title"
+        android:fillViewport="false"
+        android:visibility="visible">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/find_users_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/find_group_layout"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/colorSectionBackground"
+                android:gravity="start"
+                android:padding="5dp"
+                android:paddingBottom="10dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/users_find"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:padding="10dp"
+                    android:text="@string/users"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/users_checkboxes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/users_find"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/find_group_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/colorSectionBackground"
+                android:gravity="start"
+                android:padding="5dp"
+                android:paddingBottom="10dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/groups_find"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:padding="10dp"
+                    android:text="@string/groups"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/groups_checkboxes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/groups_find"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <!--<RelativeLayout-->
+                <!--android:id="@+id/find_categories_layout"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_below="@+id/find_users_layout"-->
+                <!--android:layout_marginBottom="5dp"-->
+                <!--android:layout_marginEnd="10dp"-->
+                <!--android:layout_marginStart="10dp"-->
+                <!--android:layout_marginTop="10dp"-->
+                <!--android:background="@color/colorSectionBackground"-->
+                <!--android:gravity="start"-->
+                <!--android:padding="5dp"-->
+                <!--android:paddingBottom="10dp"-->
+                <!--android:visibility="visible">-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/category_find"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="start"-->
+                    <!--android:padding="10dp"-->
+                    <!--android:text="@string/category"-->
+                    <!--android:textColor="@color/colorPrimaryDark"-->
+                    <!--android:textSize="16sp"-->
+                    <!--android:textStyle="bold" />-->
+
+                <!--<LinearLayout-->
+                    <!--android:id="@+id/category_checkboxes"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_below="@+id/users_find"-->
+                    <!--android:orientation="vertical">-->
+
+                <!--</LinearLayout>-->
+
+            <!--</RelativeLayout>-->
+
+            <!--<RelativeLayout-->
+                <!--android:id="@+id/find_date_layout"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_below="@+id/find_users_layout"-->
+                <!--android:layout_marginBottom="5dp"-->
+                <!--android:layout_marginEnd="10dp"-->
+                <!--android:layout_marginStart="10dp"-->
+                <!--android:layout_marginTop="10dp"-->
+                <!--android:background="@color/colorSectionBackground"-->
+                <!--android:gravity="start"-->
+                <!--android:padding="5dp"-->
+                <!--android:paddingBottom="10dp"-->
+                <!--android:visibility="visible">-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/date_find"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="start"-->
+                    <!--android:padding="10dp"-->
+                    <!--android:text="@string/date"-->
+                    <!--android:textColor="@color/colorPrimaryDark"-->
+                    <!--android:textSize="16sp"-->
+                    <!--android:textStyle="bold" />-->
+
+
+                <!--<TextView-->
+                    <!--android:id="@+id/date"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_below="@+id/date_find"-->
+                    <!--android:background="@color/colorPrimaryTransparent"-->
+                    <!--android:clickable="true"-->
+                    <!--android:focusable="true"-->
+                    <!--android:padding="10dp"-->
+                    <!--android:text="@string/date"-->
+                    <!--android:textColor="@color/colorPrimaryDark"-->
+                    <!--android:textSize="18sp" />-->
+
+            <!--</RelativeLayout>-->
+
+            <Button
+                android:id="@+id/accept_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/find_users_layout"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/colorPrimarySemi"
+                android:text="@string/back_click_accept"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+
+
+    </ScrollView>
+
+</RelativeLayout>

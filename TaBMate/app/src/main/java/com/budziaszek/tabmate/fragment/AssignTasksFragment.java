@@ -1,7 +1,5 @@
 package com.budziaszek.tabmate.fragment;
 
-import android.app.Activity;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,23 +9,21 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.budziaszek.tabmate.R;
 import com.budziaszek.tabmate.activity.MainActivity;
-import com.budziaszek.tabmate.firestoreData.DataManager;
-import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
-import com.budziaszek.tabmate.firestoreData.Group;
-import com.budziaszek.tabmate.firestoreData.User;
-import com.budziaszek.tabmate.firestoreData.UserTask;
-import com.budziaszek.tabmate.view.InformUser;
-import com.budziaszek.tabmate.view.KeyboardManager;
+import com.budziaszek.tabmate.data.DataManager;
+import com.budziaszek.tabmate.data.FirestoreRequests;
+import com.budziaszek.tabmate.data.Group;
+import com.budziaszek.tabmate.data.Task;
+import com.budziaszek.tabmate.view.helper.InformUser;
+import com.budziaszek.tabmate.view.helper.KeyboardManager;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class SelectTasksFragment extends BasicFragment {
+public class AssignTasksFragment extends BasicFragment {
 
     private static final String TAG = "SelectTasksFragmentProcedure";
     private List<String> selectedGroupsIds = new ArrayList<>();
@@ -36,9 +32,9 @@ public class SelectTasksFragment extends BasicFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "Created");
-        View fView = inflater.inflate(R.layout.tasks_select, container, false);
+        View fView = inflater.inflate(R.layout.tasks_assign, container, false);
 
-        Activity activity = getActivity();
+        activity = getActivity();
 
         // Allow groups selection
         LinearLayout layout = fView.findViewById(R.id.groups_checkboxes);
@@ -78,12 +74,12 @@ public class SelectTasksFragment extends BasicFragment {
                 return;
             }
 
-            List<UserTask> tasks = DataManager.getInstance().getTasks();
-            List<UserTask> tasksToBeAssigned = new ArrayList<>();
+            List<Task> tasks = DataManager.getInstance().getTasks();
+            List<Task> tasksToBeAssigned = new ArrayList<>();
 
-            tasks.sort(Comparator.comparing(UserTask::getDateForSort).reversed());
-            for(UserTask task:tasks){
-                if(task.getStatus() == UserTask.Status.TODO && selectedGroupsIds.contains(task.getGroup())){
+            tasks.sort(Comparator.comparing(Task::getDateForSort).reversed());
+            for(Task task:tasks){
+                if(task.getStatus() == Task.Status.TODO && selectedGroupsIds.contains(task.getGroup())){
                     if(selectedGroupsIds.contains(task.getGroup()) && task.getDoers().size() == 0)
                         if(number_of_tasks_selected < number_of_tasks){
                             tasksToBeAssigned.add(task);
@@ -98,7 +94,7 @@ public class SelectTasksFragment extends BasicFragment {
             }
 
             FirestoreRequests firestoreRequests = new FirestoreRequests();
-            for(UserTask task:tasksToBeAssigned) {
+            for(Task task:tasksToBeAssigned) {
                 Log.d(TAG, "Assigned " + task.getTitle());
                 task.addDoer(((MainActivity)getActivity()).getCurrentUserId());
                 firestoreRequests.updateTask(task, v->{}, e->{});

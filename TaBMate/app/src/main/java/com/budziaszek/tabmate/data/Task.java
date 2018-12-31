@@ -1,7 +1,6 @@
-package com.budziaszek.tabmate.firestoreData;
+package com.budziaszek.tabmate.data;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.budziaszek.tabmate.R;
 
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class UserTask {
+public class Task {
 
     private String id;
     private String title;
@@ -24,13 +23,13 @@ public class UserTask {
     private ArrayList<String> doers;
     private Status status;
     private Status statusBeforeArchive;
-    private Date date;
+    private Date deadline;
     private Date completionDate;
     private Map<String, Integer> timeEstimationVote;
     private Integer estimatedTime = 0;
     private Long timeSpent = (long)0.0;
     private Integer priority;
-    private Date playDate;
+    private Date executionStartDate;
     private Map<String, Boolean> subtasks = new HashMap<>();
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -80,7 +79,7 @@ public class UserTask {
             status = Status.TODO;
         else
             status = Status.TODO;
-        playDate = null;
+        executionStartDate = null;
         if(status == Status.DONE){
             setCompletionDate(Calendar.getInstance().getTime());
         }
@@ -115,8 +114,8 @@ public class UserTask {
         this.timeSpent = timeSpent;
     }
 
-    public void setPlayDate(Date playDate) {
-        this.playDate = playDate;
+    public void setExecutionStartDate(Date executionStartDate) {
+        this.executionStartDate = executionStartDate;
     }
 
     public void setSubtasks(Map<String, Boolean> subtasks) {
@@ -147,7 +146,7 @@ public class UserTask {
         return id;
     }
 
-    public UserTask(){
+    public Task(){
         this.title = null;
         this.description = null;
         this.group = null;
@@ -159,7 +158,7 @@ public class UserTask {
         this.timeSpent = (long)0.0;
     }
 
-    public UserTask(String title, String description, String group) {
+    public Task(String title, String description, String group) {
         this.title = title;
         this.description = description;
         this.group = group;
@@ -171,7 +170,7 @@ public class UserTask {
         this.timeSpent = (long)0.0;
     }
 
-    public UserTask(String id, String title, String description, String group, /*ArrayList<String> tag,*/ ArrayList<String> doers, Status status) {
+    public Task(String id, String title, String description, String group, /*ArrayList<String> tag,*/ ArrayList<String> doers, Status status) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -232,13 +231,13 @@ public class UserTask {
         return statusBeforeArchive;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getDeadline() {
+        return deadline;
     }
 
     public Date getDateForSort() {
-        if(date != null)
-            return date;
+        if(deadline != null)
+            return deadline;
         return new Date(0);
     }
 
@@ -246,8 +245,8 @@ public class UserTask {
         return priority;
     }
 
-    public Date getPlayDate() {
-        return playDate;
+    public Date getExecutionStartDate() {
+        return executionStartDate;
     }
 
     public Map<String, Long> getTimeSpentByDate() {
@@ -272,25 +271,25 @@ public class UserTask {
 
     public void setStatus(Status status) {
         this.status = status;
-        if(status == UserTask.Status.DONE)
+        if(status == Task.Status.DONE)
             setCompletionDate(Calendar.getInstance().getTime());
         if(status == Status.TODO)
             stop();
-        playDate = null;
+        executionStartDate = null;
     }
 
-    public void setDate(Date date){
-        this.date = date;
+    public void setDeadline(Date deadline){
+        this.deadline = deadline;
     }
 
     public String dateString(Boolean deadline){
-        if((deadline && date == null) || (!deadline && completionDate == null)){
+        if((deadline && this.deadline == null) || (!deadline && completionDate == null)){
             return "Unknown";
         }
 
         Calendar calendar = Calendar.getInstance();
         if(deadline)
-            calendar.setTime(date);
+            calendar.setTime(this.deadline);
         else
             calendar.setTime(completionDate);
 
@@ -307,9 +306,9 @@ public class UserTask {
         if(timeSpent == null){
             timeSpent = (long)0.0;
         }
-        if(playDate != null) {
-            playDate = Calendar.getInstance().getTime();
-            timeSpent += (Calendar.getInstance().getTimeInMillis() - playDate.getTime()) / 1000 / 60;
+        if(executionStartDate != null) {
+            executionStartDate = Calendar.getInstance().getTime();
+            timeSpent += (Calendar.getInstance().getTimeInMillis() - executionStartDate.getTime()) / 1000 / 60;
         }
         return (int)Math.floor(timeSpent/60) + " h " + timeSpent%60 + " min";
     }
@@ -319,14 +318,14 @@ public class UserTask {
     }
 
     public void play(){
-        playDate = Calendar.getInstance().getTime();
+        executionStartDate = Calendar.getInstance().getTime();
     }
 
     public void stop(){
-        if(playDate == null){
+        if(executionStartDate == null){
             return;
         }
-        long newTime = (Calendar.getInstance().getTimeInMillis() - playDate.getTime())/1000/60;
+        long newTime = (Calendar.getInstance().getTimeInMillis() - executionStartDate.getTime())/1000/60;
         timeSpent += newTime;
         String date = simpleDateFormat.format(Calendar.getInstance().getTime());
         if(timeSpentByDate.containsKey(date)){
@@ -335,18 +334,18 @@ public class UserTask {
         }else{
             timeSpentByDate.put(date, newTime);
         }
-        playDate = null;
+        executionStartDate = null;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(obj.getClass() != UserTask.class)
+        if(obj.getClass() != Task.class)
             return false;
 
-        if(id.equals(((UserTask)obj).id))
-            if(title.equals(((UserTask)obj).title))
-                if (description.equals(((UserTask)obj).description))
-                    return (group.equals(((UserTask)obj).group));
+        if(id.equals(((Task)obj).id))
+            if(title.equals(((Task)obj).title))
+                if (description.equals(((Task)obj).description))
+                    return (group.equals(((Task)obj).group));
 
         return false;
     }

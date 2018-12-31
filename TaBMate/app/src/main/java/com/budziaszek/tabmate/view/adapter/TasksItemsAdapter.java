@@ -15,9 +15,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.budziaszek.tabmate.R;
-import com.budziaszek.tabmate.firestoreData.DataManager;
-import com.budziaszek.tabmate.firestoreData.FirestoreRequests;
-import com.budziaszek.tabmate.firestoreData.UserTask;
+import com.budziaszek.tabmate.data.FirestoreRequests;
+import com.budziaszek.tabmate.data.Task;
 import com.budziaszek.tabmate.view.listener.TaskClickListener;
 
 import java.util.Calendar;
@@ -28,7 +27,7 @@ import java.util.List;
 public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.MyViewHolder> {
 
     private TaskClickListener taskClickListener;
-    private List<UserTask> tasksList;
+    private List<Task> tasksList;
     private Animation animation;
     private Context context;
     private int color;
@@ -64,7 +63,7 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
     }
 
 
-    public TasksItemsAdapter(List<UserTask> tasksList, Context context, int color, TaskClickListener taskClickListener, String uid) {
+    public TasksItemsAdapter(List<Task> tasksList, Context context, int color, TaskClickListener taskClickListener, String uid) {
         //this.taskItemLayouts = new ArrayList<>();
         this.tasksList = tasksList;
         this.taskClickListener = taskClickListener;
@@ -84,11 +83,11 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
     @SuppressLint("WrongConstant")
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        UserTask task = tasksList.get(position);
+        Task task = tasksList.get(position);
         holder.taskName.setText(task.getTitle());
         holder.taskDeadline.setText(task.dateString(true));
 
-        if(task.getPlayDate() != null)
+        if(task.getExecutionStartDate() != null)
             holder.taskSwitch.setChecked(true);
         else
             holder.taskSwitch.setChecked(false);
@@ -99,8 +98,7 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
             }else{
                 task.stop();
             }
-            FirestoreRequests firestoreRequests = new FirestoreRequests();
-            firestoreRequests.updateTask(task, v -> {}, e -> Log.d("Error", e.getMessage()));
+            FirestoreRequests.updateTask(task, v -> {}, e -> Log.d("Error", e.getMessage()));
         });
 
 
@@ -110,18 +108,18 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
         holder.taskDeadline.setVisibility(deadlineVisible);
         holder.taskDeadline.setTextColor(Color.GREEN);
         holder.taskDeadline.clearAnimation();
-        if (task.getStatus() != UserTask.Status.ARCHIVED && task.getStatus() != UserTask.Status.DONE && task.getDate() != null) {
-            if ((calendar.getTime().after(task.getDate()))) {
+        if (task.getStatus() != Task.Status.ARCHIVED && task.getStatus() != Task.Status.DONE && task.getDeadline() != null) {
+            if ((calendar.getTime().after(task.getDeadline()))) {
                 holder.taskDeadline.setVisibility(View.VISIBLE);
                 holder.taskDeadline.setTextColor(Color.RED);
                 holder.taskDeadline.startAnimation(animation);
-            } else if (calendar.getTime().after(new Date(task.getDate().getTime() - (preDeadlineTime * 86400 * 1000)))) {
+            } else if (calendar.getTime().after(new Date(task.getDeadline().getTime() - (preDeadlineTime * 86400 * 1000)))) {
                 holder.taskDeadline.setVisibility(View.VISIBLE);
                 holder.taskDeadline.setTextColor(Color.rgb(255, 165, 0));
                 holder.taskDeadline.startAnimation(animation);
             }
         }
-        if(task.getStatus() != UserTask.Status.DOING || !task.getDoers().contains(uid)){
+        if(task.getStatus() != Task.Status.DOING || !task.getDoers().contains(uid)){
             holder.taskSwitch.setVisibility(View.INVISIBLE);
         }
 
@@ -141,12 +139,12 @@ public class TasksItemsAdapter extends RecyclerView.Adapter<TasksItemsAdapter.My
         return 0;
     }
 
-    public void updateAll(List<UserTask> data){
+    public void updateAll(List<Task> data){
         tasksList = data;
         notifyDataSetChanged();
     }
 
-    public void update(List<UserTask> data) {
+    public void update(List<Task> data) {
         tasksList = data;
     }
 
