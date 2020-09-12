@@ -19,7 +19,7 @@ Tools and software used: Android Studio, Java, Google Firebase, MPAndroidChart
 <img src="https://github.com/Budziaszek/Application-supporting-the-management-of-finances-and-tasks/blob/master/screenshots/charts_2.png" alt="Charts" width="200">
 <img src="https://github.com/Budziaszek/Application-supporting-the-management-of-finances-and-tasks/blob/master/screenshots/assign.png" alt="Assign" width="200">
 <img src="https://github.com/Budziaszek/Application-supporting-the-management-of-finances-and-tasks/blob/master/screenshots/filtrate.png" alt="Filtrate" width="200">
-<img src="https://github.com/Budziaszek/Anpplication-supporting-the-management-of-finances-and-tasks/blob/master/screenshots/group.png" alt="Group" width="200">
+<img src="https://github.com/Budziaszek/Application-supporting-the-management-of-finances-and-tasks/blob/master/screenshots/group.png" alt="Group" width="200">
 </p>
 <p>
 <img src="https://github.com/Budziaszek/Application-supporting-the-management-of-finances-and-tasks/blob/master/screenshots/task_edit.png" alt="Task edit" width="200">
