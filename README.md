@@ -1,6 +1,14 @@
-# TaB - Tasks and Budget
-TaB is an application for mobile devices with Android system supporting the management of finances and tasks.
+# TaB - Tasks and Budget application
+TaB is an application for mobile devices with Android system supporting the management of finances and tasks. <br/>
 Tools and software used: Android Studio, Java, Google Firebase, MPAndroidChart
+
+# Description
+The project was created as part of an engineering thesis. It was decided to create a tool that allows you to use efficiently time and manage household budget. 
+The app will help users manage their tasks and overseeing the time it takes to complete them, and thus ensure improving their implementation. 
+App allows you to monitor expenses through displaying the available amount of money, adding new transactions as well as sharing
+their history. The collected data are presented in the form of graphs and statistics facilitate their analysis.
+Bearing in mind that most of the responsibilities and funds are usually shared between group of people (e.g family members)
+it was decided to create groups of users, wchich allows you to share tasks and funds. For this reason app includes synchronization, database and user authentication (achieved with Foogle Firebase).
 
 # Sample screenshots
 <p>
