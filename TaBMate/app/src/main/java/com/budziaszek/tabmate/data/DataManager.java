@@ -56,7 +56,7 @@ public class DataManager {
 
     }
 
-    public void clear(){
+    public void clear() {
         dataHasChanged = false;
         refreshCounter = 0;
         //observers.clear();
@@ -99,7 +99,11 @@ public class DataManager {
      */
     public static DataManager getInstance() {
         if (instance == null) {
-            instance = new DataManager();
+            synchronized (DataManager.class) {
+                if (instance == null) {
+                    instance = new DataManager();
+                }
+            }
         }
         return instance;
     }
@@ -270,7 +274,7 @@ public class DataManager {
         List<Transaction> filtratedTransactions = new ArrayList<>();
         for (Transaction transaction : transactions.values()) {
             if (selectedGroupsIds.contains(transaction.getGroup()))
-                if(selectedUsersIds.contains(transaction.getUid())
+                if (selectedUsersIds.contains(transaction.getUid())
                         || (transaction.getUid() == null && isUserUnspecifiedSelected))
                     filtratedTransactions.add(transaction);
         }
